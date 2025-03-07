@@ -49,4 +49,8 @@ public class PostService {
         return posts.stream().map(x -> PostDto.fromEntity(x)).toList();
     }
 
+    public PostDto findByid(Long postId) {
+        Post post = postRepository.findById(postId).orElse(null);
+        return PostDto.fromEntity(post);
+    }
 }

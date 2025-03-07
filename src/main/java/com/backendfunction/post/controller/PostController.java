@@ -26,15 +26,15 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByPostId(@PathVariable("id") Long id) {
+    public ResponseEntity<?> findByPostId(@PathVariable("id") Long id) throws BadRequestException {
 
         PostDto findPost = getDto(id, "Post 조회 실패");
         return ResponseEntity.status(HttpStatus.OK).body(findPost);
     }
     @PostMapping("/create")
     public ResponseEntity<?> createPost(@RequestBody PostDto dto) {
-
         postService.createPost(dto);
+
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 //수정
@@ -43,23 +43,23 @@ public class PostController {
         if (!dto.getId().equals(id)) {
             return ResponseEntity.status(HttpStatus.OK).body("실패");
         }
-        PostDto postDto = getDto(id, "댓글수정 실패");
+        PostDto postDto = getDto(id, "Post 수정 실패");
         postService.updateByPost(dto);
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable("id") Long id) {
-        PostDto result = getDto(id, "댓글 삭제 실패");
+    public ResponseEntity<?> deletePost(@PathVariable("id") Long id) throws BadRequestException {
+        PostDto result = getDto(id, "Post 삭제 실패");
         postService.deleteByPostId(result.getId());
         return ResponseEntity.status(HttpStatus.OK).body("성공");
 
     }
-    private PostDto getDto(Long id, String message) {
+    private PostDto getDto(Long id, String message) throws BadRequestException {
 
         Map<String, Object> findPost = postService.findByPostId(id);
         if (ObjectUtils.isEmpty(findPost.get("dto"))) {
-            return null;
+            throw new BadRequestException(message);
         }
         return (PostDto) findPost.get("dto");
     }

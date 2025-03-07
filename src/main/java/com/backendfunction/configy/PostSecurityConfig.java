@@ -1,4 +1,4 @@
-package com.backendfunction.post.configy;
+package com.backendfunction.configy;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
