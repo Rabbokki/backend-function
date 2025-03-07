@@ -1,0 +1,23 @@
+#spring.application.name=backend-function
+#MySQL \uC124\uC815
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/backend-function
+    username: ${DB_USER}
+    password: ${DB_PW}
+  sql:
+    init:
+      mode: never
+    # \uC815\uB82C \uBC29\uC2DD
+    # always \uD56D\uC0C1 , embedded : \uADF8\uC7A5 DB\uB9CC never : \uBAA8\uB4E0 \uB3D9\uC791 \uC548\uD568
+  jpa:
+    # spring.sql.init \uCD08\uAE30\uD654 \uD560\uB54C \uB370\uC774\uD130 \uC785\uB825\uC744 \uC704\uD55C \uB9AC \uC791\uC5C5\uC744 \uBC30\uCE58 \uD560\uAC83
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
