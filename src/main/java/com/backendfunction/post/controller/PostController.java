@@ -1,5 +1,6 @@
 package com.backendfunction.post.controller;
 
+<<<<<<< HEAD
 import com.backendfunction.post.dto.PostDto;
 import com.backendfunction.post.service.PostService;
 import org.apache.coyote.BadRequestException;
@@ -64,4 +65,10 @@ public class PostController {
         return (PostDto) findPost.get("dto");
     }
 
+=======
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PostController {
+>>>>>>> develop
 }
