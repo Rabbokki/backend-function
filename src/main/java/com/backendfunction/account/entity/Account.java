@@ -1,8 +1,12 @@
 package com.backendfunction.account.entity;
 
 import com.backendfunction.account.dto.AccountReqDto;
+import com.backendfunction.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "account")
@@ -18,6 +22,7 @@ public class Account {
     private String email;
     private String password;
     private String nickname;
+
 
     public Account(AccountReqDto accountReqDto) {
         this.email = accountReqDto.getEmail();

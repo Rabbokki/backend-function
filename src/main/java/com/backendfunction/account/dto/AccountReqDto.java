@@ -23,4 +23,8 @@ public class AccountReqDto {
 
     @NotBlank(message = "닉네임을 입력해 주세요.")
     private String nickname;
+
+    public void setEncodePwd(String encodePwd){
+        this.password = encodePwd;
+    }
 }
