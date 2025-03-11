@@ -23,3 +23,16 @@ jasypt:
   encryptor:
     password: jasyptStringEncryptor  # ???? ??? ?
 
+cloud:
+  aws:
+    credentials:
+      access-key: AKIA6ELKOBDPXDMU3Y7M
+      secret-key: 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
+    region:
+      static: ap-northeast-2  # AWS S3 리전
+    stack:
+      auto: false
+application:
+  bucket:
+    name: joo-legend
+
