@@ -1,3 +1,12 @@
+server:
+  port: 8443
+  ssl:
+    key-store: "file:C:/Windows/System32/keystore.p12"
+    key-store-password: "nm1120nmnm!"
+    key-store-type: PKCS12
+    key-alias: "mykey"
+
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
