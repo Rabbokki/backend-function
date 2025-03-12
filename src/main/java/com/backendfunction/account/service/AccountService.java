@@ -57,6 +57,15 @@ public class AccountService {
             public Long accountId = account.getId();
         };
     }
+
+    public ResponseDto<?> getUserInfoByEmail(String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("계정이 없습니다."));
+
+        // Return relevant user data (like email, nickname, etc.)
+        return ResponseDto.success(account);
+    }
+
     public void setHeader(HttpServletResponse response, TokenDto tokenDto){
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());

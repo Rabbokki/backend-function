@@ -25,6 +25,7 @@ public class AccountController {
     //회원가입
     @PostMapping("/signup")
     public ResponseDto<?> signUp(@RequestBody @Valid AccountReqDto accountReqDto){
+        System.out.println("called");
         return ResponseDto.success(accountService.accountSignUp(accountReqDto));
     }
     //로그인
@@ -33,6 +34,12 @@ public class AccountController {
         return ResponseDto.success(accountService.accountLogin(loginReqDto, response));
     }
 
+    // 내 정보 가져오기
+    @GetMapping("/me")
+    public ResponseDto<?> getUserInfo(@RequestHeader("Authorization") String token) {
+        String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
+        return accountService.getUserInfoByEmail(email);
+    }
 
 
     @GetMapping("/api/demo-web")
