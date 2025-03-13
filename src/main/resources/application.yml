@@ -1,3 +1,12 @@
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: "nm1120nmnm!"
+    key-store-type: PKCS12
+    key-alias: "mykey"
+
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,4 +31,17 @@ jwt:
 jasypt:
   encryptor:
     password: jasyptStringEncryptor  # ???? ??? ?
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIA6ELKOBDPXDMU3Y7M
+      secret-key: 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
+    region:
+      static: ap-northeast-2  # AWS S3 리전
+    stack:
+      auto: false
+application:
+  bucket:
+    name: joo-legend
 
