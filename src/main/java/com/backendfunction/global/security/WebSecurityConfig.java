@@ -67,9 +67,14 @@ public class WebSecurityConfig {
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()
 <<<<<<< HEAD
+<<<<<<< HEAD
                         .requestMatchers("/api/**").permitAll()
 =======
 >>>>>>> feature-joo
+=======
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/liquor/**").permitAll()
+>>>>>>> origin/feature-jang-post
                         .anyRequest().authenticated())
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

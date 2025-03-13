@@ -12,7 +12,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/dopamine_x?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
+<<<<<<< HEAD
     password: 6969
+=======
+    password: 1111
+>>>>>>> origin/feature-jang-post
 
   jpa:
     database: mysql

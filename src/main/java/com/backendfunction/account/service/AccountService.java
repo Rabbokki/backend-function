@@ -1,5 +1,6 @@
 package com.backendfunction.account.service;
 
+import com.backendfunction.account.dto.AccountDto;
 import com.backendfunction.account.dto.AccountReqDto;
 import com.backendfunction.account.dto.LoginReqDto;
 import com.backendfunction.account.entity.Account;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,4 +72,16 @@ public class AccountService {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
+
+
+    public AccountDto findById(Long id) {
+        Account account = accountRepository.findById(id).orElse(null);
+        return AccountDto.fromEntity(account);
+    }
+
+    public List<AccountDto> findAll() {
+        List<Account> accounts = accountRepository.findAll();
+        return accounts.stream().map(x -> AccountDto.fromEntity(x)).toList();
+    }
+
 }

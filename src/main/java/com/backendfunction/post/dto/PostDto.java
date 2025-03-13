@@ -1,8 +1,8 @@
 package com.backendfunction.post.dto;
 
 import com.backendfunction.commet.dto.CommentDto;
+import com.backendfunction.post.constant.Category;
 import com.backendfunction.post.entity.Post;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +18,7 @@ public class PostDto {
     private String content;
     private String title;
     private String price;
+    private Category category;
     private List<CommentDto> commentDtos = new ArrayList<>();
 
     public static PostDto fromEntity(Post post) {
@@ -26,6 +27,7 @@ public class PostDto {
                 post.getContent(),
                 post.getTitle(),
                 post.getPrice(),
+                post.getCategory(),
                 post.getCommentList().stream().map(x -> CommentDto.fromEntity(x)).toList()
         );
     }
@@ -36,6 +38,8 @@ public class PostDto {
         post.setContent(dto.getContent());
         post.setTitle(dto.getTitle());
         post.setPrice(dto.getPrice());
+        post.setCategory(dto.getCategory());
         return post;
     }
+
 }

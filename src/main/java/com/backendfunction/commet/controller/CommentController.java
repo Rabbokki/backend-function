@@ -72,7 +72,7 @@ public class CommentController {
     private CommentDto getDto(Long id, String message) throws BadRequestException {
 
         Map<String, Object> findComment = commentService.findByCommentId(id);
-        if (ObjectUtils.isEmpty(findComment)) {
+        if (ObjectUtils.isEmpty(findComment.get("dto"))) {
             throw new BadRequestException(message);
         }
         return (CommentDto) findComment.get("dto");

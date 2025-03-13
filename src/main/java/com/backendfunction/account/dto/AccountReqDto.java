@@ -1,11 +1,14 @@
 package com.backendfunction.account.dto;
 
+import com.backendfunction.account.entity.Account;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,4 +30,5 @@ public class AccountReqDto {
     public void setEncodePwd(String encodePwd){
         this.password = encodePwd;
     }
+
 }
