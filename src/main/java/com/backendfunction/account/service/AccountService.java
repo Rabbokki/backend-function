@@ -61,10 +61,28 @@ public class AccountService {
     public ResponseDto<?> getUserInfoByEmail(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("계정이 없습니다."));
-
-        // Return relevant user data (like email, nickname, etc.)
         return ResponseDto.success(account);
     }
+
+    public void updateUserInfo(String email, AccountReqDto accountReqDto) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if (accountReqDto.getEmail() != null && !accountReqDto.getEmail().equals(account.getEmail())) {
+            account.setEmail(accountReqDto.getEmail());
+        }
+
+        if (accountReqDto.getNickname() != null) {
+            account.setNickname(accountReqDto.getNickname());
+        }
+
+        if (accountReqDto.getPassword() != null) {
+            account.setPassword(passwordEncoder.encode(accountReqDto.getPassword()));
+        }
+
+        accountRepository.save(account);
+    }
+
 
     public void setHeader(HttpServletResponse response, TokenDto tokenDto){
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());

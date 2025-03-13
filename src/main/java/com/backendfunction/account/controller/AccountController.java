@@ -41,6 +41,16 @@ public class AccountController {
         return accountService.getUserInfoByEmail(email);
     }
 
+    // 내 정보 수정하기
+    @PutMapping("/me")
+    public ResponseDto<?> updateUserInfo(@RequestHeader("Authorization") String token,
+                                         @RequestBody @Valid AccountReqDto accountReqDto) {
+        String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
+        accountService.updateUserInfo(email, accountReqDto);
+        return ResponseDto.success("User details updated successfully");
+    }
+
+
 
     @GetMapping("/api/demo-web")
     public List<String> Hello(){
