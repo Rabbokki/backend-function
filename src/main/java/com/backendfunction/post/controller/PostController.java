@@ -1,5 +1,6 @@
 package com.backendfunction.post.controller;
 
+import com.backendfunction.post.constant.Category;
 import com.backendfunction.post.dto.PostDto;
 import com.backendfunction.post.service.PostService;
 import org.apache.coyote.BadRequestException;
@@ -25,7 +26,7 @@ public class PostController {
         List<PostDto> postDtos = postService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<?> findByPostId(@PathVariable("id") Long id) throws BadRequestException {
 
         PostDto findPost = getDto(id, "Post 조회 실패");
@@ -34,7 +35,6 @@ public class PostController {
     @PostMapping("/create")
     public ResponseEntity<?> createPost(@RequestBody PostDto dto) {
         postService.createPost(dto);
-
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 //수정
@@ -54,6 +54,12 @@ public class PostController {
         postService.deleteByPostId(result.getId());
         return ResponseEntity.status(HttpStatus.OK).body("성공");
 
+    }
+    //    카테고리별 출력
+    @GetMapping("/category/{category}")
+    public ResponseEntity<?> findCategory(@PathVariable("category") Category category) {
+        List<PostDto> postDtos= postService.findByCategory(category);
+        return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
     private PostDto getDto(Long id, String message) throws BadRequestException {
 

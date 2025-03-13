@@ -41,6 +41,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/account/signup").permitAll()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/liquor/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false)) // SecurityContext 설정
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 설정

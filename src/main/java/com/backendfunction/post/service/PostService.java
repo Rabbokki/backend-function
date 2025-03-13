@@ -1,8 +1,11 @@
 package com.backendfunction.post.service;
 
+import com.backendfunction.post.constant.Category;
 import com.backendfunction.post.dto.PostDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -12,6 +15,9 @@ import java.util.Map;
 
 @Service
 public class PostService {
+    @Autowired
+    EntityManager em;
+
     private final PostRepository postRepository;
 
     public PostService(PostRepository postRepository) {
@@ -53,4 +59,10 @@ public class PostService {
         Post post = postRepository.findById(postId).orElse(null);
         return PostDto.fromEntity(post);
     }
+    public List<PostDto> findByCategory(Category category) {
+        List<Post> posts = postRepository.findByCategory(category);
+        return posts.stream().map(x -> PostDto.fromEntity(x)).toList();
+    }
+
+
 }

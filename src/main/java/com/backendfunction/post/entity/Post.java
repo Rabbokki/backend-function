@@ -1,6 +1,7 @@
 package com.backendfunction.post.entity;
 
 import com.backendfunction.commet.entity.Comment;
+import com.backendfunction.post.constant.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +22,14 @@ public class Post {
     private String content;
     @Column(length = 100)
     private String price;
+    @Enumerated(EnumType.STRING)
+    private Category category;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
+
+
+
+
 
 
 }
