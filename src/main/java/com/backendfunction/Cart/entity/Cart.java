@@ -24,7 +24,7 @@ public class Cart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liquor_id")  // "liquor_id"라는 이름으로 외래 키를 설정
     private Liquor liquor;
 
