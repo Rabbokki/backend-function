@@ -10,16 +10,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -56,16 +60,19 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(Customizer.withDefaults())  // CORS 설정
-                .csrf(csrf -> csrf.disable())  // CSRF 비활성화
+                .cors(withDefaults()) // CORS 설정 적용
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/account/signup").permitAll()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()
                         .anyRequest().authenticated())
-                .securityContext(securityContext -> securityContext.requireExplicitSave(false)) // SecurityContext 설정
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 설정
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JwtAuthFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
+                .securityContext(securityContext -> securityContext.requireExplicitSave(false))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // HTTP -> HTTPS 리다이렉션 추가
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
                 .build();
     }
 }
