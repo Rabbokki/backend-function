@@ -26,12 +26,8 @@ public class AccountController {
 
     //회원가입
     @PostMapping("/signup")
-<<<<<<< HEAD
     public ResponseDto<?> signUp(@RequestBody @Valid AccountReqDto accountReqDto){
         System.out.println("called");
-=======
-    public ResponseDto<?> signUp(@RequestBody @Valid AccountReqDto accountReqDto) {
->>>>>>> origin/feature-jang-post
         return ResponseDto.success(accountService.accountSignUp(accountReqDto));
     }
 
@@ -64,5 +60,4 @@ public class AccountController {
         AccountDto dto = accountService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
-
 }
