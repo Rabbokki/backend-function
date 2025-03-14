@@ -1,6 +1,5 @@
 package com.backendfunction.Liquor.dto;
 
-import com.backendfunction.Liquor.constant.Category;
 import com.backendfunction.Liquor.entity.Liquor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,6 @@ public class LiquorDto {
     private int price;
     private int stock;
     private String country;
-    private String category;
 
 
     public static LiquorDto fromEntity(Liquor liquor) {
@@ -24,8 +22,7 @@ public class LiquorDto {
                 liquor.getName(),
                 liquor.getPrice(),
                 liquor.getStock(),
-                liquor.getCountry(),
-                liquor.getCategory().name()
+                liquor.getCountry()
         );
     }
 
@@ -36,7 +33,6 @@ public class LiquorDto {
         liquor.setPrice(dto.getPrice());
         liquor.setStock(dto.getStock());
         liquor.setCountry(dto.getCountry());
-        liquor.setCategory(Category.valueOf(dto.getCategory()));
         return liquor;
     }
 }

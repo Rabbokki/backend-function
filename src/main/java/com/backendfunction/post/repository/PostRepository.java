@@ -1,6 +1,5 @@
 package com.backendfunction.post.repository;
 
-import com.backendfunction.post.constant.Category;
 import com.backendfunction.post.entity.Post;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +14,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 //    @Modifying
 //    @Query(value = "SELECT * FROM post WHERE category = :category ", nativeQuery = true)
-    List<Post> findByCategory(Category category);
 
 }

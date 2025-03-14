@@ -1,7 +1,8 @@
 package com.backendfunction.Liquor.entity;
 
 import com.backendfunction.Cart.entity.Cart;
-import com.backendfunction.Liquor.constant.Category;
+import com.backendfunction.global.category.Category;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class Liquor {
     private Integer stock;
     @Column(length = 50)
     private String country;
-    @Enumerated(EnumType.STRING)
+
+    //category와 매핑 from JJJ
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "c_id")
+    @JsonBackReference
     private Category category;
 }

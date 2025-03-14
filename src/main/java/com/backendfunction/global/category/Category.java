@@ -1,0 +1,28 @@
+package com.backendfunction.global.category;
+
+import com.backendfunction.Liquor.entity.Liquor;
+import com.backendfunction.post.entity.Post;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String liquorName;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Liquor> liquors = new ArrayList<>();
+}

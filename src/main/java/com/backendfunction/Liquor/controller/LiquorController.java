@@ -1,6 +1,5 @@
 package com.backendfunction.Liquor.controller;
 
-import com.backendfunction.Liquor.constant.Category;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.service.LiquorService;
 import org.apache.coyote.BadRequestException;
@@ -34,11 +33,11 @@ public class LiquorController {
         return ResponseEntity.status(HttpStatus.OK).body(findLiquor);
     }
 //    카테고리별 출력
-@GetMapping("/liquor/category/{category}")
-public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
-    List<LiquorDto> list = liquorService.findByCategory(category);
-    return ResponseEntity.status(HttpStatus.OK).body(list);
-}
+//@GetMapping("/liquor/category/{category}")
+//public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
+//    List<LiquorDto> list = liquorService.findByCategory(category);
+//    return ResponseEntity.status(HttpStatus.OK).body(list);
+//}
 
     @PostMapping("/liquor/create")
     public ResponseEntity<?> createLiquor(@RequestBody LiquorDto dto) {

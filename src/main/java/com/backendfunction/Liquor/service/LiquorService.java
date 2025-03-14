@@ -1,6 +1,5 @@
 package com.backendfunction.Liquor.service;
 
-import com.backendfunction.Liquor.constant.Category;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.Liquor.repository.LiquorRepository;
@@ -51,8 +50,4 @@ public class LiquorService {
 
     }
 
-    public List<LiquorDto> findByCategory(String category) {
-        List<Liquor> liquors = liquorRepository.findByCategory(category);
-        return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
-    }
 }

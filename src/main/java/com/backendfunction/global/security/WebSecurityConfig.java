@@ -70,6 +70,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/post/**").permitAll()
                         .requestMatchers("/api/liquor/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
