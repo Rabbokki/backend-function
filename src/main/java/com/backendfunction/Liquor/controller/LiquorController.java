@@ -36,7 +36,8 @@ public class LiquorController {
 //    카테고리별 출력
 @GetMapping("/liquor/category/{category}")
 public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
-    List<LiquorDto> list = liquorService.findByCategory(category);
+    Category enumCategory = Category.valueOf(category.toUpperCase());
+    List<LiquorDto> list = liquorService.findByCategory(enumCategory);
     return ResponseEntity.status(HttpStatus.OK).body(list);
 }
 

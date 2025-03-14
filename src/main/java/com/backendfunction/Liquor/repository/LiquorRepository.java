@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 @Transactional
 public interface LiquorRepository extends JpaRepository<Liquor,Long> {
-    List<Liquor> findByCategory(String category);
+
+    List<Liquor> findByCategory(Category enumCategory);
 }

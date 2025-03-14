@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/dopamine_x?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 1111
+    password: 11111111
 
   jpa:
     database: mysql
