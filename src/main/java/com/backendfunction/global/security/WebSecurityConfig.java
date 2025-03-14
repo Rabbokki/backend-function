@@ -63,6 +63,8 @@ public class WebSecurityConfig {
                 .cors(withDefaults()) // CORS 설정 적용
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/test").permitAll()
                         .requestMatchers("/account/signup").permitAll()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()

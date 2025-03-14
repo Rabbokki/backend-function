@@ -44,9 +44,14 @@ public class AccountController {
         return accountService.getUserInfoByEmail(email);
     }
 
-    @GetMapping("/api/demo-web")
-    public List<String> Hello() {
-        return Arrays.asList("리액트 스프링 ", "연결 성공");
+    @GetMapping("/")
+    public String home() {
+        return "Welcome to Spring Boot!";
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Test endpoint works!";
     }
 
     @GetMapping("/api/account")
