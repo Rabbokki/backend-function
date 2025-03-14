@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/post/create").authenticated()
                         .requestMatchers("/post/**").permitAll()
                         .requestMatchers("/api/liquor/**").permitAll()
                         .anyRequest().authenticated())

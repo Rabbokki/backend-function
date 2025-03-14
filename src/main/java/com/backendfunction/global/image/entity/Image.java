@@ -16,13 +16,12 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Lob
     private String image;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId",nullable = true)
+    @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
     public Image(String image, Post post) {

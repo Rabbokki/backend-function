@@ -4,6 +4,7 @@ import com.backendfunction.account.entity.RefreshToken;
 import com.backendfunction.account.repository.RefreshTokenRepository;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.user.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -71,14 +72,29 @@ public class JwtUtil {
                 .compact();
     }
     // 토큰 검증
-    public Boolean tokenValidation(String token) {
+//    public Boolean tokenValidation(String token) {
+//        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//            return true;
+//        } catch (Exception ex) {
+//            log.error(ex.getMessage());
+//            return false;
+//        }
+//    }
+    public boolean tokenValidation(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            log.info("Token validated successfully: {}", token);
             return true;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        } catch (Exception e) {
+            log.error("Token validation failed: {}", e.getMessage());
             return false;
         }
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 
     // refreshToken 토큰 검증
@@ -100,9 +116,9 @@ public class JwtUtil {
     }
 
     // 토큰에서 email 가져오는 기능
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-    }
+//    public String getEmailFromToken(String token) {
+//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+//    }
 
 
 }

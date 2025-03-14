@@ -9,7 +9,9 @@ import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
 import com.backendfunction.s3.S3Service;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -19,32 +21,58 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
     private final PostRepository postRepository;
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
 
+    @Transactional
     public ResponseDto<?> createPost(PostDto dto, List<MultipartFile> file, Account account) {
+        log.info("Creating post for account: {}", account != null ? account.getId() : "null");
+        Post post = new Post(dto, account);
+
+        // Post 먼저 저장
+        post = postRepository.save(post);
+        log.info("Post saved with ID: {}", post.getId());
+
         List<Image> imageList = new ArrayList<>();
-        Post post = new Post(dto,account);
-
-        for (MultipartFile multipartFile : file) {
-            Image image = imageRepository.save(new Image(s3Service.uploadFile(multipartFile), post));
-            imageList.add(image);
+        if (file != null && !file.isEmpty()) {
+            for (MultipartFile multipartFile : file) {
+                log.info("Processing file: {}", multipartFile.getOriginalFilename());
+                Image image = new Image(s3Service.uploadFile(multipartFile), post);
+                post.getImages().add(image);
+                imageList.add(image);
+            }
         }
+
+        // Post와 Image 함께 저장
         postRepository.save(post);
-        PostDto postDto = new PostDto(post);
-
-        List<String> images = new ArrayList<>();
-        for(Image image : imageList){
-            images.add(image.getImage());
-        }
-        postDto.setImgs(images);
+        PostDto postDto = new PostDto(post); // 완성된 생성자 사용
         return ResponseDto.success(postDto);
     }
+//    public ResponseDto<?> createPost(PostDto dto, List<MultipartFile> file, Account account) {
+//        List<Image> imageList = new ArrayList<>();
+//        Post post = new Post(dto,account);
+//
+//        for (MultipartFile multipartFile : file) {
+//            Image image = imageRepository.save(new Image(s3Service.uploadFile(multipartFile), post));
+//            imageList.add(image);
+//        }
+//        postRepository.save(post);
+//        PostDto postDto = new PostDto(post);
+//
+//        List<String> images = new ArrayList<>();
+//        for(Image image : imageList){
+//            images.add(image.getImage());
+//        }
+//        postDto.setImgs(images);
+//        return ResponseDto.success(postDto);
+//    }
 
     public Map<String, Object> findByPostId(Long id) {
         Post post = postRepository.findById(id).orElse(null);

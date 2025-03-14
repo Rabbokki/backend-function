@@ -1,6 +1,7 @@
 package com.backendfunction.post.dto;
 
 import com.backendfunction.commet.dto.CommentDto;
+import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,22 @@ public class PostDto {
     private List<CommentDto> commentDtos = new ArrayList<>();
     private List<String> imgs;
 
-    public PostDto(Post post) {
-        this.id = post.getId();
-    }
+
+//    public PostDto(Post post) {
+//        this.id = post.getId();
+//    }
+public PostDto(Post post) {
+    this.id = post.getId();
+    this.content = post.getContent();
+    this.title = post.getTitle();
+    this.price = post.getPrice();
+    this.commentDtos = post.getCommentList().stream()
+            .map(CommentDto::fromEntity)
+            .collect(Collectors.toList());
+    this.imgs = post.getImages().stream()
+            .map(Image::getImage)
+            .collect(Collectors.toList());
+}
 
     public static PostDto fromEntity(Post post) {
         return new PostDto(

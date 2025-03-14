@@ -27,32 +27,59 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String accessToken = jwtUtil.getHeaderToken(request, "Access");
         String refreshToken = jwtUtil.getHeaderToken(request, "Refresh");
 
-        if(accessToken != null) {
-            if(!jwtUtil.tokenValidation(accessToken)){
+        log.info("Request URI: {}", request.getRequestURI());
+        log.info("Access Token from header: {}", accessToken);
+        log.info("Refresh Token from header: {}", refreshToken);
+
+        if (accessToken != null) {
+            if (!jwtUtil.tokenValidation(accessToken)) {
+                log.warn("Token validation failed for Access Token: {}", accessToken);
                 jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.BAD_REQUEST);
                 return;
             }
-            setAuthentication(jwtUtil.getEmailFromToken(accessToken));
-        }else if(refreshToken != null) {
-            if(!jwtUtil.refreshTokenValidation(refreshToken)){
+            String email = jwtUtil.getEmailFromToken(accessToken);
+            log.info("Extracted email from Access Token: {}", email);
+            setAuthentication(email);
+            log.info("Authentication set for Access Token: {}", SecurityContextHolder.getContext().getAuthentication());
+        } else if (refreshToken != null) {
+            if (!jwtUtil.refreshTokenValidation(refreshToken)) {
+                log.warn("Token validation failed for Refresh Token: {}", refreshToken);
                 jwtExceptionHandler(response, "RefreshToken Expired", HttpStatus.BAD_REQUEST);
                 return;
             }
-            setAuthentication(jwtUtil.getEmailFromToken(refreshToken));
+            String email = jwtUtil.getEmailFromToken(refreshToken);
+            log.info("Extracted email from Refresh Token: {}", email);
+            setAuthentication(email);
+            log.info("Authentication set for Refresh Token: {}", SecurityContextHolder.getContext().getAuthentication());
+        } else {
+            log.info("No valid tokens provided - Proceeding without authentication");
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     public void setAuthentication(String email) {
-        Authentication authentication = jwtUtil.createAuthentication(email);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            Authentication authentication = jwtUtil.createAuthentication(email);
+            if (authentication == null) {
+                log.error("Failed to create authentication for email: {}", email);
+                return;
+            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("Authentication successfully set in SecurityContext: {}", authentication);
+        } catch (Exception e) {
+            log.error("Error setting authentication for email: {}. Exception: {}", email, e.getMessage());
+        }
     }
+//    public void setAuthentication(String email) {
+//        Authentication authentication = jwtUtil.createAuthentication(email);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//    }
 
     public void jwtExceptionHandler(HttpServletResponse response, String msg, HttpStatus status) {
         response.setStatus(status.value());

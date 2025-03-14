@@ -33,11 +33,11 @@ public class Post {
 
     // image랑 매핑함 from JJJ
     @JsonManagedReference
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "a_id", nullable = false)
+    @JoinColumn(name = "a_id", nullable = true)
     private Account account;
 
     public Post(PostDto dto, Account account) {
