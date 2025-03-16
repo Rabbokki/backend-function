@@ -50,8 +50,10 @@ public class JwtUtil {
     }
 
     // header 토큰을 가져오는 기능
-    public String getHeaderToken(HttpServletRequest request, String type) {
-        return type.equals("Access") ? request.getHeader(ACCESS_TOKEN) :request.getHeader(REFRESH_TOKEN);
+    public String getHeaderToken(HttpServletRequest request, String headerName) {
+        String token = request.getHeader(headerName);
+        log.info("Header {} value: {}", headerName, token); // 디버깅용 로그 추가
+        return token;
     }
     // 토큰 생성
     public TokenDto createAllToken(String email){
@@ -83,7 +85,10 @@ public class JwtUtil {
 //    }
     public boolean tokenValidation(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                    .build()
+                    .parseClaimsJws(token);  // JWT 파싱
             log.info("Token validated successfully: {}", token);
             return true;
         } catch (Exception e) {
@@ -93,8 +98,12 @@ public class JwtUtil {
     }
 
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        return claims.getSubject();
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();  // 이메일을 가져옴
     }
 
     // refreshToken 토큰 검증

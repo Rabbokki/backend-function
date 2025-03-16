@@ -83,5 +83,12 @@ public class AccountService {
         List<Account> accounts = accountRepository.findAll();
         return accounts.stream().map(x -> AccountDto.fromEntity(x)).toList();
     }
+    //로그아웃
+    public ResponseDto<?> accountLogout(String email){
+        RefreshToken refreshToken = refreshTokenRepository.findByAccountEmail(email).orElseThrow(
+                ()-> new RuntimeException("리프레시 토큰 만료")
+        );
+        return ResponseDto.success("로그아웃 success");
+    }
 
 }

@@ -6,11 +6,13 @@ import com.backendfunction.account.dto.LoginReqDto;
 import com.backendfunction.account.service.AccountService;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
+import com.backendfunction.global.security.user.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -35,6 +37,11 @@ public class AccountController {
     @PostMapping("/login")
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
         return ResponseDto.success(accountService.accountLogin(loginReqDto, response));
+    }
+    //로그아웃
+    @PostMapping("/logout")
+    public ResponseDto<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails)throws Exception{
+        return ResponseDto.success(accountService.accountLogout(userDetails.getAccount().getEmail()));
     }
 
     // 내 정보 가져오기

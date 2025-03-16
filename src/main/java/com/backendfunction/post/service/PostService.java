@@ -1,15 +1,18 @@
 package com.backendfunction.post.service;
 
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.global.dto.GlobalResDto;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.global.image.repository.ImageRepository;
 import com.backendfunction.post.dto.PostDto;
+import com.backendfunction.post.dto.PostReqDto;
+import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
 import com.backendfunction.s3.S3Service;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +35,7 @@ public class PostService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public ResponseDto<?> createPost(PostDto dto, List<MultipartFile> file, Account account) {
+    public ResponseDto<?> createPost(PostReqDto dto, List<MultipartFile> file, Account account) {
         log.info("Creating post for account: {}", account != null ? account.getId() : "null");
         Post post = new Post(dto, account);
 
@@ -85,25 +88,52 @@ public class PostService {
         return data;
     }
 
-    public void updateByPost(PostDto dto) {
-        Post post = PostDto.fromDto(dto);
+//    public void updateByPost(PostDto dto) {
+//        Post post = PostDto.fromDto(dto);
+//        postRepository.save(post);
+//    }
+    public ResponseDto<?> updateByPost(Long id, List<MultipartFile> imgs, PostUpReqDto dto, Account account) {
+        Post post = postRepository.findPostByIdAndAccount(id,account);
+        if(post == null) return ResponseDto.fail("600","수정 권한이 없습니다.");
+
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setPrice(dto.getPrice());
+
+        if (imgs != null && !imgs.isEmpty()) {
+            List<Image> imageList = post.getImages();
+            imageList.clear();
+            for (MultipartFile img : imgs) {
+                String imgUrl = s3Service.uploadFile(img);
+                Image image = new Image(imgUrl, post);
+                imageList.add(image);
+            }
+            post.setImages(imageList);
+        }
         postRepository.save(post);
+
+        return ResponseDto.success("업데이트 성공~");
+    }
+    @Transactional
+    public ResponseDto<?> deleteByPostId(Long id,Account account) {
+        Post post = postRepository.findPostByIdAndAccount(id,account);
+        if(post==null) return ResponseDto.fail("600","삭제 권한이 없습니다.");
+        postRepository.delete(post);
+        return ResponseDto.success("삭제 완료");
+
     }
 
-    public void deleteByPostId(Long id) {
-        postRepository.deleteById(id);
-
-    }
-
+    @Transactional(readOnly = true)
     public List<PostDto> findAll() {
         List<Post> posts = postRepository.findAll();
         return posts.stream().map(x -> PostDto.fromEntity(x)).toList();
     }
-
+    @Transactional(readOnly = true)
     public PostDto findByid(Long postId) {
         Post post = postRepository.findById(postId).orElse(null);
         return PostDto.fromEntity(post);
     }
+
 //    public List<PostDto> findByCategory(Category category) {
 //        List<Post> posts = postRepository.findByCategory(category);
 //        return posts.stream().map(x -> PostDto.fromEntity(x)).toList();

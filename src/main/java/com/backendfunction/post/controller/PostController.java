@@ -1,10 +1,14 @@
 package com.backendfunction.post.controller;
 
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.user.UserDetailsImpl;
 import com.backendfunction.post.dto.PostDto;
+import com.backendfunction.post.dto.PostReqDto;
+import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +33,7 @@ public class PostController {
         this.postService = postService;
     }
 
+
     @GetMapping({"" ,"/"})
     public ResponseEntity<?> findAllPost() {
         List<PostDto> postDtos = postService.findAll();
@@ -42,7 +47,7 @@ public class PostController {
 //    }
 @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<?> createPost(@RequestParam(value = "postImg", required = false) List<MultipartFile> imgs,
-                                    @RequestPart(value = "dto") PostDto dto,
+                                    @RequestPart(value = "dto") PostReqDto dto,
                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
     log.info("UserDetails: {}", userDetails);
     if (userDetails == null || userDetails.getAccount() == null) {
@@ -54,6 +59,14 @@ public ResponseEntity<?> createPost(@RequestParam(value = "postImg", required = 
     postService.createPost(dto, imgs, account);
     return ResponseEntity.status(HttpStatus.OK).body("성공");
 }
+    //글 삭제 fix
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable("id") Long id,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails) throws BadRequestException {
+        postService.deleteByPostId(id,userDetails.getAccount());
+        return ResponseEntity.status(HttpStatus.OK).body("삭제 성공");
+
+    }
 //@PostMapping("/create")
 //public ResponseEntity<?> createPost(@RequestParam(value = "postImg", required = false) List<MultipartFile> imgs,
 //                                    @RequestPart(value = "dto") PostDto dto,
@@ -63,22 +76,26 @@ public ResponseEntity<?> createPost(@RequestParam(value = "postImg", required = 
 //    return ResponseEntity.status(HttpStatus.OK).body("성공");
 //}
 //수정
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updatePost(@RequestBody PostDto dto, @PathVariable("id") Long id) throws BadRequestException {
-        if (!dto.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body("실패");
+
+    @PatchMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updatePost(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "postImg", required = false) List<MultipartFile> imgs,
+            @RequestPart(value = "dto") PostUpReqDto dto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletRequest request) {
+        log.info("Content-Type received: {}", request.getContentType());
+        log.info("Received update request for post ID: {}, dto: {}, imgs: {}", id, dto, imgs != null ? imgs.size() : 0);
+        try {
+            ResponseDto<?> response = postService.updateByPost(id, imgs, dto, userDetails.getAccount());
+            if (!response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response.getError());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("업데이트 성공");
+        } catch (Exception e) {
+            log.error("Error updating post: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패");
         }
-//        PostDto postDto = getDto(id, "Post 수정 실패");
-//        postService.updateByPost(dto);
-        return ResponseEntity.status(HttpStatus.OK).body("성공");
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable("id") Long id) throws BadRequestException {
-//        PostDto result = getDto(id, "Post 삭제 실패");
-//        postService.deleteByPostId(result.getId());
-        return ResponseEntity.status(HttpStatus.OK).body("성공");
-
     }
     //    카테고리별 출력
 //    @GetMapping("/category/{category}")

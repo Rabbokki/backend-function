@@ -29,12 +29,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String accessToken = jwtUtil.getHeaderToken(request, "Access");
+        log.info("Request Content-Type: {}", request.getContentType());
+        String accessToken = jwtUtil.getHeaderToken(request, "Access_Token");
         String refreshToken = jwtUtil.getHeaderToken(request, "Refresh");
 
         log.info("Request URI: {}", request.getRequestURI());
         log.info("Access Token from header: {}", accessToken);
         log.info("Refresh Token from header: {}", refreshToken);
+        log.info("Raw Access_Token from header: {}", request.getHeader("Access_Token")); // 추가 로그
+        log.info("Parsed Access Token: {}", accessToken);
 
         if (accessToken != null) {
             if (!jwtUtil.tokenValidation(accessToken)) {

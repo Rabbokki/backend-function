@@ -1,6 +1,7 @@
 package com.backendfunction.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,8 @@ public class S3Service {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
+
+            // ACL 설정 제거
             s3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata));
             log.info("File uploaded to S3: " + fileName);
         } catch (IOException e) {

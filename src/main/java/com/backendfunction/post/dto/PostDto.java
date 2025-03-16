@@ -18,7 +18,7 @@ public class PostDto {
     private Long id;
     private String content;
     private String title;
-    private String price;
+    private int price;
     private List<CommentDto> commentDtos = new ArrayList<>();
     private List<String> imgs;
 

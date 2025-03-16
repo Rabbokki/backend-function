@@ -1,13 +1,5 @@
 server:
-  address: 0.0.0.0
-  port: 8443
-  ssl:
-    key-store: C:\\Users\\80405\\Documents\\dopamineX\\src\\main\\resources\\192.168.0.71.p12
-    key-store-password: changeit
-    key-store-type: PKCS12
-    key-alias: "1"
-
-
+  port: 8081
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +10,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     generate-ddl: false
     show-sql: true
     properties:
@@ -49,7 +41,7 @@ application:
     multipart:
       enabled: true
       max-file-size: 10MB
-      max-request-size: 10MB
+      max-request-size: 50MB
     file:
       upload-dir: C:/uploads  # 허용된 업로드 경로 설정
 

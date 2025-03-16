@@ -1,9 +1,10 @@
 package com.backendfunction.post.entity;
 
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
-import com.backendfunction.post.dto.PostDto;
+import com.backendfunction.post.dto.PostReqDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,22 +26,21 @@ public class Post {
     private String title;
     @Column(length = 500)
     private String content;
-    @Column(length = 100)
-    private String price;
+    private int price;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
 
     // image랑 매핑함 from JJJ
     @JsonManagedReference
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "a_id", nullable = true)
     private Account account;
 
-    public Post(PostDto dto, Account account) {
+    public Post(PostReqDto dto, Account account) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();

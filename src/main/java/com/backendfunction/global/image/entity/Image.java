@@ -1,5 +1,6 @@
 package com.backendfunction.global.image.entity;
 
+import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.post.entity.Post;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "image")
-public class Image {
+public class Image extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -65,20 +65,20 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/test").permitAll()
-                        .requestMatchers("/account/signup").permitAll()
+//                        .requestMatchers("/account/signup").permitAll()
                         .requestMatchers("/account/**").permitAll()
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/post/create").authenticated()
+//                        .requestMatchers("/post/create").permitAll()
                         .requestMatchers("/post/**").permitAll()
                         .requestMatchers("/api/liquor/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                // HTTP -> HTTPS 리다이렉션 추가
-                .requiresChannel(channel -> channel
-                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
+//                // HTTP -> HTTPS 리다이렉션 추가
+//                .requiresChannel(channel -> channel
+//                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
                 .build();
     }
 }
