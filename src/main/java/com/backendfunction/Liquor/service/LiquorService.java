@@ -49,17 +49,13 @@ public class LiquorService {
         liquorRepository.deleteById(id);
 
     }
-
-<<<<<<< HEAD
-    public List<LiquorDto> findByCategory(Category enumCategory) {
-        List<Liquor> liquors = liquorRepository.findByCategory(enumCategory);
-        return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
-    }
+//    public List<LiquorDto> findByCategory(Category enumCategory) {
+//        List<Liquor> liquors = liquorRepository.findByCategory(enumCategory);
+//        return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
+//    }
 
 //    public List<LiquorDto> findByCategory(Category ) {
 //        List<Liquor> liquors = liquorRepository.findByCategory(category1);
 //        return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
 //    }
-=======
->>>>>>> feature-joo-fix-img
 }

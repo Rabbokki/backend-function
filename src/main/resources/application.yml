@@ -6,13 +6,6 @@ spring:
     url: jdbc:mysql://localhost:3306/dopamine_x?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 11111111
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feature-you
-
->>>>>>> origin/feature-jang-post
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect

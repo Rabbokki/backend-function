@@ -51,9 +51,6 @@ public class AccountController {
         return accountService.getUserInfoByEmail(email);
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     // 내 정보 수정하기
     @PutMapping("/me")
     public ResponseDto<?> updateUserInfo(@RequestHeader("Authorization") String token,
@@ -61,24 +58,6 @@ public class AccountController {
         String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
         accountService.updateUserInfo(email, accountReqDto);
         return ResponseDto.success("User details updated successfully");
-    }
-
-
-
->>>>>>> feature-you
-    @GetMapping("/api/demo-web")
-    public List<String> Hello() {
-        return Arrays.asList("리액트 스프링 ", "연결 성공");
-=======
-    @GetMapping("/")
-    public String home() {
-        return "Welcome to Spring Boot!";
-    }
-
-    @GetMapping("/test")
-    public String test() {
-        return "Test endpoint works!";
->>>>>>> feature-joo-fix-img
     }
 
     @GetMapping("/api/account")

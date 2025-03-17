@@ -33,20 +33,18 @@ public class LiquorController {
         return ResponseEntity.status(HttpStatus.OK).body(findLiquor);
     }
 //    카테고리별 출력
-<<<<<<< HEAD
-@GetMapping("/liquor/category/{category}")
-public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
-    Category enumCategory = Category.valueOf(category.toUpperCase());
-    List<LiquorDto> list = liquorService.findByCategory(enumCategory);
-    return ResponseEntity.status(HttpStatus.OK).body(list);
-}
-=======
+//@GetMapping("/liquor/category/{category}")
+//public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
+//    Category enumCategory = Category.valueOf(category.toUpperCase());
+//    List<LiquorDto> list = liquorService.findByCategory(enumCategory);
+//    return ResponseEntity.status(HttpStatus.OK).body(list);
+//}
+
 //@GetMapping("/liquor/category/{category}")
 //public ResponseEntity<?> findByCategory(@PathVariable("category")String category) {
 //    List<LiquorDto> list = liquorService.findByCategory(category);
 //    return ResponseEntity.status(HttpStatus.OK).body(list);
 //}
->>>>>>> feature-joo-fix-img
 
     @PostMapping("/liquor/create")
     public ResponseEntity<?> createLiquor(@RequestBody LiquorDto dto) {

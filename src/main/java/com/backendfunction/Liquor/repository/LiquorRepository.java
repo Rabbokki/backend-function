@@ -10,9 +10,8 @@ import java.util.List;
 @Repository
 @Transactional
 public interface LiquorRepository extends JpaRepository<Liquor,Long> {
-<<<<<<< HEAD
 
-    List<Liquor> findByCategory(Category enumCategory);
-=======
->>>>>>> feature-joo-fix-img
+
+//    List<Liquor> findByCategory(Category enumCategory);
+
 }
