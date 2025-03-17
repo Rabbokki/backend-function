@@ -4,9 +4,11 @@ import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
+import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.post.dto.PostReqDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +29,8 @@ public class Post extends BaseEntity {
     @Column(length = 500)
     private String content;
     private int price;
+    private int commentSize;
+    private int likeSize;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
@@ -40,10 +44,29 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "a_id", nullable = true)
     private Account account;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostLike> postLikes = new ArrayList<>();
+
     public Post(PostReqDto dto, Account account) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
         this.account = account;
+    }
+
+    public Post(String title, String content, int price, Account account) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.account = account;
+        this.images = new ArrayList<>();  // 이미지 리스트 초기화
+        this.commentList = new ArrayList<>();  // 댓글 리스트 초기화
+    }
+    public void postLikeUpdate(int size){
+        this.likeSize = size;
+    }
+
+    public void commentUpdate(int size){
+        this.commentSize = size;
     }
 }

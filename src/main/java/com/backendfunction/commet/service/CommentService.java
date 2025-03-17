@@ -1,12 +1,15 @@
 package com.backendfunction.commet.service;
 
+import com.backendfunction.account.entity.Account;
 import com.backendfunction.commet.dto.CommentDto;
+import com.backendfunction.commet.dto.CommentReqDto;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.commet.repository.CommentRepository;
-import com.backendfunction.post.dto.PostDto;
+import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -14,54 +17,67 @@ import org.springframework.util.ObjectUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
-    @Autowired
-    EntityManager em;
     private final CommentRepository commentRepository;
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
-        this.commentRepository = commentRepository;
-    }
+    private final PostRepository postRepository;
 
 
 
-    public List<CommentDto> findAll() {
+    public List<CommentReqDto> findAll() {
         List<Comment> comments = commentRepository.findAll();
-        return comments.stream().map(x -> CommentDto.fromEntity(x)).toList();
+        return comments.stream().map(CommentReqDto::fromEntity).toList();
     }
 
-    public Map<String, Object> findByCommentId(Long id) {
-        Comment comment = commentRepository.findById(id).orElse(null);
+    public ResponseDto<?> findByCommentId(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+
         Map<String, Object> data = new HashMap<>();
-        if (ObjectUtils.isEmpty(comment)) {
-            data.put("postId", null);
-            data.put("dto", null);
-        } else {
-            data.put("postId", comment.getPost().getId());
-            data.put("dto", CommentDto.fromEntity(comment));
+        data.put("postId", comment.getPost().getId());
+        data.put("dto", CommentReqDto.fromEntity(comment));
+
+        return ResponseDto.success(data);
+    }
+
+
+    public ResponseDto<?> insertComment(CommentReqDto dto, Long postId, Account currentAccount) {
+        Post post = postRepository.findById(postId).orElseThrow(()->
+                new RuntimeException("댓글 작성 실패"));
+        Comment comment = new Comment(dto.getContent(),post,currentAccount);
+        post.getCommentList().add(comment);
+        commentRepository.save(comment);
+        post.commentUpdate(post.getCommentList().size());
+        return ResponseDto.success("댓글 작성 완료");
+    }
+
+    public ResponseDto<?> updateByCommentId(Long id,CommentReqDto dto, Account account) {
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("댓글 수정 실패"));
+        if(comment.getAccount().getId().equals(account.getId())){
+            comment.setContent(dto.getContent());
+            commentRepository.save(comment);
+        }else {
+            throw new RuntimeException("댓글 작성자 아님");
         }
-        return data;
+        return ResponseDto.success("댓글 수정 성공");
     }
 
+    public ResponseDto<?> deleteByCommentId(Long id, Account account) {
+        Comment comment = commentRepository.findById(id).orElseThrow(()->
+                new RuntimeException("댓글 삭제 실패"));
+        Post post = comment.getPost();
 
-    public void insertComment(CommentDto dto, Long id) {
-        Comment comment = CommentDto.fromDto(dto);
-        Post post = em.find(Post.class, id);
-        comment.setPost(post);
-
-        commentRepository.save(comment);
-    }
-
-    public void updateByCommentId(CommentDto dto) {
-        Comment comment = em.find(Comment.class, dto.getId());
-        comment.setNickname(dto.getNickname());
-        comment.setContent(dto.getContent());
-        commentRepository.save(comment);
-    }
-
-    public void deleteByCommentId(Long id) {
-        commentRepository.deleteById(id);
-
+        if(comment.getAccount().getId().equals(account.getId())){
+            post.getCommentList().remove(comment);
+            post.commentUpdate(post.getCommentSize()-1);
+            commentRepository.delete(comment);
+        }else {
+            throw new RuntimeException("댓글 작성자 아님");
+        }
+        return ResponseDto.success("댓글 삭제 성공");
     }
 }

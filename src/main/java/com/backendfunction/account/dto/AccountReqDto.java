@@ -27,6 +27,14 @@ public class AccountReqDto {
     @NotBlank(message = "닉네임을 입력해 주세요.")
     private String nickname;
 
+    public static AccountReqDto fromEntity(Account account) {
+        return new AccountReqDto(
+                account.getEmail(),
+                null,
+                account.getNickname()
+        );
+    }
+
     public void setEncodePwd(String encodePwd){
         this.password = encodePwd;
     }

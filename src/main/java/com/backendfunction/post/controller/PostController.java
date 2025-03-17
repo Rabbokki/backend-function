@@ -3,7 +3,6 @@ package com.backendfunction.post.controller;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.user.UserDetailsImpl;
-import com.backendfunction.post.dto.PostDto;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.service.PostService;
@@ -36,7 +35,7 @@ public class PostController {
 
     @GetMapping({"" ,"/"})
     public ResponseEntity<?> findAllPost() {
-        List<PostDto> postDtos = postService.findAll();
+        List<PostReqDto> postDtos = postService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
 //    @GetMapping("/id/{id}")

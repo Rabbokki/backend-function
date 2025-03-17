@@ -2,7 +2,11 @@ package com.backendfunction.account.entity;
 
 import com.backendfunction.Cart.entity.Cart;
 import com.backendfunction.account.dto.AccountReqDto;
+import com.backendfunction.commet.entity.Comment;
+import com.backendfunction.like.entity.CommentLike;
+import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.post.entity.Post;
+import com.backendfunction.recomment.entity.Recomment;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +32,18 @@ public class Account extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(fetch =  FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
+    private List<Recomment> recomments = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
+    private List<PostLike> postLikes = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
+    private List<CommentLike> commentLikes = new ArrayList<>();
 
 
     public Account(AccountReqDto accountReqDto) {

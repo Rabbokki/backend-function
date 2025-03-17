@@ -5,7 +5,6 @@ import com.backendfunction.global.dto.GlobalResDto;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.global.image.repository.ImageRepository;
-import com.backendfunction.post.dto.PostDto;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
@@ -55,7 +54,7 @@ public class PostService {
 
         // Post와 Image 함께 저장
         postRepository.save(post);
-        PostDto postDto = new PostDto(post); // 완성된 생성자 사용
+        PostReqDto postDto = new PostReqDto(post); // 완성된 생성자 사용
         return ResponseDto.success(postDto);
     }
 //    public ResponseDto<?> createPost(PostDto dto, List<MultipartFile> file, Account account) {
@@ -77,16 +76,16 @@ public class PostService {
 //        return ResponseDto.success(postDto);
 //    }
 
-    public Map<String, Object> findByPostId(Long id) {
-        Post post = postRepository.findById(id).orElse(null);
-        Map<String, Object> data = new HashMap<>();
-        if (ObjectUtils.isEmpty(post)) {
-            data.put("dto", null);
-        } else {
-            data.put("dto", PostDto.fromEntity(post));
-        }
-        return data;
-    }
+//    public Map<String, Object> findByPostId(Long id) {
+//        Post post = postRepository.findById(id).orElse(null);
+//        Map<String, Object> data = new HashMap<>();
+//        if (ObjectUtils.isEmpty(post)) {
+//            data.put("dto", null);
+//        } else {
+//            data.put("dto".fromEntity(post));
+//        }
+//        return data;
+//    }
 
 //    public void updateByPost(PostDto dto) {
 //        Post post = PostDto.fromDto(dto);
@@ -124,16 +123,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostDto> findAll() {
+    public List<PostReqDto> findAll() {
         List<Post> posts = postRepository.findAll();
-        return posts.stream().map(x -> PostDto.fromEntity(x)).toList();
+        return posts.stream().map(x -> PostReqDto.fromEntity(x)).toList();
     }
-    @Transactional(readOnly = true)
-    public PostDto findByid(Long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
-        return PostDto.fromEntity(post);
-    }
-
+//    @Transactional(readOnly = true)
+//    public PostDto findByid(Long postId) {
+//        Post post = postRepository.findById(postId).orElse(null);
+//        return PostDto.fromEntity(post);
+//    }
+//
 //    public List<PostDto> findByCategory(Category category) {
 //        List<Post> posts = postRepository.findByCategory(category);
 //        return posts.stream().map(x -> PostDto.fromEntity(x)).toList();
