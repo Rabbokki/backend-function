@@ -6,11 +6,13 @@ import com.backendfunction.account.dto.LoginReqDto;
 import com.backendfunction.account.service.AccountService;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
+import com.backendfunction.global.security.user.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -36,6 +38,11 @@ public class AccountController {
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
         return ResponseDto.success(accountService.accountLogin(loginReqDto, response));
     }
+    //로그아웃
+    @PostMapping("/logout")
+    public ResponseDto<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails)throws Exception{
+        return ResponseDto.success(accountService.accountLogout(userDetails.getAccount().getEmail()));
+    }
 
     // 내 정보 가져오기
     @GetMapping("/me")
@@ -44,6 +51,7 @@ public class AccountController {
         return accountService.getUserInfoByEmail(email);
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     // 내 정보 수정하기
@@ -61,6 +69,16 @@ public class AccountController {
     @GetMapping("/api/demo-web")
     public List<String> Hello() {
         return Arrays.asList("리액트 스프링 ", "연결 성공");
+=======
+    @GetMapping("/")
+    public String home() {
+        return "Welcome to Spring Boot!";
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Test endpoint works!";
+>>>>>>> feature-joo-fix-img
     }
 
     @GetMapping("/api/account")

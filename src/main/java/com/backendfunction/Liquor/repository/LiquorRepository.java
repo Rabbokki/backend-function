@@ -1,6 +1,5 @@
 package com.backendfunction.Liquor.repository;
 
-import com.backendfunction.Liquor.constant.Category;
 import com.backendfunction.Liquor.entity.Liquor;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +10,9 @@ import java.util.List;
 @Repository
 @Transactional
 public interface LiquorRepository extends JpaRepository<Liquor,Long> {
+<<<<<<< HEAD
 
     List<Liquor> findByCategory(Category enumCategory);
+=======
+>>>>>>> feature-joo-fix-img
 }

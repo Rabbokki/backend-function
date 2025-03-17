@@ -4,6 +4,7 @@ import com.backendfunction.account.entity.RefreshToken;
 import com.backendfunction.account.repository.RefreshTokenRepository;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.user.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -49,8 +50,10 @@ public class JwtUtil {
     }
 
     // header 토큰을 가져오는 기능
-    public String getHeaderToken(HttpServletRequest request, String type) {
-        return type.equals("Access") ? request.getHeader(ACCESS_TOKEN) :request.getHeader(REFRESH_TOKEN);
+    public String getHeaderToken(HttpServletRequest request, String headerName) {
+        String token = request.getHeader(headerName);
+        log.info("Header {} value: {}", headerName, token); // 디버깅용 로그 추가
+        return token;
     }
     // 토큰 생성
     public TokenDto createAllToken(String email){
@@ -71,14 +74,36 @@ public class JwtUtil {
                 .compact();
     }
     // 토큰 검증
-    public Boolean tokenValidation(String token) {
+//    public Boolean tokenValidation(String token) {
+//        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//            return true;
+//        } catch (Exception ex) {
+//            log.error(ex.getMessage());
+//            return false;
+//        }
+//    }
+    public boolean tokenValidation(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                    .build()
+                    .parseClaimsJws(token);  // JWT 파싱
+            log.info("Token validated successfully: {}", token);
             return true;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        } catch (Exception e) {
+            log.error("Token validation failed: {}", e.getMessage());
             return false;
         }
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();  // 이메일을 가져옴
     }
 
     // refreshToken 토큰 검증
@@ -100,9 +125,9 @@ public class JwtUtil {
     }
 
     // 토큰에서 email 가져오는 기능
-    public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-    }
+//    public String getEmailFromToken(String token) {
+//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+//    }
 
 
 }

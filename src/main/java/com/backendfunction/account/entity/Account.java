@@ -2,6 +2,7 @@ package com.backendfunction.account.entity;
 
 import com.backendfunction.Cart.entity.Cart;
 import com.backendfunction.account.dto.AccountReqDto;
+import com.backendfunction.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,8 +26,11 @@ public class Account extends BaseEntity{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Cart> carts = new ArrayList<>();
 
-    public Account(AccountReqDto accountReqDto) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Post> posts = new ArrayList<>();
 
+
+    public Account(AccountReqDto accountReqDto) {
         this.email = accountReqDto.getEmail();
         this.password = accountReqDto.getPassword();
         this.nickname = accountReqDto.getNickname();

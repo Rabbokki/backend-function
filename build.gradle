@@ -21,21 +21,27 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/release' } // Spring Cloud AWS를 위한 저장소 추가
 }
-
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2022.0.4"
+    }
+}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.300' // 최신 버전으로 수정
+    implementation 'org.springframework.boot:spring-boot-starter-validation'// 최신 버전으로 수정
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.300'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.777'
     // jjwt 라이브러리 추가
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리 모듈
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'// jasypt
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'//amazonS3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:3.1.0'//amazonS3
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'

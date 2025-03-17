@@ -1,6 +1,5 @@
 package com.backendfunction.Liquor.service;
 
-import com.backendfunction.Liquor.constant.Category;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.Liquor.repository.LiquorRepository;
@@ -51,6 +50,7 @@ public class LiquorService {
 
     }
 
+<<<<<<< HEAD
     public List<LiquorDto> findByCategory(Category enumCategory) {
         List<Liquor> liquors = liquorRepository.findByCategory(enumCategory);
         return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
@@ -60,4 +60,6 @@ public class LiquorService {
 //        List<Liquor> liquors = liquorRepository.findByCategory(category1);
 //        return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
 //    }
+=======
+>>>>>>> feature-joo-fix-img
 }
