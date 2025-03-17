@@ -4,5 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
-    WHISKEY , WINE , CHAMPAGNE ,VODKA
+    WHISKEY , WINE , CHAMPAGNE , VODKA;
+
+    public String toString() {
+        return this.name();
+    }
+
+
 }

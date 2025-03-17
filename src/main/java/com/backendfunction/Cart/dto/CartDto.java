@@ -3,6 +3,7 @@ package com.backendfunction.Cart.dto;
 import com.backendfunction.Cart.entity.Cart;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
+import com.backendfunction.account.entity.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +19,15 @@ public class CartDto {
     private int count;
     private int price;
     private LiquorDto liquorDto;
+    private Long accountId;
 
     public static CartDto fromEntity(Cart cart) {
         return new CartDto(
                 cart.getId(),
                 cart.getCount(),
                 cart.getPrice(),
-                LiquorDto.fromEntity(cart.getLiquor())
+                LiquorDto.fromEntity(cart.getLiquor()),
+                cart.getAccount().getId()
         );
     }
 
@@ -35,6 +38,9 @@ public class CartDto {
         cart.setPrice(dto.getPrice());
         Liquor liquor = LiquorDto.fromDto(dto.getLiquorDto());
         cart.setLiquor(liquor);
+        Account account = new Account();
+        account.setId(dto.getAccountId());
+        cart.setAccount(account);
         return cart;
     }
 }

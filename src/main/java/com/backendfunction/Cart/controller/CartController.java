@@ -2,6 +2,8 @@ package com.backendfunction.Cart.controller;
 
 import com.backendfunction.Cart.dto.CartDto;
 import com.backendfunction.Cart.service.CartService;
+import com.backendfunction.Liquor.dto.LiquorDto;
+import com.backendfunction.Liquor.service.LiquorService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import java.util.Map;
 @RequestMapping("/api")
 public class CartController {
     private final CartService cartService;
+    private final LiquorService liquorService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, LiquorService liquorService) {
         this.cartService = cartService;
+        this.liquorService = liquorService;
     }
 
     @GetMapping("/cart")
@@ -32,9 +36,9 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(findByCartId);
     }
 
-    @PostMapping("/cart/insert")
-    public ResponseEntity<?> insertCart(@RequestBody CartDto dto) {
-        cartService.insertCart(dto);
+    @PostMapping("/cart/insert/{liquorId}")
+    public ResponseEntity<?> insertCart(@PathVariable("liquorId")Long id,@RequestBody CartDto dto) {
+        cartService.insertCart(dto, id);
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 
@@ -53,6 +57,18 @@ public class CartController {
         cartService.deleteByCartId(dto.getId());
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     private CartDto getDto(Long id, String message) throws BadRequestException {
