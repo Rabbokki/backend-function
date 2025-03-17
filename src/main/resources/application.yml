@@ -14,7 +14,10 @@ spring:
     username: root
     password: 11111111
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> feature-you
 
 >>>>>>> origin/feature-jang-post
   jpa:
