@@ -30,6 +30,8 @@ public class Account extends BaseEntity{
     private List<Post> posts = new ArrayList<>();
 
 
+
+
     public Account(AccountReqDto accountReqDto) {
         this.email = accountReqDto.getEmail();
         this.password = accountReqDto.getPassword();

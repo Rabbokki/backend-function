@@ -14,15 +14,20 @@ public class LiquorDto {
     private int price;
     private int stock;
     private String country;
+    private int count;
+    private int totalPrice;
 
 
     public static LiquorDto fromEntity(Liquor liquor) {
+        int totalPrice = liquor.getPrice() * liquor.getCount();
         return new LiquorDto(
                 liquor.getId(),
                 liquor.getName(),
                 liquor.getPrice(),
                 liquor.getStock(),
-                liquor.getCountry()
+                liquor.getCountry(),
+                liquor.getCount(),
+                totalPrice
         );
     }
 
@@ -33,6 +38,8 @@ public class LiquorDto {
         liquor.setPrice(dto.getPrice());
         liquor.setStock(dto.getStock());
         liquor.setCountry(dto.getCountry());
+        liquor.setCount(dto.getCount());
+        liquor.setTotalPrice(dto.getTotalPrice());
         return liquor;
     }
 }

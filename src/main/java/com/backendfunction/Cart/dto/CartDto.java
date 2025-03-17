@@ -18,29 +18,32 @@ public class CartDto {
     private Long id;
     private int count;
     private int price;
-    private LiquorDto liquorDto;
+    private List<LiquorDto> list = new ArrayList<>();
     private Long accountId;
+
+    public CartDto(Cart cart) {
+        this.id = cart.getId();
+        this.count = cart.getCount();
+        this.price = cart.getPrice();
+        this.list = cart.getLiquors().stream().map(x -> LiquorDto.fromEntity(x)).toList();
+
+    }
 
     public static CartDto fromEntity(Cart cart) {
         return new CartDto(
                 cart.getId(),
                 cart.getCount(),
                 cart.getPrice(),
-                LiquorDto.fromEntity(cart.getLiquor()),
+                cart.getLiquors().stream().map(x->LiquorDto.fromEntity(x)).toList(),
                 cart.getAccount().getId()
         );
     }
 
     public static Cart fromDto(CartDto dto) {
-        Cart cart = new Cart();
-        cart.setId(dto.getId());
-        cart.setCount(dto.getCount());
-        cart.setPrice(dto.getPrice());
-        Liquor liquor = LiquorDto.fromDto(dto.getLiquorDto());
-        cart.setLiquor(liquor);
         Account account = new Account();
         account.setId(dto.getAccountId());
-        cart.setAccount(account);
+        Cart cart = new Cart(dto.getId(), dto.getCount(), dto.getPrice(), account);
         return cart;
     }
+
 }
