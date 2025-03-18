@@ -3,9 +3,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dopamine_x?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: 11111111
+    url: jdbc:mysql://dopaminex.c9ey8eai2kkp.ap-northeast-2.rds.amazonaws.com:3306/dopaminex?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root # RDS 사용자명
+    password: 1q2w3e4r! # RDS 비밀번호
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -22,7 +22,7 @@ jwt:
 
 jasypt:
   encryptor:
-    password: jasyptStringEncryptor  # ???? ??? ?
+    password: jasyptStringEncryptor  # 암호화 문자열
 
 cloud:
   aws:
@@ -33,9 +33,10 @@ cloud:
       static: ap-northeast-2  # AWS S3 리전
     stack:
       auto: false
+
 application:
   bucket:
-    name: joo-legend
+    name: joo-legend  # AWS S3 버킷 이름
 
   servlet:
     multipart:
@@ -44,4 +45,3 @@ application:
       max-request-size: 50MB
     file:
       upload-dir: C:/uploads  # 허용된 업로드 경로 설정
-

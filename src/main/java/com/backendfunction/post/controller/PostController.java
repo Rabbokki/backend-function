@@ -45,16 +45,17 @@ public class PostController {
 ////        return ResponseEntity.status(HttpStatus.OK).body(findPost);
 //    }
 @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<?> createPost(@RequestParam(value = "postImg", required = false) List<MultipartFile> imgs,
-                                    @RequestPart(value = "dto") PostReqDto dto,
-                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    log.info("UserDetails: {}", userDetails);
+public ResponseEntity<?> createPost(
+        @RequestPart(value = "postImg", required = false) List<MultipartFile> imgs,
+        @RequestPart(value = "dto") PostReqDto dto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    log.info("Received DTO: title={}, imageUrls={}", dto.getTitle(), dto.getImageUrls());
+    log.info("Received files: {}", imgs != null ? "size=" + imgs.size() : "null");
     if (userDetails == null || userDetails.getAccount() == null) {
         log.error("Account is required but userDetails is null");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("게시물 생성을 위해 로그인이 필요합니다.");
     }
     Account account = userDetails.getAccount();
-    log.info("Proceeding with account: {}", account.getId());
     postService.createPost(dto, imgs, account);
     return ResponseEntity.status(HttpStatus.OK).body("성공");
 }

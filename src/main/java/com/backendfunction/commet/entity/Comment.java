@@ -34,10 +34,14 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
     private List<Recomment> recomments = new ArrayList<>();
+    private int likeSize;
 
     public Comment(String content, Post post, Account account) {
         this.content = content;
         this.post = post;
         this.account = account;
+    }
+    public void updateLikeSize(int size){
+        this.likeSize = size;
     }
 }

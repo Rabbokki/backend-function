@@ -19,12 +19,14 @@ public class CommentReqDto {
     private Long id;
     @NotBlank(message = "댓글을 입력해 주세요.")
     private String content;
+    private int likeCount;
     private List<RecommentResDto> resDtoList;
 
     public static CommentReqDto fromEntity(Comment comment){
         return new CommentReqDto(
                 comment.getId(),
                 comment.getContent(),
+                comment.getLikeSize(),
                 comment.getRecomments().stream().map(
                         RecommentResDto::fromEntity
                 ).collect(Collectors.toList())

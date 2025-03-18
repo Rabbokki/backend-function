@@ -37,24 +37,42 @@ public class PostService {
     public ResponseDto<?> createPost(PostReqDto dto, List<MultipartFile> file, Account account) {
         log.info("Creating post for account: {}", account != null ? account.getId() : "null");
         Post post = new Post(dto, account);
-
-        // Post 먼저 저장
         post = postRepository.save(post);
         log.info("Post saved with ID: {}", post.getId());
 
-        List<Image> imageList = new ArrayList<>();
-        if (file != null && !file.isEmpty()) {
-            for (MultipartFile multipartFile : file) {
-                log.info("Processing file: {}", multipartFile.getOriginalFilename());
-                Image image = new Image(s3Service.uploadFile(multipartFile), post);
+        List<String> imageUrls = dto.getImageUrls();
+        log.info("Image URLs from DTO: {}", imageUrls);
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            for (String url : imageUrls) {
+                log.info("Adding image URL: {}", url);
+                Image image = new Image(url, post);
                 post.getImages().add(image);
-                imageList.add(image);
+                imageRepository.save(image);
             }
+        } else {
+            log.info("No image URLs provided in DTO");
         }
 
-        // Post와 Image 함께 저장
+        log.info("File parameter received: {}", file != null ? "size=" + file.size() : "null");
+        if (file != null && !file.isEmpty()) {
+            log.info("Processing {} files", file.size());
+            for (MultipartFile multipartFile : file) {
+                log.info("Processing file: name={}, size={}",
+                        multipartFile.getOriginalFilename(), multipartFile.getSize());
+                String s3Url = s3Service.uploadFile(multipartFile);
+                log.info("S3 URL generated: {}", s3Url);
+                Image image = new Image(s3Url, post);
+                post.getImages().add(image);
+                imageRepository.save(image);
+                log.info("Image saved with ID: {}", image.getId());
+            }
+        } else {
+            log.info("No files provided for upload");
+        }
+
         postRepository.save(post);
-        PostReqDto postDto = new PostReqDto(post); // 완성된 생성자 사용
+        PostReqDto postDto = new PostReqDto(post);
+        log.info("Returning post DTO with image count: {}", post.getImages().size());
         return ResponseDto.success(postDto);
     }
 //    public ResponseDto<?> createPost(PostDto dto, List<MultipartFile> file, Account account) {

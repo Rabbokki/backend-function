@@ -10,12 +10,15 @@ import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReqDto {
@@ -23,21 +26,25 @@ public class PostReqDto {
     private String content;
     private int price;
     private MultipartFile img;
-    private List<String> imageUrls;
+    private List<String> imageUrls = new ArrayList<>();
     private List<CommentReqDto> comments;
+    private int likeCount;
 
     public PostReqDto(Post post) {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.price = post.getPrice();
+        this.likeCount = post.getLikeSize();
+        this.imageUrls = post.getImages().stream().map(Image::getImage).collect(Collectors.toList());
     }
     public PostReqDto(String title, String content, int price, List<String> imageUrls,
-                      List<CommentReqDto> comments) {
+                      List<CommentReqDto> comments, int likeCount) {
         this.title = title;
         this.content = content;
         this.price = price;
         this.imageUrls = imageUrls;
         this.comments = comments;
+        this.likeCount = likeCount;
     }
 
     public static PostReqDto fromEntity(Post post){
@@ -51,14 +58,15 @@ public class PostReqDto {
                         .map(comment -> new CommentReqDto(
                                 comment.getId(),
                                 comment.getContent(),
+                                comment.getLikeSize(),
                                 comment.getRecomments().stream().map(RecommentResDto::fromEntity)
                                         .collect(Collectors.toList())
-                        )).collect(Collectors.toList())
+                        )).collect(Collectors.toList()),
+                post.getLikeSize()
         );
     }
 
     public static Post fromDto(PostReqDto dto, Account account){
-        Post post = new Post(dto,account);
-        return post;
+        return new Post(dto,account);
     }
 }
