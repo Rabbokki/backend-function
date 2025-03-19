@@ -1,10 +1,9 @@
 package com.backendfunction.Liquor.entity;
 
-import com.backendfunction.Cart.entity.Cart;
+import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.global.category.Category;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
