@@ -18,16 +18,15 @@ public class CartDto {
     private Long id;
     private int count;
     private int price;
-    private LiquorDto liquorDto;
-    private Long accountId;
+
+    public CartDto(Cart cart) {
+    }
 
     public static CartDto fromEntity(Cart cart) {
         return new CartDto(
                 cart.getId(),
                 cart.getCount(),
-                cart.getPrice(),
-                LiquorDto.fromEntity(cart.getLiquor()),
-                cart.getAccount().getId()
+                cart.getPrice()
         );
     }
 
@@ -36,11 +35,7 @@ public class CartDto {
         cart.setId(dto.getId());
         cart.setCount(dto.getCount());
         cart.setPrice(dto.getPrice());
-        Liquor liquor = LiquorDto.fromDto(dto.getLiquorDto());
-        cart.setLiquor(liquor);
-        Account account = new Account();
-        account.setId(dto.getAccountId());
-        cart.setAccount(account);
         return cart;
     }
+
 }

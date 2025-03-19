@@ -27,7 +27,7 @@ public class Account extends BaseEntity{
     private String email;
     private String password;
     private String nickname;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "account")
     private List<Cart> carts = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
@@ -44,6 +44,8 @@ public class Account extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<CommentLike> commentLikes = new ArrayList<>();
+
+
 
 
     public Account(AccountReqDto accountReqDto) {

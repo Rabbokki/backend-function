@@ -1,9 +1,13 @@
 package com.backendfunction.Liquor.dto;
 
+import com.backendfunction.Cart.dto.CartDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -14,15 +18,22 @@ public class LiquorDto {
     private int price;
     private int stock;
     private String country;
+    private int count;
+    private int totalPrice;
+    private List<CartDto> cartDtos = new ArrayList<>();
 
 
     public static LiquorDto fromEntity(Liquor liquor) {
+        int totalPrice = liquor.getPrice() * liquor.getCount();
         return new LiquorDto(
                 liquor.getId(),
                 liquor.getName(),
                 liquor.getPrice(),
                 liquor.getStock(),
-                liquor.getCountry()
+                liquor.getCountry(),
+                liquor.getCount(),
+                totalPrice,
+                liquor.getCarts().stream().map(x -> CartDto.fromEntity(x)).toList()
         );
     }
 
@@ -33,6 +44,8 @@ public class LiquorDto {
         liquor.setPrice(dto.getPrice());
         liquor.setStock(dto.getStock());
         liquor.setCountry(dto.getCountry());
+        liquor.setCount(dto.getCount());
+        liquor.setTotalPrice(dto.getTotalPrice());
         return liquor;
     }
 }

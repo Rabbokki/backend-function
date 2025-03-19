@@ -1,15 +1,8 @@
 package com.backendfunction.account.dto;
 
-import com.backendfunction.Cart.dto.CartDto;
 import com.backendfunction.account.entity.Account;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 @Data
 @AllArgsConstructor
 public class AccountDto {
@@ -17,15 +10,13 @@ public class AccountDto {
     private String email;
     private String password;
     private String nickname;
-    private List<CartDto> dtos = new ArrayList<>();
 
     public static AccountDto fromEntity(Account account) {
         return new AccountDto(
                 account.getId(),
                 account.getEmail(),
                 account.getNickname(),
-                account.getPassword(),
-                account.getCarts().stream().map(x -> CartDto.fromEntity(x)).toList()
+                account.getPassword()
         );
     }
 

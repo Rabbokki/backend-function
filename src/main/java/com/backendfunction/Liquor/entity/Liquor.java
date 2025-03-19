@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,10 +25,13 @@ public class Liquor {
     private Integer stock;
     @Column(length = 50)
     private String country;
-
+    private int count;
+    private int totalPrice;
     //category와 매핑 from JJJ
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "c_id")
     @JsonBackReference
     private Category category;
+    @OneToMany(mappedBy = "liquor", fetch = FetchType.LAZY)
+    private List<Cart> carts = new ArrayList<>();
 }

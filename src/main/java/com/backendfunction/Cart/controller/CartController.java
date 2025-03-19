@@ -1,83 +1,50 @@
 package com.backendfunction.Cart.controller;
 
 import com.backendfunction.Cart.dto.CartDto;
-import com.backendfunction.Cart.service.CartService;
-import com.backendfunction.Liquor.dto.LiquorDto;
+import com.backendfunction.Cart.dto.CartInput;
+import com.backendfunction.Cart.dto.CartReqDto;
 import com.backendfunction.Liquor.service.LiquorService;
-import org.apache.coyote.BadRequestException;
+import com.backendfunction.Cart.service.CartService;
+import com.backendfunction.account.entity.Account;
+import com.backendfunction.account.service.AccountService;
+import com.backendfunction.global.security.user.UserDetailsImpl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/cart")
 public class CartController {
     private final CartService cartService;
+    private final AccountService accountService;
     private final LiquorService liquorService;
 
-    public CartController(CartService cartService, LiquorService liquorService) {
+    public CartController(CartService cartService, AccountService accountService, LiquorService liquorService) {
         this.cartService = cartService;
+        this.accountService = accountService;
         this.liquorService = liquorService;
     }
 
-    @GetMapping("/cart")
-    public ResponseEntity<?> findAllCart() {
-        List<CartDto> dtos = cartService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(dtos);
-    }
+    @PostMapping(value = "/add/{liquorId}")
+    public ResponseEntity<?> addCart(@PathVariable("liquorId") Long id,
+                                     @AuthenticationPrincipal UserDetailsImpl userDetails, CartDto cartDto
+    ) {
 
-    @GetMapping("/cart/{id}")
-    public ResponseEntity<?> findByCartId(@PathVariable("id") Long id) throws BadRequestException {
-        CartDto findByCartId = getDto(id, "조회실패");
-        return ResponseEntity.status(HttpStatus.OK).body(findByCartId);
-    }
-
-    @PostMapping("/cart/insert/{liquorId}")
-    public ResponseEntity<?> insertCart(@PathVariable("liquorId")Long id,@RequestBody CartDto dto) {
-        cartService.insertCart(dto, id);
-        return ResponseEntity.status(HttpStatus.OK).body("성공");
-    }
-
-    @PatchMapping("/cart/update/{id}")
-    public ResponseEntity<?> updateCartId(@RequestBody CartDto dto, @PathVariable("id") Long id) {
-        if (!dto.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body("실패");
+        if (userDetails == null || userDetails.getAccount() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다");
         }
-        cartService.updateByCart(dto);
+        Account account = userDetails.getAccount();
+        cartService.addCart(id, account ,cartDto);
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 
-    @DeleteMapping("/cart/delete/{id}")
-    public ResponseEntity<?> deleteByCartId(@PathVariable("id") Long id) throws BadRequestException {
-        CartDto dto = getDto(id, "실패");
-        cartService.deleteByCartId(dto.getId());
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        cartService.deleteByCartId(id, userDetails.getAccount());
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private CartDto getDto(Long id, String message) throws BadRequestException {
-
-        Map<String, Object> findByCartId = cartService.findByCartId(id);
-        if (ObjectUtils.isEmpty(findByCartId.get("dto"))) {
-            throw new BadRequestException(message);
-        }
-        return (CartDto) findByCartId.get("dto");
-    }
 
 }
