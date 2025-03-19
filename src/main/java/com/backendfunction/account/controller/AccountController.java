@@ -56,8 +56,13 @@ public class AccountController {
     public ResponseDto<?> updateUserInfo(@RequestHeader("Authorization") String token,
                                          @RequestBody @Valid AccountReqDto accountReqDto) {
         String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
-        accountService.updateUserInfo(email, accountReqDto);
-        return ResponseDto.success("User details updated successfully");
+        try {
+            accountService.updateUserInfo(email, accountReqDto);
+            return ResponseDto.success("수정 성공 했습니다.");
+        } catch (RuntimeException e) {
+            // If a runtime exception occurs (like "This email is already taken")
+            return ResponseDto.fail("EMAIL_ALREADY_TAKEN", e.getMessage());
+        }
     }
 
     @GetMapping("/api/account")

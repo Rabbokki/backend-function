@@ -68,9 +68,13 @@ public class AccountService {
 
     public void updateUserInfo(String email, AccountReqDto accountReqDto) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("등록된 이매일 아닙니다."));
 
         if (accountReqDto.getEmail() != null && !accountReqDto.getEmail().equals(account.getEmail())) {
+            Optional<Account> existingAccount = accountRepository.findByEmail(accountReqDto.getEmail());
+            if (existingAccount.isPresent()) {
+                throw new RuntimeException("이미 사용한 이매일 입니다.");
+            }
             account.setEmail(accountReqDto.getEmail());
         }
 
