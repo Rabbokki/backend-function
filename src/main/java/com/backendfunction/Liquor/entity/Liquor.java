@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -29,7 +32,6 @@ public class Liquor {
     @JoinColumn(name = "c_id")
     @JsonBackReference
     private Category category;
-    @ManyToOne
-    @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    @OneToMany(mappedBy = "liquor", fetch = FetchType.LAZY)
+    private List<Cart> carts = new ArrayList<>();
 }

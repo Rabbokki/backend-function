@@ -23,7 +23,7 @@ public class Account extends BaseEntity{
     private String email;
     private String password;
     private String nickname;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "account")
     private List<Cart> carts = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)

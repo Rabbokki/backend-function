@@ -1,14 +1,14 @@
 package com.backendfunction.Cart.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartRedDto {
+public class CartReqDto {
     private int count;
     private int price;
-    private Long accountId;
+
 }

@@ -1,11 +1,10 @@
 package com.backendfunction.Cart.entity;
 
-import com.backendfunction.Cart.dto.CartRedDto;
+import com.backendfunction.Cart.dto.CartReqDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.account.entity.Account;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -15,34 +14,35 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "cart")
-@NoArgsConstructor
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private int count;
+    private int count; //총 상품 개수
     @Column(nullable = false)
-    private int price;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    private int price; //총 가격
+    @ManyToOne
+    @JoinColumn(name = "account_id" , nullable = true)
     private Account account;
-    @OneToMany(fetch = FetchType.LAZY , mappedBy = "cart",cascade = CascadeType.ALL)
-    private List<Liquor> liquors = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "liquor_id", nullable = true)
+    private Liquor liquor;
 
-
-    public Cart(Long id, int count, int price, Account account ) {
-        this.id = id;
-        this.count = count;
-        this.price = price;
-        this.account = account;
-    }
-
-    public Cart(CartRedDto dto, Account account) {
+    public Cart(CartReqDto dto, Account account) {
         this.count = dto.getCount();
-        this.account = account;
         this.price = dto.getPrice();
+        this.account = account;
     }
 
+    public Cart(Liquor liquor, Account account, int count, int price) {
+        this.liquor = liquor;
+        this.account = account;
+        this.price = price;
+        this.count = count;
+    }
 
+    public Cart() {
+
+    }
 }
