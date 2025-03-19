@@ -42,6 +42,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리 모듈
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'// jasypt
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.0' // 서킷 최신 버전으로 교체
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
@@ -49,6 +50,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     runtimeOnly 'com.h2database:h2'
+    //ws
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.messaging:spring-messaging'
 }
 
 tasks.named('test') {

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Test</title>
+</head>
+<body>
+<input id="message" type="text" placeholder="메시지 입력">
+<button onclick="sendMessage()">전송</button>
+<div id="messages"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+  const socket = new SockJS('http://192.168.0.71:8081/ws');
+  const stompClient = Stomp.over(socket);
+  const roomName = "a4c49fbf-4a55-4b46-b190-bd4c4776f9ce";
+  const roomId = 1;  // 방 생성 시 받은 id로 수정
+
+  stompClient.connect({}, function (frame) {
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/sub/chatroom' + roomName, function (message) {
+      const msg = JSON.parse(message.body);
+      document.getElementById('messages').innerHTML += '<p>' + msg.message + '</p>';
+    });
+  });
+
+  function sendMessage() {
+    const message = document.getElementById('message').value;
+    stompClient.send('/pub/chat', {}, JSON.stringify({
+      roomId: roomId,
+      message: message,
+      sender: "abc@abc2.com"
+    }));
+    document.getElementById('message').value = '';
+  }
+</script>
+</body>
+</html>
