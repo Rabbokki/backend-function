@@ -51,4 +51,7 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return null;
     }
+    public Account getAccount() {
+        return this.account;
+    }
 }

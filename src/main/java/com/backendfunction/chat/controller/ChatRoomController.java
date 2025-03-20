@@ -1,0 +1,38 @@
+package com.backendfunction.chat.controller;
+
+import com.backendfunction.chat.dto.ChatDto;
+import com.backendfunction.chat.dto.RoomDto;
+import com.backendfunction.chat.service.ChatRoomService;
+import com.backendfunction.global.dto.ResponseDto;
+import com.backendfunction.global.security.user.UserDetailsImpl;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/chat")
+public class ChatRoomController {
+    private final ChatRoomService chatRoomService;
+
+    @PostMapping
+    @Transactional
+    public ResponseDto<ChatDto.CreateResponse> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                          @Valid @RequestBody RoomDto.CreateRequest request) {
+        log.info("Creating room for account: id={}, email={}",
+                userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
+        ChatDto.CreateResponse response = chatRoomService.createRoom(request, userDetails);
+        return ResponseDto.success(response);
+    }
+
+    @PostMapping("/{roomName}")
+    public ResponseDto<?> deleteRoom(@PathVariable String roomName,
+                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
+        chatRoomService.deleteRoom(roomName,userDetails);
+        return ResponseDto.success("삭제 성공");
+    }
+}
