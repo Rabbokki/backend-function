@@ -51,14 +51,13 @@ public class Post extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();
 
-<<<<<<< HEAD
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<BookMark> bookMarks = new ArrayList<>();
-=======
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
->>>>>>> feature-you
+
     public Post(PostReqDto dto, Account account) {
 
         this.title = dto.getTitle();

@@ -1,10 +1,6 @@
 package com.backendfunction.cart.controller;
 
-<<<<<<< HEAD:src/main/java/com/backendfunction/Cart/controller/CartController.java
-import com.backendfunction.Cart.dto.CartDto;
-=======
 import com.backendfunction.cart.dto.CartDto;
->>>>>>> feature-jang:src/main/java/com/backendfunction/cart/controller/CartController.java
 import com.backendfunction.Liquor.service.LiquorService;
 import com.backendfunction.cart.service.CartService;
 import com.backendfunction.account.entity.Account;
