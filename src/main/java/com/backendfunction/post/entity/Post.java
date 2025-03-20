@@ -6,6 +6,7 @@ import com.backendfunction.bookmark.entity.BookMark;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
+import com.backendfunction.review.entity.Review;
 import com.backendfunction.post.dto.PostReqDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -32,6 +33,8 @@ public class Post extends BaseEntity {
     private int price;
     private int commentSize;
     private int likeSize;
+    private int reviewSize;
+    private double averageRating;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
@@ -48,8 +51,14 @@ public class Post extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();
 
+<<<<<<< HEAD
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<BookMark> bookMarks = new ArrayList<>();
+=======
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Review> reviews = new ArrayList<>();
+
+>>>>>>> feature-you
     public Post(PostReqDto dto, Account account) {
 
         this.title = dto.getTitle();
@@ -65,7 +74,10 @@ public class Post extends BaseEntity {
         this.account = account;
         this.images = new ArrayList<>();  // 이미지 리스트 초기화
         this.commentList = new ArrayList<>();  // 댓글 리스트 초기화
+        this.reviewSize = 0;
+        this.averageRating = 0;
     }
+
     public void postLikeUpdate(int size){
         this.likeSize = size;
     }
@@ -73,4 +85,25 @@ public class Post extends BaseEntity {
     public void commentUpdate(int size){
         this.commentSize = size;
     }
+
+    public void reviewUpdate(int size){
+        this.reviewSize = size;
+    }
+
+    public void recalculateAverageRating() {
+        double totalRating = 0;
+        int reviewCount = 0;
+
+        for (Review review : reviews) {
+            totalRating += review.getRating();
+            reviewCount++;
+        }
+
+        if (reviewCount > 0) {
+            this.averageRating = totalRating / reviewCount;
+        } else {
+            this.averageRating = 0;
+        }
+    }
+
 }
