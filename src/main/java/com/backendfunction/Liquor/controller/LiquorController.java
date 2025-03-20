@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -52,14 +53,14 @@ public class LiquorController {
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 
-    @PatchMapping("/liquor/update/{id}")
-    public ResponseEntity<?> updateLiquor(@RequestBody LiquorDto dto, @PathVariable("id") Long id) {
-        if (!dto.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body("실패");
-        }
-        liquorService.updateLiquor(dto);
-        return ResponseEntity.status(HttpStatus.OK).body("성공");
-    }
+//    @PatchMapping("/liquor/update/{id}")
+//    public ResponseEntity<?> updateLiquor(@RequestBody LiquorDto dto, @PathVariable("id") Long id) {
+//        if (!dto.getId().equals(id)) {
+//            return ResponseEntity.status(HttpStatus.OK).body("실패");
+//        }
+//        liquorService.updateLiquor(dto);
+//        return ResponseEntity.status(HttpStatus.OK).body("성공");
+//    }
 
     @DeleteMapping("/liquor/delete/{id}")
     public ResponseEntity<?> deleteByLiquorId(@PathVariable("id") Long id) throws BadRequestException {
