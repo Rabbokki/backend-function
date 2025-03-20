@@ -17,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,16 +100,30 @@ public class ChatRoomService {
 
     public Page<RoomDto.Response> getChatRoomList(Account account, Pageable pageable) {
         String email = account.getEmail();
+        log.info("Querying chat rooms for email: {}", email);
         Page<ChatRoom> rooms = chatRoomRepository.findAllByEmail(email, pageable);
+        if (rooms.isEmpty()) {
+            log.info("No chat rooms found for email: {}", email);
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+        log.info("Found {} chat rooms for email: {}", rooms.getTotalElements(), email);
         return new PageImpl<>(entityToListDto(rooms, email), pageable, rooms.getTotalElements());
     }
 
-    private List<RoomDto.Response> entityToListDto (Page<ChatRoom> rooms, String email) {
-        return rooms.stream().map(room-> RoomDto.Response.builder()
-                .room(room).unreadMessageCount(getUnreadCount(room))
+    private List<RoomDto.Response> entityToListDto(Page<ChatRoom> rooms, String email) {
+        return rooms.stream().map(room -> {
+            try {
+                return RoomDto.Response.builder()
+                        .room(room)
+                        .unreadMessageCount(getUnreadCount(room))
                         .latestChatMessage(getLatestChatMessage(room))
-                        .userResponseDto(getUserInfo(room,email))
-                        .build()).collect(Collectors.toList());
+                        .userResponseDto(getUserInfo(room, email))
+                        .build();
+            } catch (Exception e) {
+                log.error("Error converting room {}: {}", room.getRoomName(), e.getMessage());
+                return null; // 예외 발생 시 null 반환 (필터링 필요)
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private String getLatestChatMessage(ChatRoom room) {

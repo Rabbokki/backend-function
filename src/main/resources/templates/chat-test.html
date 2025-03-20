@@ -100,7 +100,8 @@
               document.getElementById('roomList').innerHTML = roomListHtml;
             })
             .catch(error => {
-              alert('채팅방 목록 로드 실패: ' + (error.response?.data?.message || '서버 오류'));
+              console.error('Error loading room list:', error);
+              alert('채팅방 목록 로드 실패: ' + (error.response?.data?.message || error.message || '서버 오류'));
             });
   }
 
@@ -166,7 +167,6 @@
       sendMessage();
     }
   });
-  //0bbd41e4-5f79-49eb-a966-7de09efd64bd
 </script>
 </body>
 </html>

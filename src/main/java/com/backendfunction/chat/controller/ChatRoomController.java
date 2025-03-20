@@ -10,18 +10,23 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat")
+@CrossOrigin(origins = "*")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
@@ -57,9 +62,13 @@ public class ChatRoomController {
     public ResponseEntity<Page<RoomDto.Response>> getChatRoomList(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PageableDefault Pageable pageable) {
-
-        return ResponseEntity.ok(
-                chatRoomService.getChatRoomList(userDetails.getAccount(), pageable));
+        if (userDetails == null || userDetails.getAccount() == null) {
+            log.error("UserDetails is null - Authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new PageImpl<>(Collections.emptyList(), pageable, 0));
+        }
+        log.info("Fetching chat room list for email: {}", userDetails.getAccount().getEmail());
+        return ResponseEntity.ok(chatRoomService.getChatRoomList(userDetails.getAccount(), pageable));
     }
 
 }
