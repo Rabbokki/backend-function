@@ -82,18 +82,54 @@ public class ChatRoomService {
         return responseList;
     }
 
-    private UserResponseDto getUserInfo(ChatRoom room, String account){
+    private UserResponseDto getUserInfo(ChatRoom room, String account) {
         UserResponseDto userResponseDto = new UserResponseDto();
         UserResponseDto.UserData userData = new UserResponseDto.UserData();
-
         String targetEmail = account.equals(room.getReceiver()) ? room.getSender() : room.getReceiver();
 
-        Account targetAccount = accountRepository.findByEmail(targetEmail).orElseThrow(()->
-                new RuntimeException("상대방 계정을 찾을 수 없습니다."));
-        userData.setAccountId(targetAccount.getId());
-        userData.setEmail(targetAccount.getEmail());
-        userData.setNickname(targetAccount.getNickname());
-        userData.setImgUrl(targetAccount.getImgUrl());
+        try {
+            Account targetAccount = accountRepository.findByEmail(targetEmail).orElse(null);
+            if (targetAccount == null) {
+                log.warn("Target account not found for email: {}", targetEmail);
+                // UUID 형식인지 확인
+                if (targetEmail.matches("^[0-9a-fA-F-]{36}$")) {
+                    log.warn("Value {} appears to be a UUID, not an email. Expected an email for Account lookup.", targetEmail);
+                    userData.setEmail(targetEmail);
+                    userData.setNickname("Unknown (UUID)");
+                    userData.setAccountId(0L);
+                    // 참고: Account.id가 Long이므로 UUID를 직접 조회 불가.
+                    // 만약 sender/receiver가 Account.id로 변경된다면 아래 주석 해제
+                /*
+                try {
+                    Long accountId = convertUuidToAccountId(targetEmail); // 별도 메서드 필요
+                    targetAccount = accountRepository.findById(accountId).orElse(null);
+                    if (targetAccount != null) {
+                        userData.setAccountId(targetAccount.getId());
+                        userData.setEmail(targetAccount.getEmail());
+                        userData.setNickname(targetAccount.getNickname());
+                        userData.setImgUrl(targetAccount.getImgUrl());
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to convert UUID {} to account ID: {}", targetEmail, e.getMessage());
+                }
+                */
+                } else {
+                    userData.setEmail(targetEmail);
+                    userData.setNickname("Unknown");
+                    userData.setAccountId(0L);
+                }
+            } else {
+                userData.setAccountId(targetAccount.getId());
+                userData.setEmail(targetAccount.getEmail());
+                userData.setNickname(targetAccount.getNickname());
+                userData.setImgUrl(targetAccount.getImgUrl());
+            }
+        } catch (Exception e) {
+            log.error("Error fetching user info for email {}: {}", targetEmail, e.getMessage());
+            userData.setEmail(targetEmail);
+            userData.setNickname("Error");
+            userData.setAccountId(0L);
+        }
         userResponseDto.setData(userData);
         return userResponseDto;
     }
@@ -106,24 +142,31 @@ public class ChatRoomService {
             log.info("No chat rooms found for email: {}", email);
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
-        log.info("Found {} chat rooms for email: {}", rooms.getTotalElements(), email);
         return new PageImpl<>(entityToListDto(rooms, email), pageable, rooms.getTotalElements());
     }
 
     private List<RoomDto.Response> entityToListDto(Page<ChatRoom> rooms, String email) {
-        return rooms.stream().map(room -> {
-            try {
-                return RoomDto.Response.builder()
-                        .room(room)
-                        .unreadMessageCount(getUnreadCount(room))
-                        .latestChatMessage(getLatestChatMessage(room))
-                        .userResponseDto(getUserInfo(room, email))
-                        .build();
-            } catch (Exception e) {
-                log.error("Error converting room {}: {}", room.getRoomName(), e.getMessage());
-                return null; // 예외 발생 시 null 반환 (필터링 필요)
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        return rooms.stream()
+                .map(room -> {
+                    try {
+                        log.debug("Processing room: id={}, name={}, sender={}, receiver={}",
+                                room.getId(), room.getRoomName(), room.getSender(), room.getReceiver());
+                        RoomDto.Response response = RoomDto.Response.builder()
+                                .room(room)
+                                .unreadMessageCount(getUnreadCount(room))
+                                .latestChatMessage(getLatestChatMessage(room))
+                                .userResponseDto(getUserInfo(room, email))
+                                .build();
+                        log.debug("Built response: roomName={}, userEmail={}",
+                                response.getRoomName(), response.getUserData() != null ? response.getUserData().getEmail() : "null");
+                        return response;
+                    } catch (Exception e) {
+                        log.error("Error converting room {}: {}", room.getRoomName(), e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private String getLatestChatMessage(ChatRoom room) {

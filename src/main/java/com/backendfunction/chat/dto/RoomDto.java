@@ -1,6 +1,7 @@
 package com.backendfunction.chat.dto;
 
 import com.backendfunction.chat.entity.ChatRoom;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class RoomDto {
     @NoArgsConstructor
     public static class CreateRequest{
         @NotBlank(message = "메시지 전달할 상대방을 입력해주세요")
+        @Email(message = "유효한 이메일 형식이어야 합니다")
         private String targetEmail;
 
         public ChatRoom toEntity(String account, String targetEmail){

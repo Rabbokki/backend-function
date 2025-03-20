@@ -1,5 +1,6 @@
 package com.backendfunction.chat.controller;
 
+import com.backendfunction.account.repository.AccountRepository;
 import com.backendfunction.chat.dto.ChatDto;
 import com.backendfunction.chat.dto.RoomDto;
 import com.backendfunction.chat.entity.ChatRoom;
@@ -29,6 +30,7 @@ import java.util.Collections;
 @CrossOrigin(origins = "*")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
+    private final AccountRepository accountRepository;
 
     @PostMapping
     @Transactional
@@ -36,6 +38,9 @@ public class ChatRoomController {
                                                           @Valid @RequestBody RoomDto.CreateRequest request) {
         log.info("Creating room for account: id={}, email={}",
                 userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
+        if (!accountRepository.existsByEmail(request.getTargetEmail())) {
+            throw new IllegalArgumentException("존재하지 않는 사용자 이메일입니다: " + request.getTargetEmail());
+        }
         ChatDto.CreateResponse response = chatRoomService.createRoom(request, userDetails);
         return ResponseDto.success(response);
     }
