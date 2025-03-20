@@ -110,21 +110,17 @@
   }
 
   function loadUserInfo(roomName) {
-    axios.get(`${baseUrl}/chat/${roomName}`, {
+    axios.get(`${baseUrl}/chat/list?page=0&size=10`, {
       headers: { 'Access_Token': token }
     })
             .then(response => {
-              const roomData = response.data.data;
-              axios.get(`${baseUrl}/chat/list?page=0&size=10`, { headers: { 'Access_Token': token } })
-                      .then(listResponse => {
-                        const rooms = listResponse.data.content;
-                        const roomInfo = rooms.find(r => r.room.roomName === roomName);
-                        if (roomInfo) {
-                          const userData = roomInfo.userResponseDto.data;
-                          document.getElementById('userInfo').innerHTML =
-                                  `<p>상대방: ${userData.email} (닉네임: ${userData.nickname || 'N/A'}, ID: ${userData.accountId})</p>`;
-                        }
-                      });
+              const rooms = response.data.content;
+              const roomInfo = rooms.find(r => r.room.roomName === roomName);
+              if (roomInfo) {
+                const userData = roomInfo.userResponseDto.data;
+                document.getElementById('userInfo').innerHTML =
+                        `<p>상대방: ${userData.email} (닉네임: ${userData.nickname || 'N/A'}, ID: ${userData.accountId})</p>`;
+              }
             })
             .catch(error => {
               console.error('사용자 정보 로드 실패:', error);
@@ -170,7 +166,7 @@
       sendMessage();
     }
   });
+  //0bbd41e4-5f79-49eb-a966-7de09efd64bd
 </script>
 </body>
 </html>
-//0bbd41e4-5f79-49eb-a966-7de09efd64bd

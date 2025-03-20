@@ -36,14 +36,14 @@ public class ChatRoomController {
     }
 
     @PostMapping("/{roomName}")
-    public ResponseDto<?> deleteRoom(@PathVariable String roomName,
+    public ResponseDto<?> deleteRoom(@PathVariable("roomName") String roomName,
                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
         chatRoomService.deleteRoom(roomName,userDetails);
         return ResponseDto.success("삭제 성공");
     }
 
     @GetMapping("/{roomName}")
-    public ResponseDto<?> getChatRoomDetail(@PathVariable String roomName,
+    public ResponseDto<?> getChatRoomDetail(@PathVariable("roomName") String roomName,
                                             @AuthenticationPrincipal UserDetailsImpl userDetails){
         ChatRoom room = chatRoomService.getChatRoom(roomName,userDetails.getAccount());
         ChatDto.CreateResponse response = ChatDto.CreateResponse.builder()
