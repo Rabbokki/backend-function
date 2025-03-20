@@ -6,6 +6,7 @@
     #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-top: 10px; }
     p { margin: 5px 0; }
     #roomForm { margin-bottom: 10px; }
+    #roomList { margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -13,10 +14,15 @@
 <div id="roomForm">
   <input id="targetEmail" type="text" placeholder="상대방 이메일" style="width: 200px;">
   <button onclick="createRoom()">채팅방 생성</button>
+  <input id="joinRoomName" type="text" placeholder="채팅방 이름 입력" style="width: 200px; margin-left: 10px;">
+  <button onclick="joinRoom()">채팅방 입장</button>
+  <button onclick="loadRoomList()" style="margin-left: 10px;">내 채팅방 목록</button>
 </div>
+<div id="userInfo"></div>
 <input id="message" type="text" placeholder="메시지를 입력하세요" style="width: 300px;" disabled>
 <button onclick="sendMessage()" disabled>전송</button>
 <div id="messages"></div>
+<div id="roomList"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
@@ -26,7 +32,8 @@
   let stompClient = null;
   let roomId = null;
   let roomName = null;
-  let sender = prompt("사용자 이름을 입력하세요 (이메일 형식):", "abc@abc2.com") || "guest" + Math.floor(Math.random() * 100);
+  let sender = prompt("사용자 이메일을 입력하세요:", "abc@abc2.com") || "guest" + Math.floor(Math.random() * 100);
+  const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAYWJjMi5jb20iLCJleHAiOjE3NDI1MjQ4NzksImlhdCI6MTc0MjQzODQ3OX0.MsYrPoB_ZuS4lZwkp23a8A5Z6GpauuW-TbctyzUW0X0";
 
   function createRoom() {
     const targetEmail = document.getElementById('targetEmail').value.trim();
@@ -34,32 +41,99 @@
       alert('상대방 이메일을 입력하세요.');
       return;
     }
-
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAYWJjMi5jb20iLCJleHAiOjE3NDI1MjQ4NzksImlhdCI6MTc0MjQzODQ3OX0.MsYrPoB_ZuS4lZwkp23a8A5Z6GpauuW-TbctyzUW0X0";
-
     axios.post(`${baseUrl}/chat`, { targetEmail: targetEmail }, {
-      headers: { 'Access_Token': token }  // 헤더 이름 수정
+      headers: { 'Access_Token': token }
     })
             .then(response => {
               const data = response.data.data;
               roomId = data.id;
               roomName = data.roomName;
-              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 생성: ' + roomName + '</p>';
+              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 생성: ' + roomName + ' (이 값을 다른 사람에게 공유하세요)</p>';
               connectWebSocket();
               document.getElementById('message').disabled = false;
               document.getElementById('message').focus();
               document.querySelector('button[onclick="sendMessage()"]').disabled = false;
+              loadUserInfo(roomName);
             })
             .catch(error => {
-              console.error('Error creating room:', error);
               alert('채팅방 생성 실패: ' + (error.response?.data?.message || '서버 오류'));
+            });
+  }
+
+  function joinRoom() {
+    const inputRoomName = document.getElementById('joinRoomName').value.trim();
+    if (!inputRoomName) {
+      alert('채팅방 이름을 입력하세요.');
+      return;
+    }
+    axios.get(`${baseUrl}/chat/${inputRoomName}`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+              const data = response.data.data;
+              roomId = data.id;
+              roomName = data.roomName;
+              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 입장: ' + roomName + '</p>';
+              connectWebSocket();
+              document.getElementById('message').disabled = false;
+              document.getElementById('message').focus();
+              document.querySelector('button[onclick="sendMessage()"]').disabled = false;
+              loadUserInfo(roomName);
+            })
+            .catch(error => {
+              alert('채팅방 입장 실패: ' + (error.response?.data?.message || '서버 오류'));
+            });
+  }
+
+  function loadRoomList() {
+    axios.get(`${baseUrl}/chat/list?page=0&size=10`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+              const rooms = response.data.content;
+              let roomListHtml = '<h3>내 채팅방 목록</h3><ul>';
+              rooms.forEach(room => {
+                roomListHtml += `<li>${room.room.roomName} (상대방: ${room.userResponseDto.data.email})
+                        <button onclick="joinRoomByName('${room.room.roomName}')">입장</button></li>`;
+              });
+              roomListHtml += '</ul>';
+              document.getElementById('roomList').innerHTML = roomListHtml;
+            })
+            .catch(error => {
+              alert('채팅방 목록 로드 실패: ' + (error.response?.data?.message || '서버 오류'));
+            });
+  }
+
+  function joinRoomByName(name) {
+    document.getElementById('joinRoomName').value = name;
+    joinRoom();
+  }
+
+  function loadUserInfo(roomName) {
+    axios.get(`${baseUrl}/chat/${roomName}`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+              const roomData = response.data.data;
+              axios.get(`${baseUrl}/chat/list?page=0&size=10`, { headers: { 'Access_Token': token } })
+                      .then(listResponse => {
+                        const rooms = listResponse.data.content;
+                        const roomInfo = rooms.find(r => r.room.roomName === roomName);
+                        if (roomInfo) {
+                          const userData = roomInfo.userResponseDto.data;
+                          document.getElementById('userInfo').innerHTML =
+                                  `<p>상대방: ${userData.email} (닉네임: ${userData.nickname || 'N/A'}, ID: ${userData.accountId})</p>`;
+                        }
+                      });
+            })
+            .catch(error => {
+              console.error('사용자 정보 로드 실패:', error);
             });
   }
 
   function connectWebSocket() {
     const socket = new SockJS(`${baseUrl}/ws`);
     stompClient = Stomp.over(socket);
-
     stompClient.connect({}, function (frame) {
       console.log('Connected: ' + frame);
       document.getElementById('messages').innerHTML += '<p>[시스템] ' + sender + '님이 입장했습니다.</p>';

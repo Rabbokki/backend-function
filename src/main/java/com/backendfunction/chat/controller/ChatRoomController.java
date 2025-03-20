@@ -2,15 +2,21 @@ package com.backendfunction.chat.controller;
 
 import com.backendfunction.chat.dto.ChatDto;
 import com.backendfunction.chat.dto.RoomDto;
+import com.backendfunction.chat.entity.ChatRoom;
 import com.backendfunction.chat.service.ChatRoomService;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.user.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 
 @Slf4j
 @RestController
@@ -35,4 +41,25 @@ public class ChatRoomController {
         chatRoomService.deleteRoom(roomName,userDetails);
         return ResponseDto.success("삭제 성공");
     }
+
+    @GetMapping("/{roomName}")
+    public ResponseDto<?> getChatRoomDetail(@PathVariable String roomName,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        ChatRoom room = chatRoomService.getChatRoom(roomName,userDetails.getAccount());
+        ChatDto.CreateResponse response = ChatDto.CreateResponse.builder()
+                .id(room.getId())
+                .name(room.getRoomName())
+                .build();
+        return ResponseDto.success(response);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<RoomDto.Response>> getChatRoomList(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable) {
+
+        return ResponseEntity.ok(
+                chatRoomService.getChatRoomList(userDetails.getAccount(), pageable));
+    }
+
 }

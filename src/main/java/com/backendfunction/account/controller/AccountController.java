@@ -11,9 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +29,11 @@ public class AccountController {
     private final AccountService accountService;
 
     //회원가입
-    @PostMapping("/signup")
-    public ResponseDto<?> signUp(@RequestBody @Valid AccountReqDto accountReqDto){
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseDto<?> signUp(@RequestPart(value = "accountImg", required = false) List<MultipartFile> imgs,
+                                 @RequestPart(value = "dto") @Valid AccountReqDto accountReqDto){
         System.out.println("called");
-        return ResponseDto.success(accountService.accountSignUp(accountReqDto));
+        return ResponseDto.success(accountService.accountSignUp(accountReqDto,imgs));
     }
 
     //로그인
