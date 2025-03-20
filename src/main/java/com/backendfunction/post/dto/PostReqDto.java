@@ -29,6 +29,8 @@ public class PostReqDto {
     private List<String> imageUrls = new ArrayList<>();
     private List<CommentReqDto> comments;
     private int likeCount;
+    private double averageRating;
+    private int reviewSize;
 
     public PostReqDto(Post post) {
         this.title = post.getTitle();
@@ -36,24 +38,28 @@ public class PostReqDto {
         this.price = post.getPrice();
         this.likeCount = post.getLikeSize();
         this.imageUrls = post.getImages().stream().map(Image::getImage).collect(Collectors.toList());
+        this.averageRating = post.getAverageRating();
+        this.reviewSize = post.getReviewSize();
     }
+
     public PostReqDto(String title, String content, int price, List<String> imageUrls,
-                      List<CommentReqDto> comments, int likeCount) {
+                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
         this.title = title;
         this.content = content;
         this.price = price;
         this.imageUrls = imageUrls;
         this.comments = comments;
         this.likeCount = likeCount;
+        this.averageRating = averageRating;
+        this.reviewSize = reviewSize;
     }
 
-    public static PostReqDto fromEntity(Post post){
+    public static PostReqDto fromEntity(Post post) {
         return new PostReqDto(
                 post.getTitle(),
                 post.getContent(),
                 post.getPrice(),
-                post.getImages().stream().map(Image::getImage)
-                        .collect(Collectors.toList()),
+                post.getImages().stream().map(Image::getImage).collect(Collectors.toList()),
                 post.getCommentList().stream()
                         .map(comment -> new CommentReqDto(
                                 comment.getId(),
@@ -62,11 +68,13 @@ public class PostReqDto {
                                 comment.getRecomments().stream().map(RecommentResDto::fromEntity)
                                         .collect(Collectors.toList())
                         )).collect(Collectors.toList()),
-                post.getLikeSize()
+                post.getLikeSize(),
+                post.getAverageRating(),
+                post.getReviewSize()
         );
     }
 
-    public static Post fromDto(PostReqDto dto, Account account){
-        return new Post(dto,account);
+    public static Post fromDto(PostReqDto dto, Account account) {
+        return new Post(dto, account);
     }
 }
