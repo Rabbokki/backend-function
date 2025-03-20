@@ -1,14 +1,11 @@
-package com.backendfunction.Cart.entity;
+package com.backendfunction.cart.entity;
 
-import com.backendfunction.Cart.dto.CartReqDto;
+import com.backendfunction.cart.dto.CartReqDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.account.entity.Account;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter

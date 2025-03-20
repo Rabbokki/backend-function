@@ -1,6 +1,7 @@
 package com.backendfunction.account.entity;
 
-import com.backendfunction.Cart.entity.Cart;
+import com.backendfunction.bookmark.entity.BookMark;
+import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.account.dto.AccountReqDto;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.like.entity.CommentLike;
@@ -44,6 +45,8 @@ public class Account extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<CommentLike> commentLikes = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
+    private List<BookMark> bookMarks = new ArrayList<>();
 
 
 

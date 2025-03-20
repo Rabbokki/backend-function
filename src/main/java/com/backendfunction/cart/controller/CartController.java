@@ -1,16 +1,22 @@
-package com.backendfunction.Cart.controller;
+package com.backendfunction.cart.controller;
 
+<<<<<<< HEAD:src/main/java/com/backendfunction/Cart/controller/CartController.java
 import com.backendfunction.Cart.dto.CartDto;
+=======
+import com.backendfunction.cart.dto.CartDto;
+>>>>>>> feature-jang:src/main/java/com/backendfunction/cart/controller/CartController.java
 import com.backendfunction.Liquor.service.LiquorService;
-import com.backendfunction.Cart.service.CartService;
+import com.backendfunction.cart.service.CartService;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.service.AccountService;
 import com.backendfunction.global.security.user.UserDetailsImpl;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
@@ -39,10 +45,26 @@ public class CartController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> deleteById(@PathVariable("id") Long id,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         cartService.deleteByCartId(id, userDetails.getAccount());
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
+
+    @GetMapping("/find")
+    public ResponseEntity<?> findByAccountId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<CartDto> cartDtos = cartService.findByAccountIdWithLiquor(userDetails.getAccount().getId());
+        return ResponseEntity.status(HttpStatus.OK).body(cartDtos);
+    }
+
+    @PatchMapping("/update/{liquorId}")
+    public ResponseEntity<?> updateById(@PathVariable("liquorId") Long liquorId,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @RequestParam("status") Integer statue) {
+        cartService.updateById(liquorId, userDetails.getAccount(), statue);
+        return ResponseEntity.status(HttpStatus.OK).body("성공");
+    }
+
 
 
 }

@@ -21,7 +21,7 @@ public class LiquorController {
         this.liquorService = liquorService;
     }
 
-    @GetMapping("/liquor")
+    @GetMapping({"/liquor" , "/liquor/"})
     public ResponseEntity<?> findAll(){
         List<LiquorDto> dtos = liquorService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(dtos);

@@ -2,6 +2,7 @@ package com.backendfunction.post.entity;
 
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.entity.BaseEntity;
+import com.backendfunction.bookmark.entity.BookMark;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
@@ -47,7 +48,10 @@ public class Post extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<BookMark> bookMarks = new ArrayList<>();
     public Post(PostReqDto dto, Account account) {
+
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();

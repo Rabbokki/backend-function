@@ -1,6 +1,6 @@
 package com.backendfunction.Liquor.dto;
 
-import com.backendfunction.Cart.dto.CartDto;
+import com.backendfunction.cart.dto.CartDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +21,16 @@ public class LiquorDto {
     private int count;
     private int totalPrice;
     private List<CartDto> cartDtos = new ArrayList<>();
+
+    public LiquorDto(Liquor liquor) {
+        this.id = liquor.getId();
+        this.name = liquor.getName();
+        this.price = liquor.getPrice();
+        this.stock = liquor.getStock();
+        this.country = liquor.getCountry();
+        this.count = liquor.getCount();
+        this.totalPrice = liquor.getTotalPrice();
+    }
 
 
     public static LiquorDto fromEntity(Liquor liquor) {

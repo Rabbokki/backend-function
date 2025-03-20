@@ -1,8 +1,8 @@
-package com.backendfunction.Cart.service;
+package com.backendfunction.cart.service;
 
-import com.backendfunction.Cart.dto.CartDto;
-import com.backendfunction.Cart.entity.Cart;
-import com.backendfunction.Cart.repository.CartRepository;
+import com.backendfunction.cart.dto.CartDto;
+import com.backendfunction.cart.entity.Cart;
+import com.backendfunction.cart.repository.CartRepository;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.Liquor.repository.LiquorRepository;
 import com.backendfunction.account.entity.Account;
@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,6 +59,34 @@ public class CartService {
         if (cart == null) return ResponseDto.fail("100", "삭제할수없습니다");
         cartRepository.delete(cart);
         return ResponseDto.success("삭제 성공");
+    }
+
+
+
+
+    public List<CartDto> findByAccountIdWithLiquor(Long id) {
+        List<Cart> carts = cartRepository.findByAccountIdWithLiquor(id);
+//        return carts.stream().map(cart -> CartDto.fromEntity(cart)).collect(Collectors.toList());
+        return carts.stream().map(x -> CartDto.fromEntity(x)).toList();
+    }
+
+    public ResponseDto<?> updateById(Long liquorId, Account account, int status) {
+        Cart cart =  cartRepository.findByLiquorIdAndAccount(liquorId, account);
+        if (cart == null) return ResponseDto.fail("100", "장바구니에서 찾을수 없습니다");
+
+        if (status > 0) {
+            cart.setCount(cart.getCount() + status );
+        }
+        if (status < 0) {
+            int newCount = cart.getCount() + status;
+            if (newCount < 0) {
+                newCount = 0;
+            }
+            cart.setCount(newCount);
+
+        }
+        cartRepository.save(cart);
+        return ResponseDto.success("장바구니가 성공적으로 업데이트 되었습니다");
     }
 
 }
