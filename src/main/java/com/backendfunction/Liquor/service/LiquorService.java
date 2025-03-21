@@ -3,23 +3,37 @@ package com.backendfunction.Liquor.service;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.Liquor.repository.LiquorRepository;
+import com.backendfunction.account.entity.Account;
+import com.backendfunction.global.dto.ResponseDto;
+import com.backendfunction.global.image.entity.Image;
+import com.backendfunction.global.image.repository.ImageRepository;
+import com.backendfunction.post.entity.Post;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class LiquorService {
     private final LiquorRepository liquorRepository;
+    private final ImageRepository imageRepository;
 
-    public LiquorService(LiquorRepository liquorRepository) {
+
+    public LiquorService(LiquorRepository liquorRepository, ImageRepository imageRepository) {
         this.liquorRepository = liquorRepository;
+        this.imageRepository = imageRepository;
     }
 
     public List<LiquorDto> findAll() {
         List<Liquor> liquors = liquorRepository.findAll();
+
+//        Image image = imageRepository.findByPostId();
         return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
     }
 
@@ -34,20 +48,12 @@ public class LiquorService {
         return data;
     }
 
-    public void createLiquor(LiquorDto dto) {
-        Liquor liquor = LiquorDto.fromDto(dto);
-        liquorRepository.save(liquor);
-
-    }
-
-    public void updateLiquor(LiquorDto dto) {
-        Liquor liquor = LiquorDto.fromDto(dto);
-        liquorRepository.save(liquor);
-    }
-
     public void deleteByLiquorId(Long id) {
         liquorRepository.deleteById(id);
+    }
 
+    public void createLiquor(LiquorDto dto) {
+        liquorRepository.save(LiquorDto.fromDto(dto));
     }
 //    public List<LiquorDto> findByCategory(Category enumCategory) {
 //        List<Liquor> liquors = liquorRepository.findByCategory(enumCategory);

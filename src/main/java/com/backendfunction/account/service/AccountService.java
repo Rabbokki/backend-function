@@ -10,12 +10,14 @@ import com.backendfunction.account.repository.RefreshTokenRepository;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
+import com.backendfunction.s3.S3Service;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,11 +29,21 @@ public class AccountService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
-    public ResponseDto<?> accountSignUp(AccountReqDto accountReqDto) {
+    public ResponseDto<?> accountSignUp(AccountReqDto accountReqDto,
+                                        List<MultipartFile> files) {
         if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
             throw new RuntimeException();
         }
+        if (!accountReqDto.isAdult()){
+            throw new RuntimeException("만 19세 이상만 가입할 수 있습니다.");
+        }
+        if(files != null && !files.isEmpty()){
+            String imgUrl = s3Service.uploadFile(files.get(0));
+            accountReqDto.setImgUrl(imgUrl);
+        }
+
         accountReqDto.setEncodePwd(passwordEncoder.encode(accountReqDto.getPassword()));
         Account account = new Account(accountReqDto);
         accountRepository.save(account);

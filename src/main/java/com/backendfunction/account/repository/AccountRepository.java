@@ -17,4 +17,5 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
     Optional<Account> findAccountWithCartsByEmail(@Param("email") String email);
 
 
+    boolean existsByEmail(String targetEmail);
 }

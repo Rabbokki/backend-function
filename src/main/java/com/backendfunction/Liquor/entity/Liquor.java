@@ -1,8 +1,12 @@
 package com.backendfunction.Liquor.entity;
 
+import com.backendfunction.Liquor.dto.LiquorDto;
+import com.backendfunction.account.entity.Account;
 import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.global.category.Category;
+import com.backendfunction.global.image.entity.Image;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +35,17 @@ public class Liquor {
     @JoinColumn(name = "c_id")
     @JsonBackReference
     private Category category;
-    @OneToMany(mappedBy = "liquor", fetch = FetchType.LAZY)
-    private List<Cart> carts = new ArrayList<>();
+
+    public Liquor(LiquorDto dto, Account account) {
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.country = dto.getCountry();
+        this.count = dto.getCount();
+        this.totalPrice = dto.getTotalPrice();
+    }
+
+
+    public Liquor() {
+
+    }
 }

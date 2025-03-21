@@ -3,6 +3,7 @@ package com.backendfunction.cart.dto;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.cart.entity.Cart;
+import com.backendfunction.post.dto.PostReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ public class CartDto {
     private Long id;
     private int count;
     private int price;
-    private LiquorDto liquorDto;
+    private PostReqDto postReqDto;
 
     public CartDto(Cart cart) {
     }
@@ -31,8 +32,8 @@ public static CartDto fromEntity(Cart cart) {
     dto.setId(cart.getId());
     dto.setCount(cart.getCount());
     dto.setPrice(cart.getPrice());
-    if (cart.getLiquor() != null) {
-        dto.setLiquorDto(new LiquorDto(cart.getLiquor()));
+    if (cart.getPost() != null) {
+        dto.setPostReqDto(new PostReqDto(cart.getPost()));
 
     }
     return dto;

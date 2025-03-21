@@ -3,6 +3,7 @@ package com.backendfunction.post.entity;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.bookmark.entity.BookMark;
+import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
@@ -31,35 +32,31 @@ public class Post extends BaseEntity {
     @Column(length = 500)
     private String content;
     private int price;
+    private int stock;
     private int commentSize;
     private int likeSize;
     private int reviewSize;
     private double averageRating;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
-
     // image랑 매핑함 from JJJ
     @JsonManagedReference
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "a_id", nullable = true)
     private Account account;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<BookMark> bookMarks = new ArrayList<>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Cart> carts = new ArrayList<>();
 
 
     public Post(PostReqDto dto, Account account) {
-
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
