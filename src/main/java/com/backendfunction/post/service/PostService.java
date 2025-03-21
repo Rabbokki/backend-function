@@ -130,8 +130,5 @@ public class PostService {
         }
         return PostReqDto.fromEntity(post);
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> feature-joo-test-chat
 }
