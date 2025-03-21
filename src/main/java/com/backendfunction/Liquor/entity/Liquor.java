@@ -35,8 +35,6 @@ public class Liquor {
     @JoinColumn(name = "c_id")
     @JsonBackReference
     private Category category;
-    @OneToMany(mappedBy = "liquor", fetch = FetchType.LAZY)
-    private List<Cart> carts = new ArrayList<>();
 
     public Liquor(LiquorDto dto, Account account) {
         this.name = dto.getName();

@@ -27,8 +27,8 @@ public class CartController {
         this.liquorService = liquorService;
     }
 
-    @PostMapping(value = "/add/{liquorId}")
-    public ResponseEntity<?> addCart(@PathVariable("liquorId") Long id,
+    @PostMapping(value = "/add/{postId}")
+    public ResponseEntity<?> addCart(@PathVariable("postId") Long id,
                                      @AuthenticationPrincipal UserDetailsImpl userDetails, CartDto cartDto
     ) {
 
@@ -49,15 +49,15 @@ public class CartController {
 
     @GetMapping("/find")
     public ResponseEntity<?> findByAccountId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<CartDto> cartDtos = cartService.findByAccountIdWithLiquor(userDetails.getAccount().getId());
+        List<CartDto> cartDtos = cartService.findByAccountIdWithPost(userDetails.getAccount().getId());
         return ResponseEntity.status(HttpStatus.OK).body(cartDtos);
     }
 
-    @PatchMapping("/update/{liquorId}")
-    public ResponseEntity<?> updateById(@PathVariable("liquorId") Long liquorId,
+    @PatchMapping("/update/{postId}")
+    public ResponseEntity<?> updateById(@PathVariable("postId") Long postId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails,
                                         @RequestParam("status") Integer statue) {
-        cartService.updateById(liquorId, userDetails.getAccount(), statue);
+        cartService.updateById(postId, userDetails.getAccount(), statue);
         return ResponseEntity.status(HttpStatus.OK).body("성공");
     }
 

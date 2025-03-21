@@ -8,6 +8,8 @@ import com.backendfunction.Liquor.repository.LiquorRepository;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.repository.AccountRepository;
 import com.backendfunction.global.dto.ResponseDto;
+import com.backendfunction.post.entity.Post;
+import com.backendfunction.post.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,37 +23,35 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CartService {
     private final CartRepository cartRepository;
-    private final LiquorRepository liquorRepository;
     private final AccountRepository accountRepository;
+    private final PostRepository postRepository;
 
-    public CartService(CartRepository cartRepository, LiquorRepository liquorRepository, AccountRepository accountRepository) {
+    public CartService(CartRepository cartRepository, LiquorRepository liquorRepository, AccountRepository accountRepository, PostRepository postRepository) {
         this.cartRepository = cartRepository;
-        this.liquorRepository = liquorRepository;
         this.accountRepository = accountRepository;
+        this.postRepository = postRepository;
     }
 
 
     public ResponseDto<?> addCart(Long id, Account account , CartDto cartDto) {
-        Liquor liquor = liquorRepository.findById(id).orElse(null);
-        if (ObjectUtils.isEmpty(liquor)) {
+        Post post = postRepository.findById(id).orElse(null);
+        if (ObjectUtils.isEmpty(post)) {
             return ResponseDto.fail("100", "찾을수 없는 술입니다");
         }
-
-        Cart cart = cartRepository.findByLiquorAndAccount(liquor, account);
+        Cart cart = cartRepository.findByPostAndAccount(post, account);
         if (cart != null) {
-            cart.setCount(cart.getCount() + 1);
-            cart.setPrice(cart.getPrice() + liquor.getPrice());
+            cart.setCount(cart.getCount() +1 );
+            cart.setPrice(cart.getPrice() + post.getPrice());
             cartRepository.save(cart);
             CartDto dto = new CartDto(cart);
             return ResponseDto.success(dto);
-        } else {
-            int price = liquor.getPrice() * 1;
-            Cart cart1 = new Cart(liquor, account, 1, price);
+        }else {
+            int price = post.getPrice() * 1;
+            Cart cart1 = new Cart(post, account, 1, price);
             cartRepository.save(cart1);
             CartDto dto = new CartDto(cart1);
             return ResponseDto.success(dto);
         }
-
     }
 
     public ResponseDto<?> deleteByCartId(Long id, Account account) {
@@ -64,14 +64,14 @@ public class CartService {
 
 
 
-    public List<CartDto> findByAccountIdWithLiquor(Long id) {
-        List<Cart> carts = cartRepository.findByAccountIdWithLiquor(id);
+    public List<CartDto> findByAccountIdWithPost(Long id) {
+        List<Cart> carts = cartRepository.findByAccountIdWithPost(id);
 //        return carts.stream().map(cart -> CartDto.fromEntity(cart)).collect(Collectors.toList());
         return carts.stream().map(x -> CartDto.fromEntity(x)).toList();
     }
 
-    public ResponseDto<?> updateById(Long liquorId, Account account, int status) {
-        Cart cart =  cartRepository.findByLiquorIdAndAccount(liquorId, account);
+    public ResponseDto<?> updateById(Long postId, Account account, int status) {
+        Cart cart =  cartRepository.findByPostIdAndAccount(postId, account);
         if (cart == null) return ResponseDto.fail("100", "장바구니에서 찾을수 없습니다");
 
         if (status > 0) {

@@ -21,8 +21,6 @@ public class LiquorDto {
     private String country;
     private int count;
     private int totalPrice;
-    private List<CartDto> cartDtos = new ArrayList<>();
-    private String Image;
 
     public LiquorDto(Liquor liquor) {
         this.id = liquor.getId();
@@ -42,7 +40,6 @@ public class LiquorDto {
         this.country = country;
         this.count = count;
         this.totalPrice = totalPrice;
-        this.cartDtos = list;
     }
 
 
@@ -55,8 +52,7 @@ public class LiquorDto {
                 liquor.getStock(),
                 liquor.getCountry(),
                 liquor.getCount(),
-                totalPrice,
-                liquor.getCarts().stream().map(x -> CartDto.fromEntity(x)).toList()
+                totalPrice
 
         );
     }

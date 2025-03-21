@@ -110,6 +110,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<PostReqDto> findAll() {
         List<Post> posts = postRepository.findAll();
+        log.info("Posts:", posts);
 
         // Recalculate averageRating and reviewSize for each post
         posts.forEach(post -> {
@@ -121,4 +122,13 @@ public class PostService {
                 .map(PostReqDto::fromEntity) // Convert Post to PostReqDto
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public PostReqDto findById(Long id) {
+        Post post = postRepository.findById(id).orElse(null);
+        if (ObjectUtils.isEmpty(post)) {
+            return null;
+        }
+        return PostReqDto.fromEntity(post);
+    }
+
 }

@@ -22,9 +22,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReqDto {
+    private Long id;
     private String title;
     private String content;
     private int price;
+    private int stock;
     private MultipartFile img;
     private List<String> imageUrls = new ArrayList<>();
     private List<CommentReqDto> comments;
@@ -33,20 +35,24 @@ public class PostReqDto {
     private int reviewSize;
 
     public PostReqDto(Post post) {
+        this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.price = post.getPrice();
+        this.stock = post.getStock();
         this.likeCount = post.getLikeSize();
         this.imageUrls = post.getImages().stream().map(Image::getImage).collect(Collectors.toList());
         this.averageRating = post.getAverageRating();
         this.reviewSize = post.getReviewSize();
     }
 
-    public PostReqDto(String title, String content, int price, List<String> imageUrls,
+    public PostReqDto(Long id , String title, String content, int price , int stock, List<String> imageUrls,
                       List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.price = price;
+        this.stock = stock;
         this.imageUrls = imageUrls;
         this.comments = comments;
         this.likeCount = likeCount;
@@ -54,11 +60,14 @@ public class PostReqDto {
         this.reviewSize = reviewSize;
     }
 
+
     public static PostReqDto fromEntity(Post post) {
         return new PostReqDto(
+                post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getPrice(),
+                post.getStock(),
                 post.getImages().stream().map(Image::getImage).collect(Collectors.toList()),
                 post.getCommentList().stream()
                         .map(comment -> new CommentReqDto(

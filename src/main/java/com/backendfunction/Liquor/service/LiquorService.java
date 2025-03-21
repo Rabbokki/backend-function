@@ -32,7 +32,8 @@ public class LiquorService {
 
     public List<LiquorDto> findAll() {
         List<Liquor> liquors = liquorRepository.findAll();
-        Image image = imageRepository.findByPostId();
+
+//        Image image = imageRepository.findByPostId();
         return liquors.stream().map(x -> LiquorDto.fromEntity(x)).toList();
     }
 

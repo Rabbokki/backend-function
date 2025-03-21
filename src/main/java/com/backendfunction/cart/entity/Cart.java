@@ -3,6 +3,7 @@ package com.backendfunction.cart.entity;
 import com.backendfunction.cart.dto.CartReqDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +24,8 @@ public class Cart {
     @JoinColumn(name = "account_id" , nullable = true)
     private Account account;
     @ManyToOne
-    @JoinColumn(name = "liquor_id", nullable = true)
-    private Liquor liquor;
+    @JoinColumn(name = "post_id", nullable = true)
+    private Post post;
 
     public Cart(CartReqDto dto, Account account) {
         this.count = dto.getCount();
@@ -32,8 +33,8 @@ public class Cart {
         this.account = account;
     }
 
-    public Cart(Liquor liquor, Account account, int count, int price) {
-        this.liquor = liquor;
+    public Cart(Post post, Account account, int count, int price) {
+        this.post = post;
         this.account = account;
         this.price = price;
         this.count = count;
