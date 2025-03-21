@@ -46,11 +46,8 @@ public class PostReqDto {
         this.reviewSize = post.getReviewSize();
     }
 
-<<<<<<< HEAD
-    public PostReqDto(Long id, String title, String content, int price, List<String> imageUrls,
-=======
+
     public PostReqDto(Long id , String title, String content, int price , int stock, List<String> imageUrls,
->>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
                       List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
         this.id = id;
         this.title = title;
