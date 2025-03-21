@@ -26,24 +26,23 @@ public class LikeService {
 
     @Transactional
     public ResponseDto<?> postLike(Long postId, Account account) {
-        Post post = postRepository.findById(postId).orElseThrow(()->
-                new RuntimeException("게시글 Not Found"));
-        Optional<PostLike> optionalPostLike = postLikeRepository.findByAccountAndPost(account, post);
+        // Find the post by ID
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
-        int likeSize = post.getLikeSize();
-        String isLike;
+        // Check if the user has already liked the post
+        PostLike existingLike = postLikeRepository.findByPostAndAccount(post, account);
 
-        if(optionalPostLike.isEmpty()){
-            PostLike postLike = new PostLike(post,account);
+        if (existingLike != null) {
+            // If the like exists, remove it (unlike)
+            postLikeRepository.delete(existingLike);
+            return ResponseDto.success("Like removed successfully");
+        } else {
+            // If the like doesn't exist, add a new like
+            PostLike postLike = new PostLike(post, account);
             postLikeRepository.save(postLike);
-            post.postLikeUpdate(likeSize+1);
-            isLike = "좋아요 완료";
-        }else {
-            postLikeRepository.delete(optionalPostLike.get());
-            post.postLikeUpdate(likeSize-1);
-            isLike = "좋아요 취소";
+            return ResponseDto.success("Post liked successfully");
         }
-        return ResponseDto.success(isLike);
     }
 
     @Transactional
