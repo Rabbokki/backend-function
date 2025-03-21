@@ -38,6 +38,12 @@ public class PostController {
         List<PostReqDto> postDtos = postService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+        PostReqDto dto = postService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    }
 //    @GetMapping("/id/{id}")
 //    public ResponseEntity<?> findByPostId(@PathVariable("id") Long id) throws BadRequestException {
 //

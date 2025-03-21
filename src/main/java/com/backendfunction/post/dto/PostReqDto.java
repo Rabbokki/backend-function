@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReqDto {
+    private Long id;
     private String title;
     private String content;
     private int price;
@@ -42,8 +43,9 @@ public class PostReqDto {
         this.reviewSize = post.getReviewSize();
     }
 
-    public PostReqDto(String title, String content, int price, List<String> imageUrls,
+    public PostReqDto(Long id, String title, String content, int price, List<String> imageUrls,
                       List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.price = price;
@@ -56,6 +58,7 @@ public class PostReqDto {
 
     public static PostReqDto fromEntity(Post post) {
         return new PostReqDto(
+                post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getPrice(),
