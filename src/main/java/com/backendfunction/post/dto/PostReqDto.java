@@ -47,7 +47,10 @@ public class PostReqDto {
     }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 24d60c8625cdb42724593b2b69ce0db459b48284
     public PostReqDto(Long id , String title, String content, int price , int stock, List<String> imageUrls,
                       List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
         this.id = id;
