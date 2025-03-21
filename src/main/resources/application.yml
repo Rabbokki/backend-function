@@ -1,6 +1,10 @@
 server:
   port: 8081
+<<<<<<< HEAD
   address: 192.168.0.71
+=======
+#  address: 192.168.0.71
+>>>>>>> 8dee5ddee8b945f0dc3737a02a4a7d10d6cf19a4
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
