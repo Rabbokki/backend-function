@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,10 @@ public class Account extends BaseEntity{
     private String email;
     private String password;
     private String nickname;
+
+    private LocalDate birthday;
+
+    private String imgUrl;
 
     @OneToMany(mappedBy = "account")
     @JsonIgnore
@@ -58,5 +64,7 @@ public class Account extends BaseEntity{
         this.email = accountReqDto.getEmail();
         this.password = accountReqDto.getPassword();
         this.nickname = accountReqDto.getNickname();
+        this.birthday = accountReqDto.getBirthday();
+        this.imgUrl = accountReqDto.getImgUrl();
     }
 }

@@ -11,7 +11,6 @@ public class UserResponseDto {
         public Long accountId;
         private String email;
         private String nickname;
-        private String introduction;
         @Getter
         public String imgUrl;
     }
