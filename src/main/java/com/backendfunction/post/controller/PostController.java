@@ -38,18 +38,14 @@ public class PostController {
         List<PostReqDto> postDtos = postService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(postDtos);
     }
-<<<<<<< HEAD
+
 
     @GetMapping("/find/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") Long id) {
-=======
-<<<<<<< HEAD
 
-=======
->>>>>>> feature-joo-test-chat
     @GetMapping("/find/{id}")
     public ResponseEntity<?> findByPostId(@PathVariable("id") Long id) {
->>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+
         PostReqDto dto = postService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
