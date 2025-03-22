@@ -35,15 +35,16 @@ public class LikeService {
 
         if (existingLike != null) {
             // If the like exists, remove it (unlike)
-            postLikeRepository.delete(existingLike);
+            postLikeRepository.deleteByAccountAndPost(account, post);
             return ResponseDto.success("Like removed successfully");
         } else {
             // If the like doesn't exist, add a new like
-            PostLike postLike = new PostLike(post, account);
-            postLikeRepository.save(postLike);
+            PostLike newLike = new PostLike(post, account);
+            postLikeRepository.save(newLike);  // Save a new like entity
             return ResponseDto.success("Post liked successfully");
         }
     }
+
 
     @Transactional
     public ResponseDto<?> commentLike(Long commentId, Account account) {
@@ -66,5 +67,17 @@ public class LikeService {
             isLike = "좋아요 취소";
         }
         return ResponseDto.success(isLike);
+    }
+
+    public boolean isPostLiked(Long postId, Account account) {
+        Optional<Post> post = postRepository.findById(postId);
+
+        if (post.isEmpty()) {
+            return false;
+        }
+
+        Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostAndAccount(post.get(), account));
+
+        return postLike.isPresent();
     }
 }

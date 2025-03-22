@@ -22,6 +22,13 @@ public class LikeController {
         return ResponseDto.success("좋아요 성공");
     }
 
+    @GetMapping("/likes/status/{postId}")
+    public ResponseDto<?> getPostLikeStatus(@PathVariable("postId") Long postId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean isLiked = likeService.isPostLiked(postId, userDetails.getAccount());
+        return ResponseDto.success(isLiked);
+    }
+
     @GetMapping("/comment/likes/{commentId}")
     public ResponseDto<?> commentLike(@PathVariable("commentId") Long commentId,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails){
