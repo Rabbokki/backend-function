@@ -38,13 +38,10 @@ public class ChatRoomController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody RoomDto.CreateRequest request) {
         if (userDetails == null || userDetails.getAccount() == null) {
-            log.error("인증 실패: UserDetails가 null입니다.");
-            throw new SecurityException("인증되지 않은 사용자입니다.");
+            return ResponseDto.fail("UNAUTHORIZED", "인증되지 않은 사용자입니다.");
         }
-        log.info("Creating room for account: id={}, email={}",
-                userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
         if (!accountRepository.existsByEmail(request.getTargetEmail())) {
-            throw new IllegalArgumentException("존재하지 않는 사용자 이메일입니다: " + request.getTargetEmail());
+            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 사용자 이메일입니다: " + request.getTargetEmail());
         }
         ChatDto.CreateResponse response = chatRoomService.createRoom(request, userDetails);
         return ResponseDto.success(response);

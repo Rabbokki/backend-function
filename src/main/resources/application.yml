@@ -1,9 +1,5 @@
 server:
   port: 8081
-<<<<<<< HEAD
-=======
-
->>>>>>> 52d7ca2465b19b805bbff4f9839e961323dae4fe
 #  address: 192.168.0.71
 spring:
   datasource:

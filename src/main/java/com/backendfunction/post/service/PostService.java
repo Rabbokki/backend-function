@@ -2,27 +2,21 @@ package com.backendfunction.post.service;
 
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.global.dto.ResponseDto;
-import com.backendfunction.global.image.entity.Image;
-import com.backendfunction.global.image.repository.ImageRepository;
+import com.backendfunction.post.controller.image.entity.Image;
+import com.backendfunction.post.controller.image.repository.ImageRepository;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
-import com.backendfunction.review.entity.Review;
 import com.backendfunction.s3.S3Service;
-import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +30,7 @@ public class PostService {
     @Transactional
     public ResponseDto<?> createPost(PostReqDto dto, List<MultipartFile> file, Account account) {
         log.info("Creating post for account: {}", account != null ? account.getId() : "null");
+        log.info("Creating post with category: {}", dto.getCategory());
         Post post = new Post(dto, account);
         post = postRepository.save(post);
         log.info("Post saved with ID: {}", post.getId());
