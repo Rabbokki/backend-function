@@ -42,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (accessToken != null) {
             if (!jwtUtil.tokenValidation(accessToken)) {
                 log.warn("Token validation failed for Access Token: {}", accessToken);
-                jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.BAD_REQUEST);
+                jwtExceptionHandler(response, "AccessToken Expired", HttpStatus.UNAUTHORIZED);
                 return;
             }
             String email = jwtUtil.getEmailFromToken(accessToken);
