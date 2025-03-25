@@ -131,4 +131,11 @@ public class PostService {
         return PostReqDto.fromEntity(post);
     }
 
+    @Transactional(readOnly = true)
+    public List<PostReqDto> findPostsByUser(Account account) {
+        List<Post> posts = postRepository.findByAccount(account);
+        return posts.stream()
+                .map(PostReqDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

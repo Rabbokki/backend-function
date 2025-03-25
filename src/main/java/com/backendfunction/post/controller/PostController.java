@@ -57,16 +57,34 @@ public ResponseEntity<?> createPost(
         @RequestPart(value = "postImg", required = false) List<MultipartFile> imgs,
         @RequestPart(value = "dto") PostReqDto dto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    log.info("Received DTO: title={}, imageUrls={}", dto.getTitle(), dto.getImageUrls());
-    log.info("Received files: {}", imgs != null ? "size=" + imgs.size() : "null");
+
     if (userDetails == null || userDetails.getAccount() == null) {
-        log.error("Account is required but userDetails is null");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("게시물 생성을 위해 로그인이 필요합니다.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "로그인이 필요합니다."));
     }
     Account account = userDetails.getAccount();
+
+    log.info("Received DTO: title={}", dto.getTitle());
+    log.info("Received image URLs: {}", dto.getImageUrls() != null ? dto.getImageUrls() : "None");
+    log.info("Received files: {}", (imgs != null) ? "size=" + imgs.size() : "None");
+
     postService.createPost(dto, imgs, account);
-    return ResponseEntity.status(HttpStatus.OK).body("성공");
+
+    return ResponseEntity.ok(Map.of("message", "게시물 생성 성공"));
 }
+
+
+    @GetMapping("/user/posts")
+    public ResponseEntity<?> findPostsByUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null || userDetails.getAccount() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        Account account = userDetails.getAccount();
+        List<PostReqDto> postDtos = postService.findPostsByUser(account);
+        return ResponseEntity.status(HttpStatus.OK).body(postDtos);
+    }
+
+
     //글 삭제 fix
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") Long id,

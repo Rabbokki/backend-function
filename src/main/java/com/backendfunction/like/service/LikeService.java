@@ -25,24 +25,35 @@ public class LikeService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public ResponseDto<?> postLike(Long postId, Account account) {
-        // Find the post by ID
+    public ResponseDto<?> addPostLike(Long postId, Account account) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
-        // Check if the user has already liked the post
-        PostLike existingLike = postLikeRepository.findByPostAndAccount(post, account);
-
-        if (existingLike != null) {
-            // If the like exists, remove it (unlike)
-            postLikeRepository.deleteByAccountAndPost(account, post);
-            return ResponseDto.success("Like removed successfully");
-        } else {
-            // If the like doesn't exist, add a new like
-            PostLike newLike = new PostLike(post, account);
-            postLikeRepository.save(newLike);  // Save a new like entity
-            return ResponseDto.success("Post liked successfully");
+        // Check if already liked using existsByAccountAndPost
+        if (postLikeRepository.existsByAccountAndPost(account, post)) {
+            return ResponseDto.fail("ALREADY LIKED", "Post already liked");
         }
+
+        PostLike newLike = new PostLike(post, account);
+        postLikeRepository.save(newLike);
+        return ResponseDto.success("Post liked successfully");
+    }
+
+    @Transactional
+    public ResponseDto<?> removePostLike(Long postId, Account account) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        // Use findByAccountAndPost to find the like
+        PostLike existingLike = postLikeRepository.findByAccountAndPost(account, post)
+                .orElseThrow(() -> new IllegalArgumentException("Post not liked"));
+
+        postLikeRepository.delete(existingLike);
+        return ResponseDto.success("Like removed successfully");
+    }
+
+    public boolean isPostLiked(Long postId, Account account) {
+        return postLikeRepository.findByAccountAndPost(account, postRepository.findById(postId).orElse(null)).isPresent();
     }
 
 
@@ -67,17 +78,5 @@ public class LikeService {
             isLike = "좋아요 취소";
         }
         return ResponseDto.success(isLike);
-    }
-
-    public boolean isPostLiked(Long postId, Account account) {
-        Optional<Post> post = postRepository.findById(postId);
-
-        if (post.isEmpty()) {
-            return false;
-        }
-
-        Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostAndAccount(post.get(), account));
-
-        return postLike.isPresent();
     }
 }
