@@ -18,10 +18,10 @@ public class ChatMessageController {
 
     @MessageMapping("/chat")
     public void enter(ChatDto.CreateRequest request) {
+        log.info("Received payload: {}", request);
         log.info("WebSocket message received: roomId={}, sender={}, message={}",
                 request.getRoomId(), request.getSender(), request.getMessage());
         String roomName = chatMessageService.save(request);
-        log.info("Broadcasting to: /sub/chatroom{}", roomName);
         sendingOperations.convertAndSend("/sub/chatroom" + roomName, request);
     }
 }

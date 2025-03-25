@@ -34,8 +34,13 @@ public class ChatRoomController {
 
     @PostMapping
     @Transactional
-    public ResponseDto<ChatDto.CreateResponse> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                          @Valid @RequestBody RoomDto.CreateRequest request) {
+    public ResponseDto<ChatDto.CreateResponse> createRoom(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody RoomDto.CreateRequest request) {
+        if (userDetails == null || userDetails.getAccount() == null) {
+            log.error("인증 실패: UserDetails가 null입니다.");
+            throw new SecurityException("인증되지 않은 사용자입니다.");
+        }
         log.info("Creating room for account: id={}, email={}",
                 userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
         if (!accountRepository.existsByEmail(request.getTargetEmail())) {

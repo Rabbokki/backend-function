@@ -33,6 +33,7 @@ public class PostReqDto {
     private int likeCount;
     private double averageRating;
     private int reviewSize;
+    private String sellerEmail;
 
     public PostReqDto(Post post) {
         this.id = post.getId();
@@ -44,12 +45,13 @@ public class PostReqDto {
         this.imageUrls = post.getImages().stream().map(Image::getImage).collect(Collectors.toList());
         this.averageRating = post.getAverageRating();
         this.reviewSize = post.getReviewSize();
+        this.sellerEmail = post.getAccount().getEmail();
     }
 
 
 
-    public PostReqDto(Long id , String title, String content, int price , int stock, List<String> imageUrls,
-                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize) {
+    public PostReqDto(Long id, String title, String content, int price, int stock, List<String> imageUrls,
+                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize, String sellerEmail) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -60,7 +62,9 @@ public class PostReqDto {
         this.likeCount = likeCount;
         this.averageRating = averageRating;
         this.reviewSize = reviewSize;
+        this.sellerEmail = sellerEmail;
     }
+
 
 
     public static PostReqDto fromEntity(Post post) {
@@ -81,7 +85,8 @@ public class PostReqDto {
                         )).collect(Collectors.toList()),
                 post.getLikeSize(),
                 post.getAverageRating(),
-                post.getReviewSize()
+                post.getReviewSize(),
+                post.getAccount().getEmail()
         );
     }
 
