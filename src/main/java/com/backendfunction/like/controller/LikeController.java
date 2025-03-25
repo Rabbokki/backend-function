@@ -5,21 +5,31 @@ import com.backendfunction.global.security.user.UserDetailsImpl;
 import com.backendfunction.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@RequestMapping("/likes")
 @RestController
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
 
-    @GetMapping("/likes/{postId}")
-    public ResponseDto<?> postLike(@PathVariable("postId") Long postId,
-                                   @AuthenticationPrincipal UserDetailsImpl userDetails){
-        likeService.postLike(postId,userDetails.getAccount());
-        return ResponseDto.success("좋아요 성공");
+    @PostMapping("/{postId}")
+    public ResponseDto<?> addPostLike(@PathVariable("postId") Long postId,
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return likeService.addPostLike(postId, userDetails.getAccount());
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseDto<?> removePostLike(@PathVariable("postId") Long postId,
+                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return likeService.removePostLike(postId, userDetails.getAccount());
+    }
+
+    @GetMapping("/status/{postId}")
+    public ResponseDto<?> getPostLikeStatus(@PathVariable("postId") Long postId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean isLiked = likeService.isPostLiked(postId, userDetails.getAccount());
+        return ResponseDto.success(isLiked);
     }
 
     @GetMapping("/comment/likes/{commentId}")

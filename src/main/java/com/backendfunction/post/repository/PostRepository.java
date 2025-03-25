@@ -17,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //    @Modifying
 //    @Query(value = "SELECT * FROM post WHERE category = :category ", nativeQuery = true)
 //    Optional<Post> findById(Long id);
-    Optional<Post> findByAccount(Account account);
+    List<Post> findByAccount(Account account);
     Post findPostByIdAndAccount(Long id, Account account);
 
 }
