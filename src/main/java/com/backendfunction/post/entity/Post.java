@@ -7,11 +7,12 @@ import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.commet.entity.Comment;
 import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
+import com.backendfunction.post.enums.Category;
 import com.backendfunction.review.entity.Review;
 import com.backendfunction.post.dto.PostReqDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,12 +38,22 @@ public class Post extends BaseEntity {
     private int likeSize;
     private int reviewSize;
     private double averageRating;
+    @Setter
+    @Column(nullable = true)
+    private Long viewCount = 0L;
+
+    @Column(nullable = true)
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Comment> commentList = new ArrayList<>();
     // image랑 매핑함 from JJJ
     @JsonManagedReference
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "a_id", nullable = true)
     private Account account;
@@ -60,6 +71,8 @@ public class Post extends BaseEntity {
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
+        this.stock = dto.getStock();
+        this.category = dto.getCategory();
         this.account = account;
     }
 

@@ -2,12 +2,10 @@ package com.backendfunction.Liquor.dto;
 
 import com.backendfunction.cart.dto.CartDto;
 import com.backendfunction.Liquor.entity.Liquor;
-import com.backendfunction.global.image.entity.Image;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

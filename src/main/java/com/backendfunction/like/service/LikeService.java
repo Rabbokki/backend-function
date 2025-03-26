@@ -25,26 +25,37 @@ public class LikeService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public ResponseDto<?> postLike(Long postId, Account account) {
-        Post post = postRepository.findById(postId).orElseThrow(()->
-                new RuntimeException("게시글 Not Found"));
-        Optional<PostLike> optionalPostLike = postLikeRepository.findByAccountAndPost(account, post);
+    public ResponseDto<?> addPostLike(Long postId, Account account) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
-        int likeSize = post.getLikeSize();
-        String isLike;
-
-        if(optionalPostLike.isEmpty()){
-            PostLike postLike = new PostLike(post,account);
-            postLikeRepository.save(postLike);
-            post.postLikeUpdate(likeSize+1);
-            isLike = "좋아요 완료";
-        }else {
-            postLikeRepository.delete(optionalPostLike.get());
-            post.postLikeUpdate(likeSize-1);
-            isLike = "좋아요 취소";
+        // Check if already liked using existsByAccountAndPost
+        if (postLikeRepository.existsByAccountAndPost(account, post)) {
+            return ResponseDto.fail("ALREADY LIKED", "Post already liked");
         }
-        return ResponseDto.success(isLike);
+
+        PostLike newLike = new PostLike(post, account);
+        postLikeRepository.save(newLike);
+        return ResponseDto.success("Post liked successfully");
     }
+
+    @Transactional
+    public ResponseDto<?> removePostLike(Long postId, Account account) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+        // Use findByAccountAndPost to find the like
+        PostLike existingLike = postLikeRepository.findByAccountAndPost(account, post)
+                .orElseThrow(() -> new IllegalArgumentException("Post not liked"));
+
+        postLikeRepository.delete(existingLike);
+        return ResponseDto.success("Like removed successfully");
+    }
+
+    public boolean isPostLiked(Long postId, Account account) {
+        return postLikeRepository.findByAccountAndPost(account, postRepository.findById(postId).orElse(null)).isPresent();
+    }
+
 
     @Transactional
     public ResponseDto<?> commentLike(Long commentId, Account account) {

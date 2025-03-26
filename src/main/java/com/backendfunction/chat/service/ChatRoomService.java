@@ -36,6 +36,10 @@ public class ChatRoomService {
             return ChatDto.CreateResponse.builder().id(room.getId()).name(room.getRoomName()).build();
         } else {
             ChatRoom chatRoom = request.toEntity(account.getEmail(), request.getTargetEmail());
+            if (chatRoom.getRoomName() == null) {
+                log.warn("Generated roomName is null, setting default value");
+                chatRoom.setRoomName(UUID.randomUUID().toString()); // 기본값 설정
+            }
             chatRoom = chatRoomRepository.save(chatRoom);
             return ChatDto.CreateResponse.builder().id(chatRoom.getId()).name(chatRoom.getRoomName()).build();
         }
@@ -73,7 +77,7 @@ public class ChatRoomService {
         return room;
     }
 
-    private List<ChatDto.Response> chatConvertToResponseDto(List<ChatMessage> chats) {
+    public List<ChatDto.Response> chatConvertToResponseDto(List<ChatMessage> chats) {
         List<ChatDto.Response> responseList = new ArrayList<>();
         for (ChatMessage chat : chats) {
             ChatDto.Response response = ChatDto.Response.builder().chatMessage(chat).build();

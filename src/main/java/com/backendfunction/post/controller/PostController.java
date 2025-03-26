@@ -57,16 +57,39 @@ public ResponseEntity<?> createPost(
         @RequestPart(value = "postImg", required = false) List<MultipartFile> imgs,
         @RequestPart(value = "dto") PostReqDto dto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    log.info("Received DTO: title={}, imageUrls={}", dto.getTitle(), dto.getImageUrls());
-    log.info("Received files: {}", imgs != null ? "size=" + imgs.size() : "null");
+    log.info("Received DTO: {}", dto); // DTO 전체 로그 추가
     if (userDetails == null || userDetails.getAccount() == null) {
-        log.error("Account is required but userDetails is null");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("게시물 생성을 위해 로그인이 필요합니다.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "로그인이 필요합니다."));
     }
     Account account = userDetails.getAccount();
-    postService.createPost(dto, imgs, account);
-    return ResponseEntity.status(HttpStatus.OK).body("성공");
+
+    log.info("Received DTO: title={}", dto.getTitle());
+    log.info("Received image URLs: {}", dto.getImageUrls() != null ? dto.getImageUrls() : "None");
+    log.info("Received files: {}", (imgs != null) ? "size=" + imgs.size() : "None");
+
+    try {
+        ResponseDto<?> response = postService.createPost(dto, imgs, account);
+        return ResponseEntity.ok(response.getData()); // 서비스에서 반환된 데이터를 응답
+    } catch (Exception e) {
+        log.error("Error creating post", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "게시물 생성 중 오류 발생: " + e.getMessage()));
+    }
 }
+
+
+    @GetMapping("/user/posts")
+    public ResponseEntity<?> findPostsByUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null || userDetails.getAccount() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        Account account = userDetails.getAccount();
+        List<PostReqDto> postDtos = postService.findPostsByUser(account);
+        return ResponseEntity.status(HttpStatus.OK).body(postDtos);
+    }
+
+
     //글 삭제 fix
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") Long id,
@@ -92,6 +115,7 @@ public ResponseEntity<?> createPost(
             @RequestPart(value = "dto") PostUpReqDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest request) {
+        System.out.println("You a bitch!");
         log.info("Content-Type received: {}", request.getContentType());
         log.info("Received update request for post ID: {}, dto: {}, imgs: {}", id, dto, imgs != null ? imgs.size() : 0);
         try {
