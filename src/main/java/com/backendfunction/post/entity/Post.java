@@ -56,6 +56,7 @@ public class Post extends BaseEntity {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "a_id", nullable = true)
+    @JsonBackReference
     private Account account;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();

@@ -43,6 +43,7 @@ public class Account extends BaseEntity{
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(fetch =  FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)

@@ -115,6 +115,7 @@ public ResponseEntity<?> createPost(
             @RequestPart(value = "dto") PostUpReqDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             HttpServletRequest request) {
+        System.out.println("You a bitch!");
         log.info("Content-Type received: {}", request.getContentType());
         log.info("Received update request for post ID: {}, dto: {}, imgs: {}", id, dto, imgs != null ? imgs.size() : 0);
         try {
