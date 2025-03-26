@@ -9,6 +9,7 @@ import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.review.entity.Review;
 import com.backendfunction.post.dto.PostReqDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,7 @@ public class Post extends BaseEntity {
     private List<Image> images = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "a_id", nullable = true)
+    @JsonBackReference
     private Account account;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();

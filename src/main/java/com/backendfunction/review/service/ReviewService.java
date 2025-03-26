@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,26 +19,24 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final PostRepository postRepository;
 
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getReviewsByPostId(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+        // Retrieve all reviews for this post
+        List<Review> reviews = reviewRepository.findByPost(post);
+        return ResponseDto.success(reviews);  // Return reviews in the response
+    }
+
     @Transactional
     public ResponseDto<?> addOrUpdateReview(Long postId, Account account, int rating, String content) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        Optional<Review> existingReview = reviewRepository.findByPostAndAccount(post, account);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        if (existingReview.isPresent()) {
-            // Update existing review
-            Review review = existingReview.get();
-            review.setRating(rating);
-            review.setContent(content);
-        } else {
-            // Create new review
-            Review review = new Review(post, account, rating, content);
-            reviewRepository.save(review);
-            post.setReviewSize(post.getReviewSize() + 1);
-        }
+        Review review = new Review(post, account, rating, content);
+        reviewRepository.save(review);
 
-        post.recalculateAverageRating();  // Update post rating
-        postRepository.save(post);
-        return ResponseDto.success("Review added/updated successfully");
+        // Return success with the review as data
+        return ResponseDto.success(review);
     }
 
     @Transactional
@@ -55,4 +54,6 @@ public class ReviewService {
         postRepository.save(post);
         return ResponseDto.success("Review removed successfully");
     }
+
+
 }

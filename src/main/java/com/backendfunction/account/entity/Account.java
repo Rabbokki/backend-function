@@ -9,6 +9,7 @@ import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.recomment.entity.Recomment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,6 +42,7 @@ public class Account extends BaseEntity{
     private List<Cart> carts = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(fetch =  FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
