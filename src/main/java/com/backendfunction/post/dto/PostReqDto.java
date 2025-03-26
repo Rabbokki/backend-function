@@ -2,7 +2,7 @@ package com.backendfunction.post.dto;
 
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.commet.dto.CommentReqDto;
-import com.backendfunction.post.controller.image.entity.Image;
+import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.enums.Category;
 import com.backendfunction.recomment.dto.RecommentResDto;

@@ -3,10 +3,7 @@ package com.backendfunction.chat.dto;
 import com.backendfunction.chat.entity.ChatRoom;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
@@ -19,17 +16,18 @@ public class RoomDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Setter
     public static class CreateRequest{
         @NotBlank(message = "메시지 전달할 상대방을 입력해주세요")
         @Email(message = "유효한 이메일 형식이어야 합니다")
         private String targetEmail;
 
-        public ChatRoom toEntity(String account, String targetEmail){
-            return ChatRoom.builder().
-                    roomName(UUID.randomUUID().toString())
-                    .sender(account)
-                    .receiver(targetEmail)
-                    .build();
+        public ChatRoom toEntity(String sender, String targetEmail) {
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setSender(sender);
+            chatRoom.setReceiver(targetEmail);
+            chatRoom.setRoomName(sender + "_" + targetEmail + "_" + System.currentTimeMillis()); // 예시
+            return chatRoom;
         }
     }
 

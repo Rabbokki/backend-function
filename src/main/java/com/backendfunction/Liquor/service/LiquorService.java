@@ -3,7 +3,7 @@ package com.backendfunction.Liquor.service;
 import com.backendfunction.Liquor.dto.LiquorDto;
 import com.backendfunction.Liquor.entity.Liquor;
 import com.backendfunction.Liquor.repository.LiquorRepository;
-import com.backendfunction.post.controller.image.repository.ImageRepository;
+import com.backendfunction.global.image.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;

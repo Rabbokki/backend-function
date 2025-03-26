@@ -1,4 +1,4 @@
-package com.backendfunction.post.controller.image.entity;
+package com.backendfunction.global.image.entity;
 
 import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.post.entity.Post;

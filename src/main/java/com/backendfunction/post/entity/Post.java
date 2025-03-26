@@ -5,7 +5,7 @@ import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.bookmark.entity.BookMark;
 import com.backendfunction.cart.entity.Cart;
 import com.backendfunction.commet.entity.Comment;
-import com.backendfunction.post.controller.image.entity.Image;
+import com.backendfunction.global.image.entity.Image;
 import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.post.enums.Category;
 import com.backendfunction.review.entity.Review;

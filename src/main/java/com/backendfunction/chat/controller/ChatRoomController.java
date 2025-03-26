@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 
 @Slf4j
@@ -38,12 +40,17 @@ public class ChatRoomController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody RoomDto.CreateRequest request) {
         if (userDetails == null || userDetails.getAccount() == null) {
+            log.error("인증 실패: UserDetails가 null입니다.");
             return ResponseDto.fail("UNAUTHORIZED", "인증되지 않은 사용자입니다.");
         }
+        log.info("Creating room for account: id={}, email={}",
+                userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
         if (!accountRepository.existsByEmail(request.getTargetEmail())) {
+            log.warn("Target email not found: {}", request.getTargetEmail());
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 사용자 이메일입니다: " + request.getTargetEmail());
         }
         ChatDto.CreateResponse response = chatRoomService.createRoom(request, userDetails);
+        log.info("Chat room created: id={}, roomName={}", response.getId(), response.getRoomName());
         return ResponseDto.success(response);
     }
 
@@ -76,6 +83,25 @@ public class ChatRoomController {
         }
         log.info("Fetching chat room list for email: {}", userDetails.getAccount().getEmail());
         return ResponseEntity.ok(chatRoomService.getChatRoomList(userDetails.getAccount(), pageable));
+    }
+
+    @GetMapping("/{roomName}/messages")
+    public ResponseDto<List<ChatDto.Response>> getChatMessages(
+            @PathVariable("roomName") String roomName,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault(size = 20) Pageable pageable) {
+        if (userDetails == null || userDetails.getAccount() == null) {
+            log.error("인증 실패: UserDetails가 null입니다.");
+            return ResponseDto.fail("UNAUTHORIZED", "인증되지 않은 사용자입니다.");
+        }
+        log.info("Fetching messages for roomName: {}, user: {}", roomName, userDetails.getAccount().getEmail());
+        ChatRoom room = chatRoomService.getChatRoom(roomName, userDetails.getAccount());
+        List<ChatDto.Response> messages = chatRoomService.chatConvertToResponseDto(room.getChats());
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), messages.size());
+        List<ChatDto.Response> paginatedMessages = messages.subList(start, end);
+        paginatedMessages.sort(Comparator.comparing(ChatDto.Response::getCreateAt).reversed()); // 최신순 정렬
+        return ResponseDto.success(paginatedMessages); // List 직접 반환
     }
 
 }

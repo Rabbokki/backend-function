@@ -2,8 +2,8 @@ package com.backendfunction.post.service;
 
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.global.dto.ResponseDto;
-import com.backendfunction.post.controller.image.entity.Image;
-import com.backendfunction.post.controller.image.repository.ImageRepository;
+import com.backendfunction.global.image.entity.Image;
+import com.backendfunction.global.image.repository.ImageRepository;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
