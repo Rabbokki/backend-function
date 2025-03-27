@@ -1,6 +1,7 @@
 package com.backendfunction.bookmark.entity;
 
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BookMark {
+public class BookMark extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

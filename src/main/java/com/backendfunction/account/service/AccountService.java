@@ -3,6 +3,7 @@ package com.backendfunction.account.service;
 import com.backendfunction.account.dto.AccountDto;
 import com.backendfunction.account.dto.AccountReqDto;
 import com.backendfunction.account.dto.LoginReqDto;
+import com.backendfunction.account.dto.UserInfoDto;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.entity.RefreshToken;
 import com.backendfunction.account.repository.AccountRepository;
@@ -10,6 +11,7 @@ import com.backendfunction.account.repository.RefreshTokenRepository;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
+import com.backendfunction.global.security.user.UserDetailsImpl;
 import com.backendfunction.s3.S3Service;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,10 +74,11 @@ public class AccountService {
         };
     }
 
-    public ResponseDto<?> getUserInfoByEmail(String email) {
-        Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("계정이 없습니다."));
-        return ResponseDto.success(account);
+    public UserInfoDto getUserInfoByEmail(UserDetailsImpl userDetails) {
+        if(userDetails == null) throw new RuntimeException("계정이 없습니다.");
+        Account account = accountRepository.findById(userDetails.getAccount().getId())
+                .orElseThrow(()-> new RuntimeException("계정이 없습니다."));
+        return UserInfoDto.builder().account(account).build();
     }
 
     public void updateUserInfo(String email, AccountReqDto accountReqDto) {

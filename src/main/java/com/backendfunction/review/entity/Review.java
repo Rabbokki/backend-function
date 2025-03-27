@@ -1,6 +1,7 @@
 package com.backendfunction.review.entity;
 
 import com.backendfunction.account.entity.Account;
+import com.backendfunction.account.entity.BaseEntity;
 import com.backendfunction.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
