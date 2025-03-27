@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,9 +50,8 @@ public class AccountController {
 
     // 내 정보 가져오기
     @GetMapping("/me")
-    public ResponseDto<?> getUserInfo(@RequestHeader("Authorization") String token) {
-        String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
-        return accountService.getUserInfoByEmail(email);
+    public ResponseDto<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return ResponseDto.success(accountService.getUserInfoByEmail(userDetails));
     }
 
     // 내 정보 수정하기

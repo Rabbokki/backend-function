@@ -8,6 +8,7 @@ import com.backendfunction.like.entity.CommentLike;
 import com.backendfunction.like.entity.PostLike;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.recomment.entity.Recomment;
+import com.backendfunction.review.entity.Review;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -53,6 +54,9 @@ public class Account extends BaseEntity{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikes = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<CommentLike> commentLikes = new ArrayList<>();
