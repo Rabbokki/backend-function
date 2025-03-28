@@ -100,8 +100,8 @@ public class ChatRoomController {
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), messages.size());
         List<ChatDto.Response> paginatedMessages = messages.subList(start, end);
-        paginatedMessages.sort(Comparator.comparing(ChatDto.Response::getCreateAt).reversed()); // 최신순 정렬
-        return ResponseDto.success(paginatedMessages); // List 직접 반환
+        paginatedMessages.sort(Comparator.comparing(ChatDto.Response::getCreateAt)); // 오름차순 정렬 (오래된 순)
+        return ResponseDto.success(paginatedMessages);
     }
 
 }

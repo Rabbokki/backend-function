@@ -10,12 +10,13 @@ public class PostSummaryDto {
     private Long id;
     private String title;
     private int price;
-    private LocalDateTime createdAt;
+
+    private String imgUrl;
 
     public PostSummaryDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.price = post.getPrice();
-        this.createdAt = post.getCreatedAt();
+        this.imgUrl = post.getImages().isEmpty() ? null : post.getImages().get(0).getImage();
     }
 }

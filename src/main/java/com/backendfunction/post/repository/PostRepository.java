@@ -3,6 +3,7 @@ package com.backendfunction.post.repository;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.post.entity.Post;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //    Optional<Post> findById(Long id);
     List<Post> findByAccount(Account account);
     Post findPostByIdAndAccount(Long id, Account account);
+
+    List<Post> findAll(Sort sort);
 
 }

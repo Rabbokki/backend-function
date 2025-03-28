@@ -9,6 +9,7 @@ import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
 import com.backendfunction.s3.S3Service;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,7 +105,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostReqDto> findAll() {
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findAll(Sort.by("createdAt").descending());
         log.info("Posts:", posts);
 
         // Recalculate averageRating and reviewSize for each post

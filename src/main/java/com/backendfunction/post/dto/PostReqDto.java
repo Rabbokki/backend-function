@@ -32,6 +32,7 @@ public class PostReqDto {
     private double averageRating;
     private int reviewSize;
     private String sellerEmail;
+    private String sellerNickname;
 //    public Category getCategory() {
 //        return category != null ? Category.valueOf(category) : null; // 문자열을 Category로 변환
 //    }
@@ -46,12 +47,13 @@ public class PostReqDto {
         this.averageRating = post.getAverageRating();
         this.reviewSize = post.getReviewSize();
         this.sellerEmail = post.getAccount().getEmail();
+        this.sellerNickname = post.getAccount().getNickname();
     }
 
 
 
     public PostReqDto(Long id, String title, String content, int price, int stock, List<String> imageUrls,
-                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize, String sellerEmail) {
+                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize, String sellerEmail, String sellerNickname) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -63,6 +65,7 @@ public class PostReqDto {
         this.averageRating = averageRating;
         this.reviewSize = reviewSize;
         this.sellerEmail = sellerEmail;
+        this.sellerNickname = sellerNickname;
     }
 
 
@@ -86,7 +89,8 @@ public class PostReqDto {
                 post.getLikeSize(),
                 post.getAverageRating(),
                 post.getReviewSize(),
-                post.getAccount().getEmail()
+                post.getAccount().getEmail(),
+                post.getAccount().getNickname()
         );
     }
 

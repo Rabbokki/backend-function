@@ -18,9 +18,11 @@ public class ChatDto {
     public static class CreateRequest{
         @NotNull
         private Long roomId;
+        private String roomName;
         @NotBlank
         private String message;
         private String sender;
+        private String timestamp;
     }
 
     @Getter
