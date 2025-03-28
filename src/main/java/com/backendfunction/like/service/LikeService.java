@@ -29,12 +29,16 @@ public class LikeService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
+        System.out.println("////// Now printing post: " + post);
+
         // Check if already liked using existsByAccountAndPost
         if (postLikeRepository.existsByAccountAndPost(account, post)) {
+            System.out.println("////// Now printing if like already exists: " + post);
             return ResponseDto.fail("ALREADY LIKED", "Post already liked");
         }
 
         PostLike newLike = new PostLike(post, account);
+        System.out.println("////// Now printing newLike: " + newLike);
         postLikeRepository.save(newLike);
         return ResponseDto.success("Post liked successfully");
     }

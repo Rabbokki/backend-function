@@ -87,6 +87,10 @@ public class Post extends BaseEntity {
         this.averageRating = 0;
     }
 
+    public void postViewUpdate(Long size){
+        this.viewCount = size;
+    }
+
     public void postLikeUpdate(int size){
         this.likeSize = size;
     }

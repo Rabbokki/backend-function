@@ -1,7 +1,9 @@
 package com.backendfunction.like.controller;
 
+import com.backendfunction.account.repository.AccountRepository;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.user.UserDetailsImpl;
+import com.backendfunction.like.dto.PostLikeDto;
 import com.backendfunction.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
+    private final AccountRepository accountRepository;
 
     @PostMapping("/{postId}")
     public ResponseDto<?> addPostLike(@PathVariable("postId") Long postId,

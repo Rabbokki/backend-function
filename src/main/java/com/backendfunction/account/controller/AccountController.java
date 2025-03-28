@@ -32,8 +32,7 @@ public class AccountController {
     //회원가입
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseDto<?> signUp(@RequestPart(value = "accountImg", required = false) List<MultipartFile> imgs,
-                                 @RequestPart(value = "dto") @Valid AccountReqDto accountReqDto){
-        System.out.println("called");
+                                 @RequestPart(value = "dto") @Valid AccountReqDto accountReqDto) {
         return ResponseDto.success(accountService.accountSignUp(accountReqDto,imgs));
     }
 
