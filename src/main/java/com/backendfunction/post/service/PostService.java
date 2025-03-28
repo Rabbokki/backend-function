@@ -118,12 +118,13 @@ public class PostService {
                 .map(PostReqDto::fromEntity) // Convert Post to PostReqDto
                 .collect(Collectors.toList());
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public PostReqDto findById(Long id) {
         Post post = postRepository.findById(id).orElse(null);
         if (ObjectUtils.isEmpty(post)) {
             return null;
         }
+        post.setViewCount(post.getViewCount() + 1);
         return PostReqDto.fromEntity(post);
     }
 

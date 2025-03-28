@@ -28,6 +28,7 @@ public class PostReqDto {
     private int stock;
     private List<String> imageUrls = new ArrayList<>();
     private List<CommentReqDto> comments;
+    private Long viewCount;
     private int likeCount;
     private double averageRating;
     private int reviewSize;
@@ -42,6 +43,7 @@ public class PostReqDto {
         this.content = post.getContent();
         this.price = post.getPrice();
         this.stock = post.getStock();
+        this.viewCount = post.getViewCount();
         this.likeCount = post.getLikeSize();
         this.imageUrls = post.getImages().stream().map(Image::getImage).collect(Collectors.toList());
         this.averageRating = post.getAverageRating();
@@ -53,7 +55,7 @@ public class PostReqDto {
 
 
     public PostReqDto(Long id, String title, String content, int price, int stock, List<String> imageUrls,
-                      List<CommentReqDto> comments, int likeCount, double averageRating, int reviewSize, String sellerEmail, String sellerNickname) {
+                      List<CommentReqDto> comments,Long viewCount, int likeCount, double averageRating, int reviewSize, String sellerEmail, String sellerNickname) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -61,6 +63,7 @@ public class PostReqDto {
         this.stock = stock;
         this.imageUrls = imageUrls;
         this.comments = comments;
+        this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.averageRating = averageRating;
         this.reviewSize = reviewSize;
@@ -86,6 +89,7 @@ public class PostReqDto {
                                 comment.getRecomments().stream().map(RecommentResDto::fromEntity)
                                         .collect(Collectors.toList())
                         )).collect(Collectors.toList()),
+                post.getViewCount(),
                 post.getLikeSize(),
                 post.getAverageRating(),
                 post.getReviewSize(),
