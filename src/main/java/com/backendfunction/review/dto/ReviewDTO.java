@@ -16,6 +16,7 @@ public class ReviewDTO {
     private Long postId;
     private Long accountId;
     private int rating;
+    private String nickname;
     private String content;
 
     public ReviewDTO(Review review) {
@@ -23,6 +24,7 @@ public class ReviewDTO {
         this.postId = review.getPost().getId();
         this.accountId = review.getAccount().getId();
         this.rating = review.getRating();
+        this.nickname = review.getAccount().getNickname();
         this.content = review.getContent();
     }
 }

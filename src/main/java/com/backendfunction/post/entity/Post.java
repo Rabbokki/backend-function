@@ -104,6 +104,7 @@ public class Post extends BaseEntity {
     }
 
     public void recalculateAverageRating() {
+        System.out.println("///////////Recalculating average rating");
         double totalRating = 0;
         int reviewCount = 0;
 

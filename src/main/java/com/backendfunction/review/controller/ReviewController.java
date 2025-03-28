@@ -26,11 +26,14 @@ public class ReviewController {
     public ResponseDto<?> addOrUpdateReview(@PathVariable("postId") Long postId,
                                             @RequestBody ReviewDTO reviewDTO,
                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // Fetch the Account entity using accountId from ReviewDTO
+        System.out.println("Received reviewDTO: " + reviewDTO);
+        if (reviewDTO.getAccountId() == null) {
+            return ResponseDto.fail("400", "Account ID is required");
+        }
+
         Account account = accountRepository.findById(reviewDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        // Create the review based on the DTO
         return reviewService.addOrUpdateReview(postId, account, reviewDTO.getRating(), reviewDTO.getContent());
     }
 
@@ -39,4 +42,5 @@ public class ReviewController {
                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return reviewService.removeReview(postId, userDetails.getAccount());
     }
+
 }

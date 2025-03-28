@@ -4,6 +4,7 @@ import com.backendfunction.account.entity.Account;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
+import com.backendfunction.review.dto.ReviewSummaryDto;
 import com.backendfunction.review.entity.Review;
 import com.backendfunction.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,15 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getReviewsByPostId(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        // Retrieve all reviews for this post
-        List<Review> reviews = reviewRepository.findByPost(post);
-        return ResponseDto.success(reviews);  // Return reviews in the response
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Convert each Review entity to a ReviewSummaryDto
+        List<ReviewSummaryDto> reviewDtos = reviewRepository.findByPost(post).stream()
+                .map(ReviewSummaryDto::new)
+                .toList();
+
+        return ResponseDto.success(reviewDtos);
     }
 
     @Transactional
@@ -32,10 +38,12 @@ public class ReviewService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        Review review = new Review(post, account, rating, content);
+        Review review = new Review(post, account, rating, account.getNickname(), content);
         reviewRepository.save(review);
+        post.setReviewSize(post.getReviewSize() + 1);
+        post.recalculateAverageRating();
+        postRepository.save(post);
 
-        // Return success with the review as data
         return ResponseDto.success(review);
     }
 
@@ -50,7 +58,7 @@ public class ReviewService {
 
         reviewRepository.delete(existingReview.get());
         post.setReviewSize(post.getReviewSize() - 1);
-        post.recalculateAverageRating();  // Update post rating
+        post.recalculateAverageRating();
         postRepository.save(post);
         return ResponseDto.success("Review removed successfully");
     }

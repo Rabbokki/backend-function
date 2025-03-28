@@ -29,12 +29,16 @@ public class Review extends BaseEntity {
     private int rating;
 
     @Column(length = 500)
+    private String nickname;
+
+    @Column(length = 500)
     private String content;
 
-    public Review(Post post, Account account, int rating, String content) {
+    public Review(Post post, Account account, int rating, String nickname, String content) {
         this.post = post;
         this.account = account;
         this.rating = rating;
+        this.nickname = nickname;
         this.content = content;
     }
 }
