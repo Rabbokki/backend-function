@@ -77,7 +77,7 @@ public class PostReqDto {
 
 
     public static PostReqDto fromEntity(Post post) {
-        return new PostReqDto(
+        PostReqDto dto = new PostReqDto(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
@@ -99,6 +99,8 @@ public class PostReqDto {
                 post.getAccount().getEmail(),
                 post.getAccount().getNickname()
         );
+        dto.setTimeAgo(Chrono.timesAgo(post.getCreatedAt())); // timeAgo 설정 추가
+        return dto;
     }
 
     public static Post fromDto(PostReqDto dto, Account account) {
