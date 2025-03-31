@@ -63,7 +63,8 @@ public class Account extends BaseEntity{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<BookMark> bookMarks = new ArrayList<>();
 
-
+    private String provider;
+    private String providerId;
 
 
     public Account(AccountReqDto accountReqDto) {
