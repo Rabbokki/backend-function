@@ -29,20 +29,29 @@ public class ChatRoomService {
 
     @Transactional
     public ChatDto.CreateResponse createRoom(RoomDto.CreateRequest request, UserDetailsImpl userDetails) {
-        Account account = accountRepository.findAccountWithCartsByEmail(userDetails.getAccount().getEmail())
-                .orElseThrow(() -> new RuntimeException("Account를 찾을 수 없습니다."));
-        if (checkDuplicatedForCreate(request, account.getEmail())) {
-            ChatRoom room = chatRoomRepository.findByReceiverAndSender(request.getTargetEmail(), account.getEmail());
-            return ChatDto.CreateResponse.builder().id(room.getId()).name(room.getRoomName()).build();
-        } else {
-            ChatRoom chatRoom = request.toEntity(account.getEmail(), request.getTargetEmail());
-            if (chatRoom.getRoomName() == null) {
-                log.warn("Generated roomName is null, setting default value");
-                chatRoom.setRoomName(UUID.randomUUID().toString()); // 기본값 설정
-            }
-            chatRoom = chatRoomRepository.save(chatRoom);
-            return ChatDto.CreateResponse.builder().id(chatRoom.getId()).name(chatRoom.getRoomName()).build();
+        String sender = userDetails.getAccount().getEmail();
+        String receiver = request.getTargetEmail();
+        Long postId = request.getPostId();
+
+        if (sender.equals(receiver)) {
+            throw new IllegalArgumentException("자신과 채팅할 수 없습니다.");
         }
+
+        // postId로 기존 방 확인
+        Optional<ChatRoom> existingRoom = chatRoomRepository.findByPostIdAndSenderOrReceiver(postId, sender, receiver);
+        if (existingRoom.isPresent()) {
+            ChatRoom room = existingRoom.get();
+            return ChatDto.CreateResponse.builder().id(room.getId()).name(room.getRoomName()).build();
+        }
+
+        String roomName = postId + "_" + sender; // 또는 고정된 형식으로 변경 가능
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setRoomName(roomName);
+        chatRoom.setPostId(postId);
+        chatRoom.setSender(sender);
+        chatRoom.setReceiver(receiver);
+        chatRoom = chatRoomRepository.save(chatRoom);
+        return ChatDto.CreateResponse.builder().id(chatRoom.getId()).name(chatRoom.getRoomName()).build();
     }
 
     private boolean checkDuplicatedForCreate(RoomDto.CreateRequest request, String sender){
@@ -61,9 +70,13 @@ public class ChatRoomService {
         chatRoomRepository.save(room);
     }
 
-    private ChatRoom getRoom(String roomName){
-        return chatRoomRepository.findChatRoomByRoomName(roomName)
-                .orElseThrow(()->new RuntimeException("존재하지 않는 채팅방 입니다."));
+    private ChatRoom getRoom(String roomName) {
+        log.info("Fetching room with roomName: {}", roomName);
+        Optional<ChatRoom> room = chatRoomRepository.findChatRoomByRoomName(roomName);
+        if (room.isEmpty()) {
+            log.warn("No chat room found for roomName: {}", roomName);
+        }
+        return room.orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방 입니다."));
     }
 
     @Transactional
@@ -90,49 +103,18 @@ public class ChatRoomService {
         UserResponseDto userResponseDto = new UserResponseDto();
         UserResponseDto.UserData userData = new UserResponseDto.UserData();
         String targetEmail = account.equals(room.getReceiver()) ? room.getSender() : room.getReceiver();
-
-        try {
-            Account targetAccount = accountRepository.findByEmail(targetEmail).orElse(null);
-            if (targetAccount == null) {
-                log.warn("Target account not found for email: {}", targetEmail);
-                // UUID 형식인지 확인
-                if (targetEmail.matches("^[0-9a-fA-F-]{36}$")) {
-                    log.warn("Value {} appears to be a UUID, not an email. Expected an email for Account lookup.", targetEmail);
-                    userData.setEmail(targetEmail);
-                    userData.setNickname("Unknown (UUID)");
-                    userData.setAccountId(0L);
-                    // 참고: Account.id가 Long이므로 UUID를 직접 조회 불가.
-                    // 만약 sender/receiver가 Account.id로 변경된다면 아래 주석 해제
-                /*
-                try {
-                    Long accountId = convertUuidToAccountId(targetEmail); // 별도 메서드 필요
-                    targetAccount = accountRepository.findById(accountId).orElse(null);
-                    if (targetAccount != null) {
-                        userData.setAccountId(targetAccount.getId());
-                        userData.setEmail(targetAccount.getEmail());
-                        userData.setNickname(targetAccount.getNickname());
-                        userData.setImgUrl(targetAccount.getImgUrl());
-                    }
-                } catch (Exception e) {
-                    log.error("Failed to convert UUID {} to account ID: {}", targetEmail, e.getMessage());
-                }
-                */
-                } else {
-                    userData.setEmail(targetEmail);
-                    userData.setNickname("Unknown");
-                    userData.setAccountId(0L);
-                }
-            } else {
-                userData.setAccountId(targetAccount.getId());
-                userData.setEmail(targetAccount.getEmail());
-                userData.setNickname(targetAccount.getNickname());
-                userData.setImgUrl(targetAccount.getImgUrl());
-            }
-        } catch (Exception e) {
-            log.error("Error fetching user info for email {}: {}", targetEmail, e.getMessage());
+        log.debug("Fetching user info for targetEmail: {}", targetEmail);
+        Account targetAccount = accountRepository.findByEmail(targetEmail).orElse(null);
+        if (targetAccount == null) {
+            log.warn("No account found for email: {}", targetEmail);
             userData.setEmail(targetEmail);
-            userData.setNickname("Error");
+            userData.setNickname("Unknown");
             userData.setAccountId(0L);
+        } else {
+            userData.setAccountId(targetAccount.getId());
+            userData.setEmail(targetAccount.getEmail());
+            userData.setNickname(targetAccount.getNickname());
+            userData.setImgUrl(targetAccount.getImgUrl());
         }
         userResponseDto.setData(userData);
         return userResponseDto;
@@ -142,8 +124,10 @@ public class ChatRoomService {
         String email = account.getEmail();
         log.info("Querying chat rooms for email: {}", email);
         Page<ChatRoom> rooms = chatRoomRepository.findAllByEmail(email, pageable);
+        log.info("Found {} rooms for email: {}", rooms.getTotalElements(), email);
+        rooms.forEach(room -> log.debug("Room: id={}, name={}, sender={}, receiver={}",
+                room.getId(), room.getRoomName(), room.getSender(), room.getReceiver()));
         if (rooms.isEmpty()) {
-            log.info("No chat rooms found for email: {}", email);
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
         return new PageImpl<>(entityToListDto(rooms, email), pageable, rooms.getTotalElements());
@@ -161,8 +145,6 @@ public class ChatRoomService {
                                 .latestChatMessage(getLatestChatMessage(room))
                                 .userResponseDto(getUserInfo(room, email))
                                 .build();
-                        log.debug("Built response: roomName={}, userEmail={}",
-                                response.getRoomName(), response.getUserData() != null ? response.getUserData().getEmail() : "null");
                         return response;
                     } catch (Exception e) {
                         log.error("Error converting room {}: {}", room.getRoomName(), e.getMessage());
@@ -181,6 +163,15 @@ public class ChatRoomService {
 
     private Long getUnreadCount(ChatRoom room) {
         return room.getChats().stream().filter(chat-> !chat.isMessageCheckStatus()).count();
+    }
+
+    // 테스트 메서드 추가
+    @Transactional(readOnly = true)
+    public Page<ChatRoom> testChatRoomsForWnsdyd() {
+        Page<ChatRoom> rooms = chatRoomRepository.findAllByEmail("wnsdyd821@gmail.com", Pageable.unpaged());
+        rooms.forEach(room -> log.info("Room for wnsdyd821@gmail.com: id={}, name={}, sender={}, receiver={}",
+                room.getId(), room.getRoomName(), room.getSender(), room.getReceiver()));
+        return rooms; // Page<ChatRoom> 반환
     }
 
 }

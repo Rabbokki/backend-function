@@ -18,6 +18,7 @@ public class RoomDto {
     @NoArgsConstructor
     @Setter
     public static class CreateRequest{
+        private Long postId;
         @NotBlank(message = "메시지 전달할 상대방을 입력해주세요")
         @Email(message = "유효한 이메일 형식이어야 합니다")
         private String targetEmail;
@@ -35,6 +36,7 @@ public class RoomDto {
     public static class Response{
         private Long roomId;
         private String roomName;
+        private Long postId;
         private List<ChatDto.Response> chatList;
         private String email;
         private Long unreadMessageCount;

@@ -40,17 +40,12 @@ public class ChatRoomController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody RoomDto.CreateRequest request) {
         if (userDetails == null || userDetails.getAccount() == null) {
-            log.error("인증 실패: UserDetails가 null입니다.");
             return ResponseDto.fail("UNAUTHORIZED", "인증되지 않은 사용자입니다.");
         }
-        log.info("Creating room for account: id={}, email={}",
-                userDetails.getAccount().getId(), userDetails.getAccount().getEmail());
         if (!accountRepository.existsByEmail(request.getTargetEmail())) {
-            log.warn("Target email not found: {}", request.getTargetEmail());
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 사용자 이메일입니다: " + request.getTargetEmail());
         }
         ChatDto.CreateResponse response = chatRoomService.createRoom(request, userDetails);
-        log.info("Chat room created: id={}, roomName={}", response.getId(), response.getRoomName());
         return ResponseDto.success(response);
     }
 
@@ -72,7 +67,7 @@ public class ChatRoomController {
         return ResponseDto.success(response);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/rooms")
     public ResponseEntity<Page<RoomDto.Response>> getChatRoomList(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PageableDefault Pageable pageable) {
@@ -81,8 +76,15 @@ public class ChatRoomController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new PageImpl<>(Collections.emptyList(), pageable, 0));
         }
-        log.info("Fetching chat room list for email: {}", userDetails.getAccount().getEmail());
-        return ResponseEntity.ok(chatRoomService.getChatRoomList(userDetails.getAccount(), pageable));
+        try {
+            Page<RoomDto.Response> rooms = chatRoomService.getChatRoomList(userDetails.getAccount(), pageable);
+            log.info("Returning chat rooms: {}", rooms.getContent());
+            return ResponseEntity.ok(rooms);
+        } catch (Exception e) {
+            log.error("Failed to fetch chat rooms: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new PageImpl<>(Collections.emptyList(), pageable, 0));
+        }
     }
 
     @GetMapping("/{roomName}/messages")
@@ -102,6 +104,14 @@ public class ChatRoomController {
         List<ChatDto.Response> paginatedMessages = messages.subList(start, end);
         paginatedMessages.sort(Comparator.comparing(ChatDto.Response::getCreateAt)); // 오름차순 정렬 (오래된 순)
         return ResponseDto.success(paginatedMessages);
+    }
+
+    // 테스트 엔드포인트 추가
+    // 또는 Page<ChatRoom>을 응답으로 반환
+    @GetMapping("/test/wnsdyd821/rooms")
+    public ResponseEntity<Page<ChatRoom>> testWnsdydChatRoomsWithResponse() {
+        Page<ChatRoom> rooms = chatRoomService.testChatRoomsForWnsdyd();
+        return ResponseEntity.ok(rooms);
     }
 
 }

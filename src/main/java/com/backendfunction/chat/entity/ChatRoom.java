@@ -19,9 +19,11 @@ public class ChatRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String roomName;
+    private Long postId;
     private String sender;
     private String receiver;
     private boolean isDeleted;
+    public boolean status = true;
 
     @OneToMany(mappedBy = "room",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     private List<ChatMessage> chats;
