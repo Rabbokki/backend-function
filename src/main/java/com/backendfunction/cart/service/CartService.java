@@ -41,7 +41,6 @@ public class CartService {
         Cart cart = cartRepository.findByPostAndAccount(post, account);
         if (cart != null) {
             cart.setCount(cart.getCount() +1 );
-            cart.setPrice(cart.getPrice() + post.getPrice());
             cartRepository.save(cart);
             CartDto dto = new CartDto(cart);
             return ResponseDto.success(dto);
