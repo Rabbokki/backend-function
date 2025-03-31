@@ -5,6 +5,7 @@ import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.user.UserDetailsImpl;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
+import com.backendfunction.post.enums.Category;
 import com.backendfunction.post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -128,6 +129,11 @@ public ResponseEntity<?> createPost(
             log.error("Error updating post: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 실패");
         }
+    }
+    @GetMapping("/category/{category}")
+    public ResponseEntity<?> findByCategory(@PathVariable("category")Category category) {
+        List<PostReqDto> post = postService.findByCategory(category);
+        return ResponseEntity.status(HttpStatus.OK).body(post);
     }
     //    카테고리별 출력
 //    @GetMapping("/category/{category}")

@@ -2,6 +2,7 @@ package com.backendfunction.post.repository;
 
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.post.entity.Post;
+import com.backendfunction.post.enums.Category;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,4 +21,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByAccount(Account account);
     Post findPostByIdAndAccount(Long id, Account account);
 
+    List<Post> findByCategory(Category category);
 }
