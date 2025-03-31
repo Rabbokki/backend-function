@@ -7,6 +7,7 @@ import com.backendfunction.global.image.repository.ImageRepository;
 import com.backendfunction.post.dto.PostReqDto;
 import com.backendfunction.post.dto.PostUpReqDto;
 import com.backendfunction.post.entity.Post;
+import com.backendfunction.post.enums.Category;
 import com.backendfunction.post.repository.PostRepository;
 import com.backendfunction.s3.S3Service;
 import org.springframework.data.domain.Sort;
@@ -134,5 +135,10 @@ public class PostService {
         return posts.stream()
                 .map(PostReqDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public List<PostReqDto> findByCategory(Category category) {
+        List<Post> posts = postRepository.findByCategory(category);
+        return posts.stream().map(x -> PostReqDto.fromEntity(x)).toList();
     }
 }
