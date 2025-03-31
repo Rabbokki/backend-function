@@ -3,6 +3,7 @@ package com.backendfunction.post.dto;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.commet.dto.CommentReqDto;
 import com.backendfunction.global.image.entity.Image;
+import com.backendfunction.global.util.Chrono;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.enums.Category;
 import com.backendfunction.recomment.dto.RecommentResDto;
@@ -34,6 +35,7 @@ public class PostReqDto {
     private int reviewSize;
     private String sellerEmail;
     private String sellerNickname;
+    private String timeAgo;
 //    public Category getCategory() {
 //        return category != null ? Category.valueOf(category) : null; // 문자열을 Category로 변환
 //    }
@@ -50,6 +52,7 @@ public class PostReqDto {
         this.reviewSize = post.getReviewSize();
         this.sellerEmail = post.getAccount().getEmail();
         this.sellerNickname = post.getAccount().getNickname();
+        this.timeAgo = Chrono.timesAgo(post.getCreatedAt());
     }
 
 
@@ -74,7 +77,7 @@ public class PostReqDto {
 
 
     public static PostReqDto fromEntity(Post post) {
-        return new PostReqDto(
+        PostReqDto dto = new PostReqDto(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
@@ -96,6 +99,8 @@ public class PostReqDto {
                 post.getAccount().getEmail(),
                 post.getAccount().getNickname()
         );
+        dto.setTimeAgo(Chrono.timesAgo(post.getCreatedAt())); // timeAgo 설정 추가
+        return dto;
     }
 
     public static Post fromDto(PostReqDto dto, Account account) {

@@ -35,7 +35,7 @@ public class Post extends BaseEntity {
     private int price;
     private int stock;
     private int commentSize;
-    private int likeSize;
+    private int likeSize=0;
     private int reviewSize;
     private double averageRating;
     @Setter
@@ -92,7 +92,8 @@ public class Post extends BaseEntity {
     }
 
     public void postLikeUpdate(int size){
-        this.likeSize = size;
+        this.likeSize += size;
+        if(this.likeSize < 0) this.likeSize = 0;
     }
 
     public void commentUpdate(int size){

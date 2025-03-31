@@ -28,19 +28,15 @@ public class LikeService {
     public ResponseDto<?> addPostLike(Long postId, Account account) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Post not found"));
-
-        System.out.println("////// Now printing post: " + post);
-
-        // Check if already liked using existsByAccountAndPost
-        if (postLikeRepository.existsByAccountAndPost(account, post)) {
-            System.out.println("////// Now printing if like already exists: " + post);
-            return ResponseDto.fail("ALREADY LIKED", "Post already liked");
+        if(postLikeRepository.existsByAccountAndPost(account, post)){
+            return ResponseDto.fail("이미 좋아요 되있음.","게시물이 좋아요 되있음");
         }
 
         PostLike newLike = new PostLike(post, account);
-        System.out.println("////// Now printing newLike: " + newLike);
         postLikeRepository.save(newLike);
-        return ResponseDto.success("Post liked successfully");
+        post.postLikeUpdate(+1);
+        postRepository.save(post);
+        return ResponseDto.success("좋아요 완료");
     }
 
     @Transactional
@@ -53,6 +49,8 @@ public class LikeService {
                 .orElseThrow(() -> new IllegalArgumentException("Post not liked"));
 
         postLikeRepository.delete(existingLike);
+        post.postLikeUpdate(-1);
+        postRepository.save(post);
         return ResponseDto.success("Like removed successfully");
     }
 
