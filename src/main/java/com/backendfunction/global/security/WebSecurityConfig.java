@@ -63,6 +63,9 @@ public class WebSecurityConfig {
                 .cors(withDefaults()) // CORS 설정 적용
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/callback**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/test").permitAll()
 //                        .requestMatchers("/account/signup").permitAll()
@@ -75,6 +78,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()
                         .requestMatchers("/api/liquor/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -84,4 +88,5 @@ public class WebSecurityConfig {
 //                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
                 .build();
     }
+
 }
