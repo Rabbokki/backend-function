@@ -38,6 +38,11 @@ public class Account extends BaseEntity{
 
     private String imgUrl;
 
+    @Column(nullable = true)
+    private String provider;
+    @Column(nullable = true)
+    private String providerId;
+
     @OneToMany(mappedBy = "account")
     @JsonIgnore
     private List<Cart> carts = new ArrayList<>();
@@ -63,15 +68,22 @@ public class Account extends BaseEntity{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.REMOVE)
     private List<BookMark> bookMarks = new ArrayList<>();
 
-    private String provider;
-    private String providerId;
 
 
+    //일반 회원
     public Account(AccountReqDto accountReqDto) {
         this.email = accountReqDto.getEmail();
         this.password = accountReqDto.getPassword();
         this.nickname = accountReqDto.getNickname();
         this.birthday = accountReqDto.getBirthday();
         this.imgUrl = accountReqDto.getImgUrl();
+    }
+
+    //google 로그인
+    public Account(String email, String nickname, String provider, String providerId) {
+        this.email = email;
+        this.nickname = nickname;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 }
