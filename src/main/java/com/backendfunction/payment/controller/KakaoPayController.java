@@ -3,6 +3,7 @@ package com.backendfunction.payment.controller;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.payment.dto.KakaoApproveResponse;
 import com.backendfunction.payment.dto.KakaoCancelResponse;
+import com.backendfunction.payment.dto.KakaoReadyRequest;
 import com.backendfunction.payment.dto.KakaoReadyResponse;
 import com.backendfunction.payment.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ public class KakaoPayController {
      * 결제요청
      */
     @PostMapping("/ready")
-    public ResponseEntity<ResponseDto<KakaoReadyResponse>> readyToKakaoPay() {
-        KakaoReadyResponse response = kakaoPayService.kakaoPayReady();
+    public ResponseEntity<ResponseDto<KakaoReadyResponse>> readyToKakaoPay(@RequestBody KakaoReadyRequest request) {
+        KakaoReadyResponse response = kakaoPayService.kakaoPayReady(request);
         return ResponseEntity.ok(ResponseDto.success(response));
     }
 
