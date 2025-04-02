@@ -40,6 +40,11 @@ public class Account extends BaseEntity{
     @Column(nullable = true)
     private Long kakaoId;
 
+    @Column(nullable = true)
+    private String provider;
+    @Column(nullable = true)
+    private String providerId;
+
     @OneToMany(mappedBy = "account")
     @JsonIgnore
     private List<Cart> carts = new ArrayList<>();
@@ -67,7 +72,7 @@ public class Account extends BaseEntity{
 
 
 
-
+    //일반 회원
     public Account(AccountReqDto accountReqDto) {
         this.email = accountReqDto.getEmail();
         this.password = accountReqDto.getPassword();
@@ -76,4 +81,14 @@ public class Account extends BaseEntity{
         this.imgUrl = accountReqDto.getImgUrl();
     }
 
+<<<<<<< HEAD
+=======
+    //google 로그인
+    public Account(String email, String nickname, String provider, String providerId) {
+        this.email = email;
+        this.nickname = nickname;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
+>>>>>>> feature-joo-all
 }

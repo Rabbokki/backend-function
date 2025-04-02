@@ -1,5 +1,7 @@
 package com.backendfunction.global.security;
 
+import com.backendfunction.account.oauth2.google.CustomOAuth2UserService;
+import com.backendfunction.account.oauth2.google.OAuth2SuccessHandler;
 import com.backendfunction.global.security.jwt.filter.JwtAuthFilter;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -84,6 +87,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/liquor/**").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
+<<<<<<< HEAD
 >>>>>>> feature-jang-login
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -121,4 +125,24 @@ public class WebSecurityConfig {
 //    }
 =======
 >>>>>>> feature-jang-login
+=======
+                .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler()))
+                .securityContext(securityContext -> securityContext.requireExplicitSave(false))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .oauth2Login(oauth2 -> oauth2
+//                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+//                )
+//                // HTTP -> HTTPS 리다이렉션 추가
+//                .requiresChannel(channel -> channel
+//                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
+                .build();
+    }
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler() {
+        return new OAuth2SuccessHandler(jwtUtil);
+    }
+
+>>>>>>> feature-joo-all
 }

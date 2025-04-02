@@ -57,8 +57,16 @@ dependencies {
     //ws
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.messaging:spring-messaging'
+<<<<<<< HEAD
 //    oauth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+=======
+    //OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    //env
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+>>>>>>> feature-joo-all
 }
 
 tasks.named('test') {
