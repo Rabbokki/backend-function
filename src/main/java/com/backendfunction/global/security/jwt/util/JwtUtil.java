@@ -66,12 +66,14 @@ public class JwtUtil {
 
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(email)
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
+        log.info("Generated token: {}", token); // 토큰 생성 로그 추가
+        return token;
     }
     // 토큰 검증
 //    public Boolean tokenValidation(String token) {

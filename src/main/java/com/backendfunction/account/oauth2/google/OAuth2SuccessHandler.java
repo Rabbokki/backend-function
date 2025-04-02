@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
 
@@ -22,11 +24,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String accessToken = (String) userDetails.getAttributes().get("accessToken");
-        String refreshToken = (String) userDetails.getAttributes().get("refreshToken");
+        String email = userDetails.getUsername(); // 이메일 가져오기
 
-        // 리액트로 리다이렉션 (예: localhost:3000/callback)
+        // 직접 토큰 생성
+        String accessToken = jwtUtil.createToken(email, "Access");
+        String refreshToken = jwtUtil.createToken(email, "Refresh");
+
+        log.info("Generated Access Token: {}", accessToken);
+        log.info("Generated Refresh Token: {}", refreshToken);
+
         String redirectUrl = "http://localhost:3000/callback?accessToken=" + accessToken + "&refreshToken=" + refreshToken;
+        log.info("Redirecting to: {}", redirectUrl);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

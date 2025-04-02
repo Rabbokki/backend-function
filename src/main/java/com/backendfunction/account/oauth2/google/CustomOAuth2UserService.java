@@ -23,7 +23,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final AccountRepository accountRepository;
-    private final JwtUtil jwtUtil;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -36,16 +35,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String providerId = oAuth2User.getAttribute("sub");
 
         Account account = accountRepository.findByEmail(email)
-                .orElseGet(()->{
-                    Account newAccount = new Account(email,name,provider,providerId);
+                .orElseGet(() -> {
+                    Account newAccount = new Account(email, name, provider, providerId);
                     return accountRepository.save(newAccount);
                 });
-        String accessToken = jwtUtil.createToken(email,"Access");
-        String refreshToken = jwtUtil.createToken(email,"Refresh");
-        Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
-        attributes.put("accessToken",accessToken);
-        attributes.put("refreshToken",refreshToken);
 
-        return new CustomUserDetails(account,oAuth2User.getAttributes());
+        return new CustomUserDetails(account, oAuth2User.getAttributes());
     }
 }

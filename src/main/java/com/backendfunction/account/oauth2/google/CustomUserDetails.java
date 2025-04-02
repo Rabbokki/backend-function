@@ -3,6 +3,7 @@ package com.backendfunction.account.oauth2.google;
 import com.backendfunction.account.entity.Account;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Getter
+@Slf4j
 public class CustomUserDetails implements UserDetails, OAuth2User {
     private final Account account;
     private Map<String, Object> attributes;
@@ -26,6 +28,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     public CustomUserDetails(Account account, Map<String, Object> attributes){
         this.account = account;
         this.attributes = attributes;
+        log.info("CustomUserDetails attributes: {}", attributes); // 디버깅 로그 추가
     }
 
     @Override
