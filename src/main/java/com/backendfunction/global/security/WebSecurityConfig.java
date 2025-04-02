@@ -63,14 +63,35 @@ public class WebSecurityConfig {
                 .cors(withDefaults()) // Apply CORS settings
                 .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .authorizeHttpRequests(auth -> auth
+<<<<<<< HEAD
                         .anyRequest().permitAll() // 🔥 Allow all requests
                 )
+=======
+
+                        .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/callback**").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/test").permitAll()
+//                        .requestMatchers("/account/signup").permitAll()
+                        .requestMatchers("/account/**").permitAll()
+                        .requestMatchers("/file/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+//                        .requestMatchers("/post/create").permitAll()
+                        .requestMatchers("/post/**").permitAll()
+                        .requestMatchers("/cart/**").authenticated()
+                        .requestMatchers("/chat").authenticated()
+                        .requestMatchers("/api/liquor/**").permitAll()
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().authenticated())
+>>>>>>> feature-jang-login
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
+<<<<<<< HEAD
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 //        return httpSecurity
@@ -98,4 +119,6 @@ public class WebSecurityConfig {
 ////                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
 //                .build();
 //    }
+=======
+>>>>>>> feature-jang-login
 }

@@ -61,3 +61,6 @@ resilience4j.circuitbreaker:
       failureRateThreshold: 50
       waitDurationInOpenState: 5000ms
       permittedNumberOfCallsInHalfOpenState: 10
+kakao:
+  client_id: 59863455ad799376c5e0310b92c4e537
+  redirect_uri: http://localhost:8081

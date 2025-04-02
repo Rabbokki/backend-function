@@ -37,6 +37,8 @@ public class Account extends BaseEntity{
     private LocalDate birthday;
 
     private String imgUrl;
+    @Column(nullable = true)
+    private Long kakaoId;
 
     @OneToMany(mappedBy = "account")
     @JsonIgnore
@@ -73,4 +75,5 @@ public class Account extends BaseEntity{
         this.birthday = accountReqDto.getBirthday();
         this.imgUrl = accountReqDto.getImgUrl();
     }
+
 }
