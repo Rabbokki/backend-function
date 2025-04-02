@@ -37,6 +37,7 @@ public class Account extends BaseEntity{
     private LocalDate birthday;
 
     private String imgUrl;
+
     @Column(nullable = true)
     private Long kakaoId;
 
@@ -81,8 +82,6 @@ public class Account extends BaseEntity{
         this.imgUrl = accountReqDto.getImgUrl();
     }
 
-<<<<<<< HEAD
-=======
     //google 로그인
     public Account(String email, String nickname, String provider, String providerId) {
         this.email = email;
@@ -90,5 +89,4 @@ public class Account extends BaseEntity{
         this.provider = provider;
         this.providerId = providerId;
     }
->>>>>>> feature-joo-all
 }

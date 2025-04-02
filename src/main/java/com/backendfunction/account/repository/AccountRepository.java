@@ -19,5 +19,4 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
 
     boolean existsByEmail(String targetEmail);
 
-    Account findByKakaoEmail(String email);
 }

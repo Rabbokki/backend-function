@@ -63,16 +63,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(withDefaults()) // Apply CORS settings
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
+                .cors(withDefaults()) // CORS 설정 적용
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-<<<<<<< HEAD
-                        .anyRequest().permitAll() // 🔥 Allow all requests
-                )
-=======
-
-                        .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/callback**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/test").permitAll()
 //                        .requestMatchers("/account/signup").permitAll()
@@ -85,47 +78,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()
                         .requestMatchers("/api/liquor/**").permitAll()
-                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
-<<<<<<< HEAD
->>>>>>> feature-jang-login
-                .securityContext(securityContext -> securityContext.requireExplicitSave(false))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
-
-<<<<<<< HEAD
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        return httpSecurity
-//                .cors(withDefaults()) // CORS 설정 적용
-//                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/").permitAll()
-//                        .requestMatchers("/test").permitAll()
-////                        .requestMatchers("/account/signup").permitAll()
-//                        .requestMatchers("/account/**").permitAll()
-//                        .requestMatchers("/file/**").permitAll()
-//                        .requestMatchers("/api/**").permitAll()
-//                        .requestMatchers("/ws/**").permitAll()
-////                        .requestMatchers("/post/create").permitAll()
-//                        .requestMatchers("/post/**").permitAll()
-//                        .requestMatchers("/cart/**").authenticated()
-//                        .requestMatchers("/chat").authenticated()
-//                        .requestMatchers("/api/liquor/**").permitAll()
-//                        .anyRequest().authenticated())
-//                .securityContext(securityContext -> securityContext.requireExplicitSave(false))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-////                // HTTP -> HTTPS 리다이렉션 추가
-////                .requiresChannel(channel -> channel
-////                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
-//                .build();
-//    }
-=======
->>>>>>> feature-jang-login
-=======
                 .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler()))
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
@@ -144,5 +97,4 @@ public class WebSecurityConfig {
         return new OAuth2SuccessHandler(jwtUtil);
     }
 
->>>>>>> feature-joo-all
 }
