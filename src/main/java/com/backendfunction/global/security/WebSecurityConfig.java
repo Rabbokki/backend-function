@@ -60,28 +60,42 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(withDefaults()) // CORS 설정 적용
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .cors(withDefaults()) // Apply CORS settings
+                .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/test").permitAll()
-//                        .requestMatchers("/account/signup").permitAll()
-                        .requestMatchers("/account/**").permitAll()
-                        .requestMatchers("/file/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-//                        .requestMatchers("/post/create").permitAll()
-                        .requestMatchers("/post/**").permitAll()
-                        .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/chat").authenticated()
-                        .requestMatchers("/api/liquor/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll() // 🔥 Allow all requests
+                )
                 .securityContext(securityContext -> securityContext.requireExplicitSave(false))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                // HTTP -> HTTPS 리다이렉션 추가
-//                .requiresChannel(channel -> channel
-//                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
                 .build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        return httpSecurity
+//                .cors(withDefaults()) // CORS 설정 적용
+//                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/test").permitAll()
+////                        .requestMatchers("/account/signup").permitAll()
+//                        .requestMatchers("/account/**").permitAll()
+//                        .requestMatchers("/file/**").permitAll()
+//                        .requestMatchers("/api/**").permitAll()
+//                        .requestMatchers("/ws/**").permitAll()
+////                        .requestMatchers("/post/create").permitAll()
+//                        .requestMatchers("/post/**").permitAll()
+//                        .requestMatchers("/cart/**").authenticated()
+//                        .requestMatchers("/chat").authenticated()
+//                        .requestMatchers("/api/liquor/**").permitAll()
+//                        .anyRequest().authenticated())
+//                .securityContext(securityContext -> securityContext.requireExplicitSave(false))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+////                // HTTP -> HTTPS 리다이렉션 추가
+////                .requiresChannel(channel -> channel
+////                        .anyRequest().requiresSecure()) // 모든 요청을 HTTPS로 강제
+//                .build();
+//    }
 }

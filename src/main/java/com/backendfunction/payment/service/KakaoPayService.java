@@ -4,6 +4,7 @@ import com.backendfunction.payment.dto.KakaoApproveResponse;
 import com.backendfunction.payment.dto.KakaoCancelResponse;
 import com.backendfunction.payment.dto.KakaoReadyResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @Transactional
 public class KakaoPayService {
-
+    @Value("${kakao.admin-key}")
+    private String adminKey;
     static final String cid = "TC0ONETIME"; // 가맹점 테스트 코드
-    static final String admin_Key = "${ADMIN_KEY}"; // 공개 조심! 본인 애플리케이션의 어드민 키를 넣어주세요
     private KakaoReadyResponse kakaoReady;
 
     public KakaoReadyResponse kakaoPayReady() {
@@ -29,13 +30,15 @@ public class KakaoPayService {
         parameters.add("partner_order_id", "가맹점 주문 번호");
         parameters.add("partner_user_id", "가맹점 회원 ID");
         parameters.add("item_name", "상품명");
-        parameters.add("quantity", "주문 수량");
-        parameters.add("total_amount", "총 금액");
-        parameters.add("vat_amount", "부가세");
-        parameters.add("tax_free_amount", "상품 비과세 금액");
-        parameters.add("approval_url", "http://localhost:8081/payment/success"); // 성공 시 redirect url
-        parameters.add("cancel_url", "http://localhost:8081/payment/cancel"); // 취소 시 redirect url
-        parameters.add("fail_url", "http://localhost:8081/payment/fail"); // 실패 시 redirect url
+        parameters.add("quantity", "1");  // Change this to a numeric value
+        parameters.add("total_amount", "1000");
+        parameters.add("vat_amount", "91");
+        parameters.add("tax_free_amount", "0");
+        parameters.add("green_deposit", "0");
+        parameters.add("approval_url", "https://9921-112-221-66-171.ngrok-free.app/payment/success");
+        parameters.add("cancel_url", "https://9921-112-221-66-171.ngrok-free.app/payment/cancel");
+        parameters.add("fail_url", "https://9921-112-221-66-171.ngrok-free.app/payment/fail");
+
 
         // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
@@ -47,6 +50,8 @@ public class KakaoPayService {
                 "https://kapi.kakao.com/v1/payment/ready",
                 requestEntity,
                 KakaoReadyResponse.class);
+
+        System.out.println("//////////////////결제 했다!");
 
         return kakaoReady;
     }
@@ -108,7 +113,7 @@ public class KakaoPayService {
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String auth = "KakaoAK " + admin_Key;
+        String auth = "KakaoAK " + adminKey;
 
         httpHeaders.set("Authorization", auth);
         httpHeaders.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
