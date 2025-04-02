@@ -2,16 +2,17 @@ package com.backendfunction.account.kakao.TokenDto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KakaoTokenResDto {
     @JsonProperty("token_type")
     public String tokenType;
-    @JsonProperty("access_Token")
+    @JsonProperty("access_token")
     public String accessToken;
     @JsonProperty("id_token")
     public String idToken;

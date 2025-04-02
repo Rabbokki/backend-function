@@ -2,13 +2,14 @@ package com.backendfunction.account.kakao.TokenDto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.util.HashMap;
 
-@Getter
+@Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KakaoUserInfoResponseDto {
@@ -41,7 +42,7 @@ public class KakaoUserInfoResponseDto {
     @JsonProperty("for_partner")
     public Partner partner;
 
-    @Getter
+    @Data
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class KakaoAccount {
@@ -147,7 +148,7 @@ public class KakaoUserInfoResponseDto {
         @JsonProperty("ci_authenticated_at")
         public Date ciCreatedAt;
 
-        @Getter
+        @Data
         @NoArgsConstructor
         @JsonIgnoreProperties(ignoreUnknown = true)
         public class Profile {
@@ -177,7 +178,7 @@ public class KakaoUserInfoResponseDto {
         }
     }
 
-    @Getter
+    @Data
     @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public class Partner {
