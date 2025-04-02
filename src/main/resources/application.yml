@@ -1,5 +1,6 @@
 server:
   port: 8081
+  address: 0.0.0.0
 
 spring:
   datasource:
@@ -27,6 +28,9 @@ jwt:
 jasypt:
   encryptor:
     password: jasyptStringEncryptor  # 암호화 문자열
+
+kakao:
+  admin-key: c529b80160058697969915b6269cb2ee
 
 cloud:
   aws:
