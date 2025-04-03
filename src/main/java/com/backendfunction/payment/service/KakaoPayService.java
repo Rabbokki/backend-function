@@ -34,30 +34,24 @@ public class KakaoPayService {
 
     public KakaoReadyResponse kakaoPayReady(KakaoReadyRequest request) {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // Get user info using userDetails
         UserInfoDto userInfo = accountService.getUserInfoByEmail(userDetails);
         Long accountId = userInfo.getAccountId();
 
-        // 카카오페이 요청 양식
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("cid", cid);
-        parameters.add("partner_order_id", request.getPostId().toString()); // Use postId as order ID
-        parameters.add("partner_user_id", accountId.toString()); // Set accountId instead of email
-        parameters.add("item_name", request.getItemName()); // Use item name from request
-        parameters.add("quantity", String.valueOf(request.getQuantity())); // Dynamic quantity
-        parameters.add("total_amount", String.valueOf(request.getTotalAmount())); // Dynamic amount
-        parameters.add("vat_amount", String.valueOf(request.getVatAmount())); // Dynamic VAT
+        parameters.add("partner_order_id", request.getPostId().toString());
+        parameters.add("partner_user_id", accountId.toString());
+        parameters.add("item_name", request.getItemName());
+        parameters.add("quantity", String.valueOf(request.getQuantity()));
+        parameters.add("total_amount", String.valueOf(request.getTotalAmount()));
+        parameters.add("vat_amount", String.valueOf(request.getVatAmount()));
         parameters.add("tax_free_amount", "0");
         parameters.add("green_deposit", "0");
-        parameters.add("approval_url", request.getApprovalUrl()); // Dynamic URLs
+        parameters.add("approval_url", request.getApprovalUrl());
         parameters.add("cancel_url", request.getCancelUrl());
         parameters.add("fail_url", request.getFailUrl());
 
-        // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
-
-        // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
         kakaoReady = restTemplate.postForObject(
@@ -65,7 +59,9 @@ public class KakaoPayService {
                 requestEntity,
                 KakaoReadyResponse.class);
 
-        System.out.println("//////////////////결제 했다!");
+        if (kakaoReady != null) {
+            kakaoReady.setPartnerOrderId(request.getPostId().toString()); // Store postId in the response
+        }
 
         return kakaoReady;
     }
@@ -74,28 +70,26 @@ public class KakaoPayService {
      * 결제 완료 승인
      */
     public KakaoApproveResponse approveResponse(String pgToken) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserInfoDto userInfo = accountService.getUserInfoByEmail(userDetails);
+        Long accountId = userInfo.getAccountId();
 
-        // 카카오 요청
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("cid", cid);
         parameters.add("tid", kakaoReady.getTid());
-        parameters.add("partner_order_id", "가맹점 주문 번호");
-        parameters.add("partner_user_id", "가맹점 회원 ID");
+        parameters.add("partner_order_id", kakaoReady.getPartnerOrderId());
+        parameters.add("partner_user_id", accountId.toString());
         parameters.add("pg_token", pgToken);
 
-        // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
-
-        // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
-        KakaoApproveResponse approveResponse = restTemplate.postForObject(
+        return restTemplate.postForObject(
                 "https://kapi.kakao.com/v1/payment/approve",
                 requestEntity,
                 KakaoApproveResponse.class);
-
-        return approveResponse;
     }
+
 
     /**
      * 결제 환불
