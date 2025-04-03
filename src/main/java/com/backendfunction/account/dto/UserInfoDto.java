@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Data
 public class UserInfoDto {
     private Long accountId;
+    private String email;
     private String nickname;
     private String imgUrl;
     private List<PostSummaryDto> postList = new ArrayList<>();
@@ -28,6 +29,7 @@ public class UserInfoDto {
     @Builder
     public UserInfoDto(Account account){
         this.accountId = account.getId();
+        this.email = account.getEmail();
         this.nickname = account.getNickname();
         this.imgUrl = account.getImgUrl();
         this.postList = account.getPosts().stream().map(PostSummaryDto::new).collect(Collectors.toList());
