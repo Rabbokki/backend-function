@@ -1,23 +1,17 @@
-package com.backendfunction.account.kakao.controller;
+package com.backendfunction.account.oauth2.kakao.controller;
 
 import com.backendfunction.account.entity.Account;
-import com.backendfunction.account.kakao.Service.KakaoService;
-import com.backendfunction.account.kakao.Service.KakaoUserService;
-import com.backendfunction.account.kakao.TokenDto.KakaoTokenResDto;
-import com.backendfunction.account.kakao.TokenDto.KakaoUserInfoResponseDto;
-import com.backendfunction.account.kakao.TokenDto.UserRequest;
+import com.backendfunction.account.oauth2.kakao.TokenDto.KakaoTokenResDto;
+import com.backendfunction.account.oauth2.kakao.TokenDto.KakaoUserInfoResponseDto;
+import com.backendfunction.account.oauth2.kakao.TokenDto.UserRequest;
 import com.backendfunction.account.repository.AccountRepository;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
-import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,13 +48,22 @@ public class KakaoLoginController {
         String nickName = userDto.getKakaoAccount().getProfile().getNickName();
         String kakaoRefreshToken = tokenDto.getRefreshToken();
         Long kakaoId = userDto.id;
-        Account account = repository.findByEmail(email).orElseGet(() -> {
+        Account account = repository.findByEmail(email).orElse(null);
+        if (account == null) {
             Account user = new Account();
             user.setEmail(email);
             user.setNickname(nickName);
             user.setKakaoId(kakaoId);
-            return user;
-        });
+            repository.save(user);
+        }
+//        Account account = repository.findByEmail(email).orElseGet(() -> {
+//            Account user = new Account();
+//            user.setEmail(email);
+//            user.setNickname(nickName);
+//            user.setKakaoId(kakaoId);
+//            repository.save(user);
+//            return user;
+//        });
         String accessToken = jwtUtil.createToken(email, "Access");
         TokenDto tokenDto1 = new TokenDto(accessToken, kakaoRefreshToken);
         Map<String, Object> repons = new HashMap<>();

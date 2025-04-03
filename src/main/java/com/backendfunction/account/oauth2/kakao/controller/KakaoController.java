@@ -1,4 +1,4 @@
-package com.backendfunction.account.kakao.controller;
+package com.backendfunction.account.oauth2.kakao.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;

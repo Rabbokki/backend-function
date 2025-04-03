@@ -1,4 +1,4 @@
-package com.backendfunction.account.kakao.TokenDto;
+package com.backendfunction.account.oauth2.kakao.TokenDto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

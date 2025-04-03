@@ -1,4 +1,4 @@
-package com.backendfunction.account.kakao.TokenDto;
+package com.backendfunction.account.oauth2.kakao.TokenDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

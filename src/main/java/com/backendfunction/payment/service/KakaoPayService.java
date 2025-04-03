@@ -38,8 +38,7 @@ public class KakaoPayService {
         UserInfoDto userInfo = accountService.getUserInfoByEmail(userDetails);
         Long accountId = userInfo.getAccountId();
 
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-//        parameters.add("cid", cid);
+
 //        parameters.add("partner_order_id", "가맹점 주문 번호");
 //        parameters.add("partner_user_id", "가맹점 회원 ID");
 //        parameters.add("item_name", "상품명");
@@ -52,6 +51,8 @@ public class KakaoPayService {
 //        parameters.add("cancel_url", "https://9921-112-221-66-171.ngrok-free.app/payment/cancel");
 //        parameters.add("fail_url", "https://9921-112-221-66-171.ngrok-free.app/payment/fail");
 
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", cid);
         parameters.add("partner_order_id", request.getPostId().toString()); // Use postId as order ID
         parameters.add("partner_user_id", accountId.toString()); // Set accountId instead of email
         parameters.add("item_name", request.getItemName()); // Use item name from request

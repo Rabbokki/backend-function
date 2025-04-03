@@ -1,7 +1,7 @@
-package com.backendfunction.account.kakao.Service;
+package com.backendfunction.account.oauth2.kakao.Service;
 
-import com.backendfunction.account.kakao.TokenDto.KakaoTokenResDto;
-import com.backendfunction.account.kakao.TokenDto.KakaoUserInfoResponseDto;
+import com.backendfunction.account.oauth2.kakao.TokenDto.KakaoTokenResDto;
+import com.backendfunction.account.oauth2.kakao.TokenDto.KakaoUserInfoResponseDto;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
