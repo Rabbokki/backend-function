@@ -1,7 +1,6 @@
 package com.backendfunction.account.kakao.controller;
 
 import com.backendfunction.account.entity.Account;
-import com.backendfunction.account.kakao.Service.KakaoService;
 import com.backendfunction.account.kakao.Service.KakaoUserService;
 import com.backendfunction.account.kakao.TokenDto.KakaoTokenResDto;
 import com.backendfunction.account.kakao.TokenDto.KakaoUserInfoResponseDto;
