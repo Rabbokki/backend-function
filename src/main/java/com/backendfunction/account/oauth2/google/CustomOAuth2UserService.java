@@ -29,10 +29,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
-        String provider = "google";
-        String providerId = oAuth2User.getAttribute("sub");
+        //google ? naver??
+        String  registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = userRequest.getClientRegistration()
+                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+
+        OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(registrationId,oAuth2User.getAttributes());
+
+        String email = oAuth2UserInfo.getEmail();
+        String name = oAuth2UserInfo.getName();
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
 
         Account account = accountRepository.findByEmail(email)
                 .orElseGet(() -> {
@@ -41,5 +48,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 });
 
         return new CustomUserDetails(account, oAuth2User.getAttributes());
+    }
+
+    private OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String,Object> attributes){
+        if("google".equals(registrationId)){
+            return new GoogleUserDetails(attributes);
+        } else if ("naver".equals(registrationId)) {
+            return new NaverUserDetails(attributes);
+        }else {
+            throw new OAuth2AuthenticationException("지원하지 않는 OAuth2" + registrationId);
+        }
     }
 }
