@@ -3,6 +3,7 @@ package com.backendfunction.account.dto;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.bookmark.dto.BookMarkSummaryDto;
 import com.backendfunction.bookmark.entity.BookMark;
+import com.backendfunction.like.dto.PostLikeSummaryDto;
 import com.backendfunction.post.dto.PostSummaryDto;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.review.dto.ReviewSummaryDto;
@@ -24,7 +25,7 @@ public class UserInfoDto {
     private String imgUrl;
     private List<PostSummaryDto> postList = new ArrayList<>();
     private List<ReviewSummaryDto> reviews = new ArrayList<>();
-    private List<BookMarkSummaryDto> bookMarks = new ArrayList<>();
+    private List<PostLikeSummaryDto> likeList = new ArrayList<>();
 
     @Builder
     public UserInfoDto(Account account){
@@ -34,6 +35,6 @@ public class UserInfoDto {
         this.imgUrl = account.getImgUrl();
         this.postList = account.getPosts().stream().map(PostSummaryDto::new).collect(Collectors.toList());
         this.reviews = account.getReviews().stream().map(ReviewSummaryDto::new).collect(Collectors.toList());
-        this.bookMarks = account.getBookMarks().stream().map(BookMarkSummaryDto::new).collect(Collectors.toList());
+        this.likeList = account.getPostLikes().stream().map(PostLikeSummaryDto::new).collect(Collectors.toList());
     }
 }

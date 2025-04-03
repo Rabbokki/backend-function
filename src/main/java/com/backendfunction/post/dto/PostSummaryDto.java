@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class PostSummaryDto {
     private Long id;
     private String title;
+    private String content;
     private int price;
     private Long viewCount;
     private int likeCount;
@@ -21,6 +22,7 @@ public class PostSummaryDto {
     public PostSummaryDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
+        this.content = post.getContent();
         this.price = post.getPrice();
         this.viewCount = post.getViewCount();
         this.likeCount = post.getLikeSize();
