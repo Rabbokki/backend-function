@@ -81,6 +81,12 @@ public class AccountService {
         return UserInfoDto.builder().account(account).build();
     }
 
+//    public UserInfoDto getUserInfoByEmail(String email) {
+//        Account account = accountRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("계정이 없습니다."));
+//        return UserInfoDto.builder().account(account).build();
+//    }
+
     public void updateUserInfo(String email, AccountReqDto accountReqDto) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("등록된 이매일 아닙니다."));
