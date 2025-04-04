@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/api/post")
 @Slf4j
 public class PostController {
     private final PostService postService;

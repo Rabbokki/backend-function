@@ -47,14 +47,11 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 와일드카드 사용
-        configuration.setAllowedOrigins(Arrays.asList("http://52.79.225.242")); // 정확한 출처
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://52.79.225.242"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Access_Token");
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
