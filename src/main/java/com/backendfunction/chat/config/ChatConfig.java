@@ -18,13 +18,11 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(ChatConfig.class);
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        logger.info("Registering STOMP endpoint: /ws");
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        logger.info("Configuring message broker with prefix /sub and /pub");
         registry.enableSimpleBroker("/sub");
         registry.setApplicationDestinationPrefixes("/pub");
     }
