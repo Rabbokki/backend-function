@@ -55,7 +55,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return new GoogleUserDetails(attributes);
         } else if ("naver".equals(registrationId)) {
             return new NaverUserDetails(attributes);
-        }else {
+        }else if ("kakao".equals(registrationId)) {
+            return new KakaoUserDetail(attributes);
+        }else  {
             throw new OAuth2AuthenticationException("지원하지 않는 OAuth2" + registrationId);
         }
     }
