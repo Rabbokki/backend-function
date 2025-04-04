@@ -48,13 +48,12 @@ public class WebSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns( Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*", "POST", "GET", "DELETE", "PUT", "PATCH"));  //프론트에서 보내는 CRUD 허용
-        configuration.setAllowedOrigins(Arrays.asList("52.79.225.242"));
-        configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token")); // 프론트에서 보내는 모든 해더 허용
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 와일드카드 사용
+        configuration.setAllowedOrigins(Arrays.asList("http://52.79.225.242")); // 정확한 출처
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
         configuration.setAllowCredentials(true);
-        configuration.addExposedHeader ( "*" );
-        configuration.addExposedHeader("Access_Token"); // Axios 에서는 이런식으로 Access_token으로 지정해줘야 보임 *사용불가
+        configuration.addExposedHeader("Access_Token");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
