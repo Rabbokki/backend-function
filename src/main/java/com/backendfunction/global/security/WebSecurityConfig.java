@@ -50,6 +50,7 @@ public class WebSecurityConfig {
 
         configuration.setAllowedOriginPatterns( Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*", "POST", "GET", "DELETE", "PUT", "PATCH"));  //프론트에서 보내는 CRUD 허용
+        configuration.setAllowedOrigins(Arrays.asList("52.79.225.242"));
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token")); // 프론트에서 보내는 모든 해더 허용
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader ( "*" );
