@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # 작업이 실행될 환경
+    runs-on: ubuntu-latest
     steps:
       - name: 체크아웃
         uses: actions/checkout@v3
@@ -38,4 +38,6 @@ jobs:
           script: |
             sudo timedatectl set-timezone Asia/Seoul
             docker pull ${{ secrets.DOCKER_USER_NAME }}/${{ secrets.DOCKER_IMAGE_NAME }}-be
-            docker-compose up -d
+            docker-compose down
+            docker volume prune -f
+            docker-compose up -d --force-recreate
