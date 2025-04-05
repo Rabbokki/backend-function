@@ -52,6 +52,7 @@ public class WebSecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Access_Token");
+        System.out.println("CORS 설정 적용: " + configuration.getAllowedOrigins());
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -67,6 +68,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/test").permitAll()
 //                        .requestMatchers("/account/signup").permitAll()
                         .requestMatchers("/account/**").permitAll()
+                        .requestMatchers("/api/account/signup").permitAll()
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
