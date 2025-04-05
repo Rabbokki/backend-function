@@ -30,7 +30,7 @@ spring:
           google:
             client-id: 36282424110-0km648e8j6e5i46v2vsre8rjfgt6mq0d.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: "http://localhost:8081/login/oauth2/code/google"
+            redirect-uri: "http://52.79.225.242:8081/login/oauth2/code/google"
             scope:
               - email
               - profile
@@ -64,7 +64,8 @@ jasypt:
 kakao:
   admin-key: c529b80160058697969915b6269cb2ee
   client_id: 59863455ad799376c5e0310b92c4e537
-  redirect_uri: http://localhost:8081
+  redirect_uri: http://52.79.225.242:8081
+
 
 cloud:
   aws:
