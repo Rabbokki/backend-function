@@ -1,9 +1,7 @@
 name: 배포
-
 on:
   push:
     branches: [ "develop" ]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -31,7 +29,7 @@ jobs:
       - name: AWS EC2에 ssh 접속 후 배포
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_IP }}
+          host: 3.36.33.178  # 새 IP
           port: 22
           username: ubuntu
           key: ${{ secrets.AWS_KEY }}
