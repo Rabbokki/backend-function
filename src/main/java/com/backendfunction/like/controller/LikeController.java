@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/likes")
+@RequestMapping("/api/likes")
 @RestController
 @RequiredArgsConstructor
 public class LikeController {
