@@ -130,10 +130,10 @@ public ResponseEntity<?> createPost(
         }
     }
     @GetMapping("/category/{category}")
-    public ResponseEntity<?> findByCategory(@PathVariable("category")Category category) {
+    public ResponseEntity<?> findByCategory(@PathVariable("category") Category category) {
         List<PostReqDto> post = postService.findByCategory(category);
         System.out.println("Category posts: " + post);
-        return ResponseEntity.status(HttpStatus.OK).body(post);
+        return ResponseEntity.ok(post); 
     }
     //    카테고리별 출력
 //    @GetMapping("/category/{category}")
