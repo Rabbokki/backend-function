@@ -131,5 +131,17 @@ public class JwtUtil {
 //        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 //    }
 
+    public String getAccessTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader("Access_Token");
+        log.info("Raw Access_Token from header: {}", token);
+        return token != null && !token.isEmpty() ? token : null;
+    }
+
+    public String getRefreshTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader("Refresh");
+        log.info("Raw Refresh from header: {}", token);
+        return token != null && !token.equals("undefined") ? token : null;
+    }
+
 
 }
