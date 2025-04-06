@@ -25,6 +25,9 @@ public class LikeController {
     @DeleteMapping("/{postId}")
     public ResponseDto<?> removePostLike(@PathVariable("postId") Long postId,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null || userDetails.getAccount() == null) {
+            return ResponseDto.fail("UNAUTHORIZED", "로그인이 필요합니다.");
+        }
         return likeService.removePostLike(postId, userDetails.getAccount());
     }
 
