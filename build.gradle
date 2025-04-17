@@ -4,12 +4,12 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.dopamineX'
+group = 'com'
 version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -21,19 +21,92 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/release' } // Spring Cloud AWS를 위한 저장소 추가
 }
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+    }
+}
+//dependencies {
+//    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+//    compileOnly 'org.projectlombok:lombok:1.18.24'
+//    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'// 최신 버전으로 수정
+//    implementation 'com.amazonaws:aws-java-sdk-core:1.12.300'
+//    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.777'
+//    // jjwt 라이브러리 추가
+//    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+//    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+//    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리 모듈
+//    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'// jasypt
+//    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+//    implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.0' // 서킷 최신 버전으로 교체
+//    compileOnly 'org.projectlombok:lombok'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
+//    annotationProcessor 'org.projectlombok:lombok'
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation 'org.springframework.security:spring-security-test'
+//    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    runtimeOnly 'com.h2database:h2'
+//    //ws
+//    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+//    implementation 'org.springframework.messaging:spring-messaging'
+//    //OAuth2
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+//    //env
+//    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+//
+//}
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket' // WebSocket 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 의존성
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // AWS
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.777'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // Jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
+    // Database
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+
+    // Env
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
 }

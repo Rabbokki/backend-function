@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Test</title>
+  <style>
+    #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-top: 10px; }
+    p { margin: 5px 0; }
+    #roomForm { margin-bottom: 10px; }
+    #roomList { margin-top: 10px; }
+  </style>
+</head>
+<body>
+<h2>채팅 테스트</h2>
+<div id="roomForm">
+  <input id="targetEmail" type="text" placeholder="상대방 이메일" style="width: 200px;">
+  <button onclick="createRoom()">채팅방 생성</button>
+  <input id="joinRoomName" type="text" placeholder="채팅방 이름 입력" style="width: 200px; margin-left: 10px;">
+  <button onclick="joinRoom()">채팅방 입장</button>
+  <button onclick="loadRoomList()" style="margin-left: 10px;">내 채팅방 목록</button>
+</div>
+<div id="userInfo"></div>
+<input id="message" type="text" placeholder="메시지를 입력하세요" style="width: 300px;" disabled>
+<button onclick="sendMessage()" disabled>전송</button>
+<div id="messages"></div>
+<div id="roomList"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
+<script>
+  const baseUrl = 'http://192.168.0.71:8081';
+  let stompClient = null;
+  let roomId = null;
+  let roomName = null;
+  let sender = prompt("사용자 이메일을 입력하세요:", "abc@abc2.com") || "guest" + Math.floor(Math.random() * 100);
+  const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAYWJjMi5jb20iLCJleHAiOjE3NDI1MjQ4NzksImlhdCI6MTc0MjQzODQ3OX0.MsYrPoB_ZuS4lZwkp23a8A5Z6GpauuW-TbctyzUW0X0";
+
+  function createRoom() {
+    const targetEmail = document.getElementById('targetEmail').value.trim();
+    if (!targetEmail) {
+      alert('상대방 이메일을 입력하세요.');
+      return;
+    }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+    if (!targetEmail.includes('@')) {
+      alert('유효한 이메일 주소를 입력하세요 (예: user@example.com)');
+      return;
+    }
+>>>>>>> feature-joo-test-chat
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+    axios.post(`${baseUrl}/chat`, { targetEmail: targetEmail }, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+              const data = response.data.data;
+              roomId = data.id;
+              roomName = data.roomName;
+<<<<<<< HEAD
+              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 생성: ' + roomName + ' (이 값을 다른 사람에게 공유하세요)</p>';
+=======
+<<<<<<< HEAD
+              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 생성: ' + roomName + ' (이 값을 다른 사람에게 공유하세요)</p>';
+=======
+              document.getElementById('messages').innerHTML +=
+                      '<p>[시스템] 채팅방 생성: ' + roomName + ' (이 값을 다른 사람에게 공유하세요)</p>';
+>>>>>>> feature-joo-test-chat
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+              connectWebSocket();
+              document.getElementById('message').disabled = false;
+              document.getElementById('message').focus();
+              document.querySelector('button[onclick="sendMessage()"]').disabled = false;
+              loadUserInfo(roomName);
+            })
+            .catch(error => {
+              alert('채팅방 생성 실패: ' + (error.response?.data?.message || '서버 오류'));
+            });
+  }
+
+  function joinRoom() {
+    const inputRoomName = document.getElementById('joinRoomName').value.trim();
+    if (!inputRoomName) {
+      alert('채팅방 이름을 입력하세요.');
+      return;
+    }
+    axios.get(`${baseUrl}/chat/${inputRoomName}`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+              const data = response.data.data;
+              roomId = data.id;
+              roomName = data.roomName;
+              document.getElementById('messages').innerHTML += '<p>[시스템] 채팅방 입장: ' + roomName + '</p>';
+              connectWebSocket();
+              document.getElementById('message').disabled = false;
+              document.getElementById('message').focus();
+              document.querySelector('button[onclick="sendMessage()"]').disabled = false;
+              loadUserInfo(roomName);
+            })
+            .catch(error => {
+              alert('채팅방 입장 실패: ' + (error.response?.data?.message || '서버 오류'));
+            });
+  }
+
+  function loadRoomList() {
+    axios.get(`${baseUrl}/chat/list?page=0&size=10`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+              const rooms = response.data.content;
+              let roomListHtml = '<h3>내 채팅방 목록</h3><ul>';
+              rooms.forEach(room => {
+                roomListHtml += `<li>${room.room.roomName} (상대방: ${room.userResponseDto.data.email})
+                        <button onclick="joinRoomByName('${room.room.roomName}')">입장</button></li>`;
+              });
+<<<<<<< HEAD
+=======
+=======
+              console.log('Response data:', response.data); // 응답 구조 확인
+              const rooms = response.data.content || [];
+              let roomListHtml = '<h3>내 채팅방 목록</h3><ul>';
+              if (rooms.length === 0) {
+                roomListHtml += '<li>채팅방이 없습니다.</li>';
+              } else {
+                rooms.forEach(room => {
+                  const userData = room.userData || {}; // userResponseDto.data 대신 userData
+                  roomListHtml += `<li>${room.roomName} (상대방: ${userData.email || 'N/A'})
+                            <button onclick="joinRoomByName('${room.roomName}')">입장</button></li>`;
+                });
+              }
+>>>>>>> feature-joo-test-chat
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+              roomListHtml += '</ul>';
+              document.getElementById('roomList').innerHTML = roomListHtml;
+            })
+            .catch(error => {
+<<<<<<< HEAD
+              alert('채팅방 목록 로드 실패: ' + (error.response?.data?.message || '서버 오류'));
+=======
+              console.error('Error loading room list:', error);
+              alert('채팅방 목록 로드 실패: ' + (error.response?.data?.message || error.message || '서버 오류'));
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+            });
+  }
+
+  function joinRoomByName(name) {
+    document.getElementById('joinRoomName').value = name;
+    joinRoom();
+  }
+
+  function loadUserInfo(roomName) {
+    axios.get(`${baseUrl}/chat/list?page=0&size=10`, {
+      headers: { 'Access_Token': token }
+    })
+            .then(response => {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+              const rooms = response.data.content;
+              const roomInfo = rooms.find(r => r.room.roomName === roomName);
+              if (roomInfo) {
+                const userData = roomInfo.userResponseDto.data;
+                document.getElementById('userInfo').innerHTML =
+                        `<p>상대방: ${userData.email} (닉네임: ${userData.nickname || 'N/A'}, ID: ${userData.accountId})</p>`;
+<<<<<<< HEAD
+=======
+=======
+              console.log('Full response:', response.data); // 디버깅용
+              const rooms = response.data.content || [];
+              const roomInfo = rooms.find(r => r.roomName === roomName || r.room?.roomName === roomName);
+              if (roomInfo) {
+                const userData = roomInfo.userResponseDto?.data || {};
+                document.getElementById('userInfo').innerHTML =
+                        `<p>상대방: ${userData.email || 'N/A'} (닉네임: ${userData.nickname || 'N/A'}, ID: ${userData.accountId || 'N/A'})</p>`;
+              } else {
+                console.warn('Room not found in list:', roomName);
+                document.getElementById('userInfo').innerHTML = '<p>상대방 정보 로드 실패</p>';
+>>>>>>> feature-joo-test-chat
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+              }
+            })
+            .catch(error => {
+              console.error('사용자 정보 로드 실패:', error);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+              document.getElementById('userInfo').innerHTML = '<p>사용자 정보 로드 오류</p>';
+>>>>>>> feature-joo-test-chat
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+            });
+  }
+
+  function connectWebSocket() {
+    const socket = new SockJS(`${baseUrl}/ws`);
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+      console.log('Connected: ' + frame);
+      document.getElementById('messages').innerHTML += '<p>[시스템] ' + sender + '님이 입장했습니다.</p>';
+      stompClient.subscribe('/sub/chatroom' + roomName, function (message) {
+        const msg = JSON.parse(message.body);
+        document.getElementById('messages').innerHTML += '<p>' + msg.sender + ': ' + msg.message + '</p>';
+        scrollToBottom();
+      });
+    }, function (error) {
+      console.error('Connection error:', error);
+      alert('웹소켓 연결 실패');
+    });
+  }
+
+  function sendMessage() {
+    const message = document.getElementById('message').value.trim();
+    if (message && stompClient) {
+      stompClient.send('/pub/chat', {}, JSON.stringify({
+        roomId: roomId,
+        message: message,
+        sender: sender
+      }));
+      document.getElementById('message').value = '';
+    }
+  }
+
+  function scrollToBottom() {
+    const messagesDiv = document.getElementById('messages');
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  document.getElementById('message').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+<<<<<<< HEAD
+  //0bbd41e4-5f79-49eb-a966-7de09efd64bd
+=======
+>>>>>>> b4e06d9ba474ab77e5570422e6d2765e1f485a1c
+</script>
+</body>
+</html>
