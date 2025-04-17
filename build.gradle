@@ -7,6 +7,9 @@ plugins {
 group = 'com'
 version = '0.0.1-SNAPSHOT'
 
+springBoot {
+    mainClass = 'com.dopaminex.DopamineXApplication'
+}
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
@@ -109,4 +112,8 @@ tasks.named('test') {
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
+}
+
+jar {
+    enabled = false
 }
