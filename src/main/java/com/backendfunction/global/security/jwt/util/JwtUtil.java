@@ -6,6 +6,7 @@ import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.user.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,12 +18,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
-
-import io.jsonwebtoken.SignatureAlgorithm;
 
 
 @Slf4j
