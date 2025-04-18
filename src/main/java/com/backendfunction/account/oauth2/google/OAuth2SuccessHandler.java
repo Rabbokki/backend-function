@@ -33,7 +33,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("Generated Access Token: {}", accessToken);
         log.info("Generated Refresh Token: {}", refreshToken);
 
-        String redirectUrl = "http://localhost:3000/callback?accessToken=" + accessToken + "&refreshToken=" + refreshToken;
+        String redirectUrl = "https://dopaminex.kro.kr/callback?accessToken=" + accessToken + "&refreshToken=" + refreshToken;
         log.info("Redirecting to: {}", redirectUrl);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }

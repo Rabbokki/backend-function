@@ -5,6 +5,12 @@ server:
   main:
     log-startup-info: true
   port: 8081
+  ssl:
+    enabled: true
+    key-store: file:/etc/letsencrypt/live/dopaminex.kro.kr/keystore.p12
+    key-store-password: dopaminex123  # PFX 파일 비밀번호
+    key-store-type: PKCS12
+    key-alias: dopaminex
 
 spring:
   datasource:
@@ -30,7 +36,7 @@ spring:
           google:
             client-id: 36282424110-0km648e8j6e5i46v2vsre8rjfgt6mq0d.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: "http://localhost:8081/login/oauth2/code/google"
+            redirect-uri: "https://dopaminex.kro.kr:8443/login/oauth2/code/google"
             scope:
               - email
               - profile
@@ -39,7 +45,7 @@ spring:
             client-secret: jZLsurnTpW
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8081/login/oauth2/code/naver
+            redirect-uri: https://dopaminex.kro.kr:8443/login/oauth2/code/naver
             scope:
               - name
               - email
