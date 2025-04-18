@@ -4,7 +4,7 @@ logging:
 server:
   main:
     log-startup-info: true
-  port: 8081
+  port: 8443
   ssl:
     enabled: true
     key-store: file:/etc/letsencrypt/live/dopaminex.kro.kr/keystore.p12
@@ -70,7 +70,7 @@ jasypt:
 kakao:
   admin-key: c529b80160058697969915b6269cb2ee
   client_id: 59863455ad799376c5e0310b92c4e537
-  redirect_uri: http://localhost:8081
+  redirect_uri: https://dopaminex.kro.kr/callback
 
 cloud:
   aws:
@@ -92,7 +92,7 @@ application:
       max-file-size: 10MB
       max-request-size: 50MB
     file:
-      upload-dir: C:/uploads  # 허용된 업로드 경로 설정
+      upload-dir: /uploads  # 허용된 업로드 경로 설정
 
 resilience4j.circuitbreaker:
   instances:

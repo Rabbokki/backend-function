@@ -6,7 +6,7 @@ WORKDIR /app
 
 # JAR 파일을 컨테이너에 복사(jar파일이 하나만 생기도록 설정해줘야 함.)
 COPY build/libs/*.jar app.jar
-
+RUN apk update && apk add curl
 # 포트 설정
 EXPOSE 8081 8443
 
