@@ -1,9 +1,6 @@
 name: 배포
 on:
   push:
-<<<<<<< HEAD
-    branches: [ "develop" ]
-=======
     branches: [ "main" ]
 
 >>>>>>> e590f2533e0b474ed033c5855707a0fdc01023e0
