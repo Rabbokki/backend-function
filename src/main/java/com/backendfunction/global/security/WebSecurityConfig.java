@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                 "https://dopaminex.kro.kr:8443",
                 "http://joo-legend.s3-website.ap-northeast-2.amazonaws.com"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Access_Token");
