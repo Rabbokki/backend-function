@@ -5,6 +5,7 @@ import com.backendfunction.account.oauth2.google.OAuth2SuccessHandler;
 import com.backendfunction.global.security.jwt.filter.JwtAuthFilter;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +28,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -56,6 +58,7 @@ public class WebSecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Access_Token");
+        log.info("CORS configuration applied: origins={}", configuration.getAllowedOrigins());
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

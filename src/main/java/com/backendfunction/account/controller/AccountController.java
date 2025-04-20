@@ -5,8 +5,10 @@ import com.backendfunction.account.dto.AccountReqDto;
 import com.backendfunction.account.dto.LoginReqDto;
 import com.backendfunction.account.service.AccountService;
 import com.backendfunction.global.dto.ResponseDto;
+import com.backendfunction.global.security.jwt.dto.TokenDto;
 import com.backendfunction.global.security.jwt.util.JwtUtil;
 import com.backendfunction.global.security.user.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import java.util.List;
 public class AccountController {
     private final JwtUtil jwtUtil;
     private final AccountService accountService;
+    private final HttpServletRequest request;
 
     //회원가입
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -41,8 +44,15 @@ public class AccountController {
     //로그인
     @PostMapping("/login")
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
-        log.info("Login request: email={}", loginReqDto.getEmail());
-        return ResponseDto.success(accountService.accountLogin(loginReqDto, response));
+        log.info("Login request received: email={}, ip={}", loginReqDto.getEmail(), request.getRemoteAddr());
+        try {
+            TokenDto tokenDto = accountService.accountLogin(loginReqDto, response);
+            log.info("Login successful: email={}, accessToken={}", loginReqDto.getEmail(), tokenDto.getAccessToken());
+            return ResponseDto.success(tokenDto);
+        } catch (Exception e) {
+            log.error("Login failed: email={}, error={}", loginReqDto.getEmail(), e.getMessage(), e);
+            return ResponseDto.fail("LOGIN_FAILED", e.getMessage());
+        }
     }
     //로그아웃
     @PostMapping("/logout")
