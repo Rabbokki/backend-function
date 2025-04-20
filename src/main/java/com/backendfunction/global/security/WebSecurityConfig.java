@@ -47,7 +47,9 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://dopaminex.kro.kr"
+                "http://localhost:3002",
+                "https://dopaminex.kro.kr",
+                "https://dopaminex.kro.kr:8443"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));
