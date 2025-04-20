@@ -44,10 +44,10 @@ public class AccountController {
     //로그인
     @PostMapping("/login")
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
-        log.info("Login request received: email={}, ip={}", loginReqDto.getEmail(), request.getRemoteAddr());
+        log.info("Login request: email={}, url={}, ip={}", loginReqDto.getEmail(), request.getRequestURL(), request.getRemoteAddr());
         try {
             TokenDto tokenDto = accountService.accountLogin(loginReqDto, response);
-            log.info("Login successful: email={}, accessToken={}", loginReqDto.getEmail(), tokenDto.getAccessToken());
+            log.info("Login success: email={}, accessToken={}", loginReqDto.getEmail(), tokenDto.getAccessToken());
             return ResponseDto.success(tokenDto);
         } catch (Exception e) {
             log.error("Login failed: email={}, error={}", loginReqDto.getEmail(), e.getMessage(), e);
