@@ -49,7 +49,8 @@ public class WebSecurityConfig {
                 "http://localhost:3000",
                 "http://localhost:3002",
                 "https://dopaminex.kro.kr",
-                "https://dopaminex.kro.kr:8443"
+                "https://dopaminex.kro.kr:8443",
+                "http://joo-legend.s3-website.ap-northeast-2.amazonaws.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*", "Access_Token"));

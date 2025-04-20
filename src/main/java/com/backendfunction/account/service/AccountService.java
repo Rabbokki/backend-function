@@ -69,26 +69,32 @@ public class AccountService {
         return ResponseDto.success("회원가입 완료");
     }
 
-    public TokenDto accountLogin(LoginReqDto loginReqDto, HttpServletResponse response){
-        log.info("Querying account for email: {}", loginReqDto.getEmail());
-        Account account = accountRepository.findByEmail(loginReqDto.getEmail()).orElseThrow(()->
-                new RuntimeException("계정이 없습니다."));
-        log.info("Verifying password for email: {}", loginReqDto.getEmail());
-        if(!passwordEncoder.matches(loginReqDto.getPassword(), account.getPassword())){
+    public TokenDto accountLogin(LoginReqDto loginReqDto, HttpServletResponse response) {
+        log.info("Querying account: email={}", loginReqDto.getEmail());
+        Account account = accountRepository.findByEmail(loginReqDto.getEmail()).orElseThrow(() -> {
+            log.error("Account not found: email={}", loginReqDto.getEmail());
+            return new RuntimeException("계정이 없습니다.");
+        });
+        log.info("Verifying password: email={}", loginReqDto.getEmail());
+        if (!passwordEncoder.matches(loginReqDto.getPassword(), account.getPassword())) {
+            log.error("Password mismatch: email={}", loginReqDto.getEmail());
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
+        log.info("Generating tokens for email: {}", loginReqDto.getEmail());
         TokenDto tokenDto = jwtUtil.createAllToken(loginReqDto.getEmail());
         log.info("Tokens created: accessToken={}", tokenDto.getAccessToken());
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccountEmail(loginReqDto.getEmail());
-
-        if(refreshToken.isPresent()){
+        if (refreshToken.isPresent()) {
+            log.info("Updating existing refresh token for email: {}", loginReqDto.getEmail());
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
-        }else {
+        } else {
+            log.info("Creating new refresh token for email: {}", loginReqDto.getEmail());
             RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), loginReqDto.getEmail());
             refreshTokenRepository.save(newToken);
         }
-        setHeader(response,tokenDto);
-        return new TokenDto(tokenDto){
+        log.info("Setting response headers for email: {}", loginReqDto.getEmail());
+        setHeader(response, tokenDto);
+        return new TokenDto(tokenDto) {
             public Long accountId = account.getId();
         };
     }
