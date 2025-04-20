@@ -10,6 +10,7 @@ import com.backendfunction.global.security.user.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/account")
+@Slf4j
 public class AccountController {
     private final JwtUtil jwtUtil;
     private final AccountService accountService;
@@ -39,6 +41,7 @@ public class AccountController {
     //로그인
     @PostMapping("/login")
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
+        log.info("Login request: email={}", loginReqDto.getEmail());
         return ResponseDto.success(accountService.accountLogin(loginReqDto, response));
     }
     //로그아웃

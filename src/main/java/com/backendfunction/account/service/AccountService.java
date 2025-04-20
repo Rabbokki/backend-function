@@ -70,12 +70,15 @@ public class AccountService {
     }
 
     public TokenDto accountLogin(LoginReqDto loginReqDto, HttpServletResponse response){
+        log.info("Querying account for email: {}", loginReqDto.getEmail());
         Account account = accountRepository.findByEmail(loginReqDto.getEmail()).orElseThrow(()->
                 new RuntimeException("계정이 없습니다."));
+        log.info("Verifying password for email: {}", loginReqDto.getEmail());
         if(!passwordEncoder.matches(loginReqDto.getPassword(), account.getPassword())){
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
         TokenDto tokenDto = jwtUtil.createAllToken(loginReqDto.getEmail());
+        log.info("Tokens created: accessToken={}", tokenDto.getAccessToken());
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccountEmail(loginReqDto.getEmail());
 
         if(refreshToken.isPresent()){
