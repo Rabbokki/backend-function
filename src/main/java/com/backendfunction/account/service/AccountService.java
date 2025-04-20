@@ -16,9 +16,11 @@ import com.backendfunction.s3.S3Service;
 import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountService {
     private final AccountRepository accountRepository;
     private final JwtUtil jwtUtil;
@@ -33,22 +36,35 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
-    public ResponseDto<?> accountSignUp(AccountReqDto accountReqDto,
-                                        List<MultipartFile> files) {
-        if(accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()){
-            throw new RuntimeException();
+
+    @Transactional
+    public ResponseDto<?> accountSignUp(AccountReqDto accountReqDto, List<MultipartFile> files) {
+        log.info("Starting sign-up for email: {}", accountReqDto.getEmail());
+        if (accountRepository.findByEmail(accountReqDto.getEmail()).isPresent()) {
+            log.warn("Email already exists: {}", accountReqDto.getEmail());
+            return ResponseDto.fail("EMAIL_ALREADY_TAKEN", "이미 사용 중인 이메일입니다.");
         }
-        if (!accountReqDto.isAdult()){
-            throw new RuntimeException("만 19세 이상만 가입할 수 있습니다.");
+        if (!accountReqDto.isAdult()) {
+            log.warn("User is not adult: birthday={}", accountReqDto.getBirthday());
+            return ResponseDto.fail("AGE_RESTRICTION", "만 19세 이상만 가입할 수 있습니다.");
         }
-        if(files != null && !files.isEmpty()){
-            String imgUrl = s3Service.uploadFile(files.get(0));
-            accountReqDto.setImgUrl(imgUrl);
+        if (files != null && !files.isEmpty()) {
+            try {
+                log.info("Uploading file to S3: fileName={}", files.get(0).getOriginalFilename());
+                String imgUrl = s3Service.uploadFile(files.get(0));
+                accountReqDto.setImgUrl(imgUrl);
+                log.info("S3 upload successful: imgUrl={}", imgUrl);
+            } catch (Exception e) {
+                log.error("S3 upload failed", e);
+                return ResponseDto.fail("S3_UPLOAD_FAILED", "이미지 업로드 실패: " + e.getMessage());
+            }
         }
 
         accountReqDto.setEncodePwd(passwordEncoder.encode(accountReqDto.getPassword()));
         Account account = new Account(accountReqDto);
+        log.info("Saving account to DB: email={}", account.getEmail());
         accountRepository.save(account);
+        log.info("Account saved successfully: id={}", account.getId());
 
         return ResponseDto.success("회원가입 완료");
     }

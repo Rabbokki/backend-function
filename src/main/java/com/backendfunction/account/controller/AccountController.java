@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/account")
+@RequestMapping("/api/account")
 public class AccountController {
     private final JwtUtil jwtUtil;
     private final AccountService accountService;
