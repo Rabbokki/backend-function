@@ -2,9 +2,9 @@ logging:
   file:
     name: /app/logs/spring-boot.log
   level:
-    org.springframework: DEBUG
-    com.backend-function: DEBUG
-    org.hibernate.SQL: DEBUG
+    org.springframework: INFO
+    com.backend-function: INFO
+    org.hibernate.SQL: INFO
 server:
   main:
     log-startup-info: true
