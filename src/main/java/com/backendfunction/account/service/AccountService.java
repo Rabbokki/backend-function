@@ -99,10 +99,12 @@ public class AccountService {
         };
     }
 
-    public UserInfoDto getUserInfoByEmail(UserDetailsImpl userDetails) {
-        if(userDetails == null) throw new RuntimeException("계정이 없습니다.");
-        Account account = accountRepository.findById(userDetails.getAccount().getId())
-                .orElseThrow(()-> new RuntimeException("계정이 없습니다."));
+    public UserInfoDto getUserInfoByEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("이메일이 제공되지 않았습니다.");
+        }
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("계정이 없습니다: " + email));
         return UserInfoDto.builder().account(account).build();
     }
 

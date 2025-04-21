@@ -1,10 +1,7 @@
 package com.backendfunction.payment.controller;
 
 import com.backendfunction.global.dto.ResponseDto;
-import com.backendfunction.payment.dto.KakaoApproveResponse;
-import com.backendfunction.payment.dto.KakaoCancelResponse;
-import com.backendfunction.payment.dto.KakaoReadyRequest;
-import com.backendfunction.payment.dto.KakaoReadyResponse;
+import com.backendfunction.payment.dto.*;
 import com.backendfunction.payment.service.KakaoPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -61,8 +58,13 @@ public class KakaoPayController {
      * 환불
      */
     @PostMapping("/refund")
-    public ResponseEntity<ResponseDto<?>> refund() {
-        KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel();
+    public ResponseEntity<ResponseDto<?>> refund(@RequestBody KakaoCancelRequest request) {
+        KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(
+                request.getTid(),
+                request.getCancelAmount(),
+                request.getCancelTaxFreeAmount(),
+                request.getCancelVatAmount()
+        );
         return ResponseEntity.ok(ResponseDto.success(kakaoCancelResponse));
     }
 }

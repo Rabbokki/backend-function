@@ -77,6 +77,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/payment/**").permitAll()
 //                        .requestMatchers("/post/create").permitAll()
                         .requestMatchers("/post/**").permitAll()
                         .requestMatchers("/cart/**").authenticated()

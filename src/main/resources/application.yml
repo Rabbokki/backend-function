@@ -54,12 +54,15 @@ spring:
               - name
               - email
           kakao:
-            client-id: 59863455ad799376c5e0310b92c4e537
-            client-secret: ${KAKAO_CLIENT_SECRET}
-            scope: profile_nickname,account_email
-            authorization-grant-type: authorization_code
-            redirect-uri: https://dopaminex.kro.kr:8443/login/oauth2/code/kakao
-            client-authentication-method: client_secret_post
+            pay:
+              admin-key: c529b80160058697969915b6269cb2ee
+              cid: TC0ONETIME
+              ready-url: https://kapi.kakao.com/v1/payment/ready
+              approve-url: https://kapi.kakao.com/v1/payment/approve
+              cancel-url: https://kapi.kakao.com/v1/payment/cancel
+            oauth2:
+              client_id: 59863455ad799376c5e0310b92c4e537
+              redirect_uri: https://dopaminex.kro.kr:8443/login/oauth2/code/kakao
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize

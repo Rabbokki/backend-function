@@ -63,7 +63,7 @@ public class AccountController {
     // 내 정보 가져오기
     @GetMapping("/me")
     public ResponseDto<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return ResponseDto.success(accountService.getUserInfoByEmail(userDetails));
+        return ResponseDto.success(accountService.getUserInfoByEmail(userDetails.getAccount().getEmail()));
     }
 
     // 내 정보 수정하기

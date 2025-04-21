@@ -10,9 +10,11 @@ import com.backendfunction.payment.dto.KakaoReadyResponse;
 import com.backendfunction.post.entity.Post;
 import com.backendfunction.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,42 +25,43 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class KakaoPayService {
-
     private final PostRepository postRepository;
     private final AccountService accountService;
-
-    @Value("${kakao.admin-key}")
+    @Value("${kakao.pay.admin-key}")
     private String adminKey;
-    static final String cid = "TC0ONETIME"; // 가맹점 테스트 코드
+    @Value("${kakao.pay.ready-url}")
+    private String readyUrl;
+    @Value("${kakao.pay.approve-url}")
+    private String approveUrl;
+    @Value("${kakao.pay.cancel-url}")
+    private String cancelUrl;
+    static final String cid = "TC0ONETIME";
     private KakaoReadyResponse kakaoReady;
 
     public KakaoReadyResponse kakaoPayReady(KakaoReadyRequest request) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserInfoDto userInfo = accountService.getUserInfoByEmail(userDetails);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalStateException("인증 정보가 없습니다.");
+        }
+
+        Object principal = authentication.getPrincipal();
+        String email;
+        log.info("Principal type: {}, value: {}", principal.getClass(), principal);
+        if (principal instanceof UserDetailsImpl) {
+            email = ((UserDetailsImpl) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        } else {
+            throw new IllegalStateException("알 수 없는 principal 타입: " + principal.getClass());
+        }
+
+        UserInfoDto userInfo = accountService.getUserInfoByEmail(email);
         Long accountId = userInfo.getAccountId();
-
-
-//        parameters.add("partner_order_id", "가맹점 주문 번호");
-//        parameters.add("partner_user_id", "가맹점 회원 ID");
-//        parameters.add("item_name", "상품명");
-//        parameters.add("quantity", "1");  // Change this to a numeric value
-//        parameters.add("total_amount", "1000");
-//        parameters.add("vat_amount", "91");
-//        parameters.add("tax_free_amount", "0");
-//        parameters.add("green_deposit", "0");
-//        parameters.add("approval_url", "https://9921-112-221-66-171.ngrok-free.app/payment/success");
-//        parameters.add("cancel_url", "https://9921-112-221-66-171.ngrok-free.app/payment/cancel");
-//        parameters.add("fail_url", "https://9921-112-221-66-171.ngrok-free.app/payment/fail");
 
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("cid", cid);
-        parameters.add("partner_order_id", request.getPostId().toString()); // Use postId as order ID
-        parameters.add("partner_user_id", accountId.toString()); // Set accountId instead of email
-        parameters.add("item_name", request.getItemName()); // Use item name from request
-        parameters.add("quantity", String.valueOf(request.getQuantity())); // Dynamic quantity
-        parameters.add("total_amount", String.valueOf(request.getTotalAmount())); // Dynamic amount
-        parameters.add("vat_amount", String.valueOf(request.getVatAmount())); // Dynamic VAT
         parameters.add("partner_order_id", request.getPostId().toString());
         parameters.add("partner_user_id", accountId.toString());
         parameters.add("item_name", request.getItemName());
@@ -71,27 +74,38 @@ public class KakaoPayService {
         parameters.add("cancel_url", request.getCancelUrl());
         parameters.add("fail_url", request.getFailUrl());
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         RestTemplate restTemplate = new RestTemplate();
 
         kakaoReady = restTemplate.postForObject(
-                "https://kapi.kakao.com/v1/payment/ready",
+                readyUrl,
                 requestEntity,
                 KakaoReadyResponse.class);
 
         if (kakaoReady != null) {
-            kakaoReady.setPartnerOrderId(request.getPostId().toString()); // Store postId in the response
+            kakaoReady.setPartnerOrderId(request.getPostId().toString());
         }
 
         return kakaoReady;
     }
 
-    /**
-     * 결제 완료 승인
-     */
     public KakaoApproveResponse approveResponse(String pgToken) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserInfoDto userInfo = accountService.getUserInfoByEmail(userDetails);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalStateException("인증 정보가 없습니다.");
+        }
+        String email;
+        Object principal = authentication.getPrincipal();
+        log.info("Principal type: {}, value: {}", principal.getClass(), principal);
+        if (principal instanceof UserDetailsImpl) {
+            email = ((UserDetailsImpl) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        } else {
+            throw new IllegalStateException("알 수 없는 principal 타입: " + principal.getClass());
+        }
+
+        UserInfoDto userInfo = accountService.getUserInfoByEmail(email);
         Long accountId = userInfo.getAccountId();
 
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -101,51 +115,37 @@ public class KakaoPayService {
         parameters.add("partner_user_id", accountId.toString());
         parameters.add("pg_token", pgToken);
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         RestTemplate restTemplate = new RestTemplate();
 
         return restTemplate.postForObject(
-                "https://kapi.kakao.com/v1/payment/approve",
+                approveUrl,
                 requestEntity,
                 KakaoApproveResponse.class);
     }
 
-
-    /**
-     * 결제 환불
-     */
-    public KakaoCancelResponse kakaoCancel() {
-
-        // 카카오페이 요청
+    public KakaoCancelResponse kakaoCancel(String tid, int cancelAmount, int cancelTaxFreeAmount, int cancelVatAmount) {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("cid", cid);
-        parameters.add("tid", "환불할 결제 고유 번호");
-        parameters.add("cancel_amount", "환불 금액");
-        parameters.add("cancel_tax_free_amount", "환불 비과세 금액");
-        parameters.add("cancel_vat_amount", "환불 부가세");
+        parameters.add("tid", tid);
+        parameters.add("cancel_amount", String.valueOf(cancelAmount));
+        parameters.add("cancel_tax_free_amount", String.valueOf(cancelTaxFreeAmount));
+        parameters.add("cancel_vat_amount", String.valueOf(cancelVatAmount));
 
-        // 파라미터, 헤더
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
-
-        // 외부에 보낼 url
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, getHeaders());
         RestTemplate restTemplate = new RestTemplate();
 
-        KakaoCancelResponse cancelResponse = restTemplate.postForObject(
-                "https://kapi.kakao.com/v1/payment/cancel",
+        return restTemplate.postForObject(
+                cancelUrl,
                 requestEntity,
                 KakaoCancelResponse.class);
-
-        return cancelResponse;
     }
 
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
-
         String auth = "KakaoAK " + adminKey;
-
         httpHeaders.set("Authorization", auth);
         httpHeaders.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
         return httpHeaders;
     }
 }
