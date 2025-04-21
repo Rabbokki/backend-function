@@ -29,19 +29,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        //google ? naver??
-        String  registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
-        OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(registrationId,oAuth2User.getAttributes());
+        OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
         String email = oAuth2UserInfo.getEmail();
         String name = oAuth2UserInfo.getName();
         String provider = oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
 
-        Account account = accountRepository.findByEmail(email)
+        Account account = accountRepository.findByProviderAndProviderId(provider, providerId)
                 .orElseGet(() -> {
                     Account newAccount = new Account(email, name, provider, providerId);
                     return accountRepository.save(newAccount);
@@ -50,13 +49,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return new CustomUserDetails(account, oAuth2User.getAttributes());
     }
 
-    private OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String,Object> attributes){
-        if("google".equals(registrationId)){
+    private OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
+        if ("google".equals(registrationId)) {
             return new GoogleUserDetails(attributes);
         } else if ("naver".equals(registrationId)) {
             return new NaverUserDetails(attributes);
-        }else {
-            throw new OAuth2AuthenticationException("지원하지 않는 OAuth2" + registrationId);
+        } else if ("kakao".equals(registrationId)) {
+            return new KakaoUserDetails(attributes);
+        } else {
+            throw new OAuth2AuthenticationException("지원하지 않는 OAuth2: " + registrationId);
         }
     }
 }
