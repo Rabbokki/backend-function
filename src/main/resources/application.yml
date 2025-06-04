@@ -8,20 +8,20 @@ logging:
 server:
   main:
     log-startup-info: true
-  port: 8443
+  port: 8080
   ssl:
-    enabled: true
-    key-store: file:/etc/letsencrypt/live/dopaminex.kro.kr/keystore.p12
-    key-store-password: dopaminex123  # PFX 파일 비밀번호
-    key-store-type: PKCS12
-    key-alias: dopaminex
+    enabled: false
+    # key-store: file:/etc/letsencrypt/live/dopaminex.kro.kr/keystore.p12
+    # key-store-password: dopaminex123
+    # key-store-type: PKCS12
+    # key-alias: dopaminex
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://dopaminex.c9ey8eai2kkp.ap-northeast-2.rds.amazonaws.com:3306/dopaminex?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root # RDS 사용자명
-    password: 1q2w3e4r! # RDS 비밀번호
+    username: root
+    password: 1q2w3e4r!
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -40,7 +40,7 @@ spring:
           google:
             client-id: 36282424110-0km648e8j6e5i46v2vsre8rjfgt6mq0d.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: "https://dopaminex.kro.kr:8443/login/oauth2/code/google"
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope:
               - email
               - profile
@@ -49,20 +49,19 @@ spring:
             client-secret: jZLsurnTpW
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: https://dopaminex.kro.kr:8443/login/oauth2/code/naver
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             scope:
               - name
               - email
           kakao:
-            pay:
-              admin-key: c529b80160058697969915b6269cb2ee
-              cid: TC0ONETIME
-              ready-url: https://kapi.kakao.com/v1/payment/ready
-              approve-url: https://kapi.kakao.com/v1/payment/approve
-              cancel-url: https://kapi.kakao.com/v1/payment/cancel
-            oauth2:
-              client_id: 59863455ad799376c5e0310b92c4e537
-              redirect_uri: https://dopaminex.kro.kr:8443/login/oauth2/code/kakao
+            client-id: 59863455ad799376c5e0310b92c4e537
+            client-secret: c529b80160058697969915b6269cb2ee
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize
@@ -75,16 +74,23 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+kakao:
+  pay:
+    admin-key: c529b80160058697969915b6269cb2ee
+    cid: TC0ONETIME
+    ready-url: https://kapi.kakao.com/v1/payment/ready
+    approve-url: https://kapi.kakao.com/v1/payment/approve
+    cancel-url: https://kapi.kakao.com/v1/payment/cancel
+
 jwt:
   secret:
     key: 7J2064W467Kg7J207IWY7Lqg7ZSE7IiY6rCV7IOd67aE65Ok7ZmU7J207YyF7ZWY7IS47JqU7KKL7J2A7ZqM7IKs7JeQ66qo65GQ7Leo7JeF7ISx6rO17ZWY7Iuk6rGw652866+/7Iq164uI64uk65287J2067iM7IS47IWY65Ok7Ja07KO87IWU7ISc6rCQ7IKs7ZWp64uI64uk64+E7JuA7J2065CY7JeI7Jy866m07KKL6rKg7Iq164uI64uk
-
   websocket:
     endpoint: /ws/chat
 
 jasypt:
   encryptor:
-    password: jasyptStringEncryptor  # 암호화 문자열
+    password: jasyptStringEncryptor
 
 cloud:
   aws:
@@ -92,21 +98,20 @@ cloud:
       access-key: AKIA6ELKOBDPXDMU3Y7M
       secret-key: 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
     region:
-      static: ap-northeast-2  # AWS S3 리전
+      static: ap-northeast-2
     stack:
       auto: false
 
 application:
   bucket:
-    name: joo-legend  # AWS S3 버킷 이름
-
+    name: joo-legend
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 50MB
     file:
-      upload-dir: /uploads  # 허용된 업로드 경로 설정
+      upload-dir: /uploads
 
 resilience4j.circuitbreaker:
   instances:
