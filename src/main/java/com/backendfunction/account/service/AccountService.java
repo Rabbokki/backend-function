@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +37,6 @@ public class AccountService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
-
 
     @Transactional
     public ResponseDto<?> accountSignUp(AccountReqDto accountReqDto, List<MultipartFile> files) {
@@ -63,12 +64,18 @@ public class AccountService {
         accountReqDto.setEncodePwd(passwordEncoder.encode(accountReqDto.getPassword()));
         Account account = new Account(accountReqDto);
         log.info("Saving account to DB: email={}", account.getEmail());
-        accountRepository.save(account);
-        log.info("Account saved successfully: id={}", account.getId());
+        Account savedAccount = accountRepository.save(account);
+        log.info("Account saved successfully: id={}", savedAccount.getId());
 
-        return ResponseDto.success("회원가입 완료");
+        String accessToken = jwtUtil.createAccessToken(accountReqDto.getEmail());
+        return ResponseDto.success(Map.of(
+                "message", "회원가입 완료",
+                "accessToken", accessToken,
+                "accountId", savedAccount.getId()
+        ));
     }
 
+    @Transactional
     public TokenDto accountLogin(LoginReqDto loginReqDto, HttpServletResponse response) {
         log.info("Querying account: email={}", loginReqDto.getEmail());
         Account account = accountRepository.findByEmail(loginReqDto.getEmail()).orElseThrow(() -> {
@@ -94,34 +101,35 @@ public class AccountService {
         }
         log.info("Setting response headers for email: {}", loginReqDto.getEmail());
         setHeader(response, tokenDto);
-        return new TokenDto(tokenDto) {
-            public Long accountId = account.getId();
-        };
+        return new TokenDto(tokenDto.getAccessToken(), tokenDto.getRefreshToken(), account.getId());
     }
 
     public UserInfoDto getUserInfoByEmail(String email) {
         if (email == null || email.isEmpty()) {
+            log.error("Email not provided");
             throw new IllegalArgumentException("이메일이 제공되지 않았습니다.");
         }
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("계정이 없습니다: " + email));
+                .orElseThrow(() -> {
+                    log.error("Account not found: email={}", email);
+                    return new RuntimeException("계정이 없습니다: " + email);
+                });
         return UserInfoDto.builder().account(account).build();
     }
 
-//    public UserInfoDto getUserInfoByEmail(String email) {
-//        Account account = accountRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("계정이 없습니다."));
-//        return UserInfoDto.builder().account(account).build();
-//    }
-
+    @Transactional
     public void updateUserInfo(String email, AccountReqDto accountReqDto) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("등록된 이매일 아닙니다."));
+                .orElseThrow(() -> {
+                    log.error("Account not found: email={}", email);
+                    return new RuntimeException("등록된 이메일이 아닙니다.");
+                });
 
         if (accountReqDto.getEmail() != null && !accountReqDto.getEmail().equals(account.getEmail())) {
             Optional<Account> existingAccount = accountRepository.findByEmail(accountReqDto.getEmail());
             if (existingAccount.isPresent()) {
-                throw new RuntimeException("이미 사용한 이매일 입니다.");
+                log.error("Email already taken: {}", accountReqDto.getEmail());
+                throw new RuntimeException("이미 사용 중인 이메일입니다.");
             }
             account.setEmail(accountReqDto.getEmail());
         }
@@ -134,31 +142,39 @@ public class AccountService {
             account.setPassword(passwordEncoder.encode(accountReqDto.getPassword()));
         }
 
+        log.info("Updating account: email={}", account.getEmail());
         accountRepository.save(account);
+        log.info("Account updated successfully: email={}", account.getEmail());
     }
 
-
-    public void setHeader(HttpServletResponse response, TokenDto tokenDto){
+    public void setHeader(HttpServletResponse response, TokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
-
     public AccountDto findById(Long id) {
-        Account account = accountRepository.findById(id).orElse(null);
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Account not found: id={}", id);
+                    return new RuntimeException("계정이 없습니다: id=" + id);
+                });
         return AccountDto.fromEntity(account);
     }
 
     public List<AccountDto> findAll() {
         List<Account> accounts = accountRepository.findAll();
-        return accounts.stream().map(x -> AccountDto.fromEntity(x)).toList();
-    }
-    //로그아웃
-    public ResponseDto<?> accountLogout(String email){
-        RefreshToken refreshToken = refreshTokenRepository.findByAccountEmail(email).orElseThrow(
-                ()-> new RuntimeException("리프레시 토큰 만료")
-        );
-        return ResponseDto.success("로그아웃 success");
+        return accounts.stream().map(AccountDto::fromEntity).collect(Collectors.toList());
     }
 
+    @Transactional
+    public ResponseDto<?> accountLogout(String email) {
+        RefreshToken refreshToken = refreshTokenRepository.findByAccountEmail(email)
+                .orElseThrow(() -> {
+                    log.error("Refresh token not found: email={}", email);
+                    return new RuntimeException("리프레시 토큰 만료");
+                });
+        refreshTokenRepository.delete(refreshToken);
+        log.info("Logout successful: email={}", email);
+        return ResponseDto.success("로그아웃 성공");
+    }
 }

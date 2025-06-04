@@ -68,12 +68,16 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 명시적으로 CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable()) // 폼 로그인 비활성화
+                .httpBasic(httpBasic -> httpBasic.disable()) // 기본 HTTP 인증 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/test").permitAll()
                         .requestMatchers("/account/**").permitAll()
+                        .requestMatchers("/api/account/signup").permitAll()
+                        .requestMatchers("/api/account/login").permitAll()
                         .requestMatchers("/file/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()

@@ -20,21 +20,26 @@ import java.io.IOException;
 import java.util.Enumeration;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.equals("/api/account/signup") || path.equals("/api/account/login");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         Enumeration<String> headerNames = request.getHeaderNames();
-        System.out.println("🔥 Incoming request headers:");
+        log.info("🔥 Incoming request headers:");
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            System.out.println(headerName + ": " + request.getHeader(headerName));
+            log.info("{}: {}", headerName, request.getHeader(headerName));
         }
 
         log.info("Request Content-Type: {}", request.getContentType());
@@ -44,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         log.info("Request URI: {}", request.getRequestURI());
         log.info("Access Token from header: {}", accessToken);
         log.info("Refresh Token from header: {}", refreshToken);
-        log.info("Raw Access_Token from header: {}", request.getHeader("Access_Token")); // 추가 로그
+        log.info("Raw Access_Token from header: {}", request.getHeader("Access_Token"));
         log.info("Parsed Access Token: {}", accessToken);
 
         if (accessToken != null) {
@@ -87,10 +92,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             log.error("Error setting authentication for email: {}. Exception: {}", email, e.getMessage());
         }
     }
-//    public void setAuthentication(String email) {
-//        Authentication authentication = jwtUtil.createAuthentication(email);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//    }
 
     public void jwtExceptionHandler(HttpServletResponse response, String msg, HttpStatus status) {
         response.setStatus(status.value());
@@ -99,8 +100,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String json = new ObjectMapper().writeValueAsString(new GlobalResDto(msg, status.value()));
             response.getWriter().write(json);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Error writing JSON response: {}", e.getMessage());
         }
     }
-
 }

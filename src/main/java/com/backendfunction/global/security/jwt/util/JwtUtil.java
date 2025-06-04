@@ -47,23 +47,25 @@ public class JwtUtil {
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
+        log.info("JwtUtil initialized with secret key");
     }
 
-    // header 토큰을 가져오는 기능
     public String getHeaderToken(HttpServletRequest request, String headerName) {
         String token = request.getHeader(headerName);
-        log.info("Header {} value: {}", headerName, token); // 디버깅용 로그 추가
+        log.info("Header {} value: {}", headerName, token);
         return token;
     }
-    // 토큰 생성
-    public TokenDto createAllToken(String email){
+
+    public TokenDto createAllToken(String email) {
         return new TokenDto(createToken(email, "Access"), createToken(email, "Refresh"));
     }
 
+    public String createAccessToken(String email) {
+        return createToken(email, "Access");
+    }
+
     public String createToken(String email, String type) {
-
         Date date = new Date();
-
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
         String token = Jwts.builder()
@@ -72,25 +74,16 @@ public class JwtUtil {
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
-        log.info("Generated token: {}", token); // 토큰 생성 로그 추가
+        log.info("Generated {} token for email: {}", type, email);
         return token;
     }
-    // 토큰 검증
-//    public Boolean tokenValidation(String token) {
-//        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//            return true;
-//        } catch (Exception ex) {
-//            log.error(ex.getMessage());
-//            return false;
-//        }
-//    }
+
     public boolean tokenValidation(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                    .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(token);  // JWT 파싱
+                    .parseClaimsJws(token);
             log.info("Token validated successfully: {}", token);
             return true;
         } catch (Exception e) {
@@ -101,35 +94,34 @@ public class JwtUtil {
 
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Base64.getDecoder().decode(secretKey))  // secretKey를 byte[]로 디코딩
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject();  // 이메일을 가져옴
+        String email = claims.getSubject();
+        log.info("Extracted email from token: {}", email);
+        return email;
     }
 
-    // refreshToken 토큰 검증
     public Boolean refreshTokenValidation(String token) {
-
-        // 1차 토큰 검증
-        if(!tokenValidation(token)) return false;
-
-        // DB에 저장한 토큰 비교
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccountEmail(getEmailFromToken(token));
-
-        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
+        if (!tokenValidation(token)) {
+            return false;
+        }
+        String email = getEmailFromToken(token);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccountEmail(email);
+        boolean isValid = refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
+        log.info("Refresh token validation for email: {}, isValid: {}", email, isValid);
+        return isValid;
     }
 
-    // 인증 객체 생성
     public Authentication createAuthentication(String email) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            log.info("Created authentication for email: {}", email);
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } catch (Exception e) {
+            log.error("Failed to create authentication for email: {}, error: {}", email, e.getMessage());
+            return null;
+        }
     }
-
-    // 토큰에서 email 가져오는 기능
-//    public String getEmailFromToken(String token) {
-//        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-//    }
-
-
 }

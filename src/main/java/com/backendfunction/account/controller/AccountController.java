@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -34,61 +35,84 @@ public class AccountController {
     private final AccountService accountService;
     private final HttpServletRequest request;
 
-    //회원가입
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseDto<?> signUp(@RequestPart(value = "accountImg", required = false) List<MultipartFile> imgs,
                                  @RequestPart(value = "dto") @Valid AccountReqDto accountReqDto) {
-        return ResponseDto.success(accountService.accountSignUp(accountReqDto,imgs));
+        log.info("Signup request: email={}, ip={}", accountReqDto.getEmail(), request.getRemoteAddr());
+        try {
+            ResponseDto<?> response = accountService.accountSignUp(accountReqDto, imgs);
+            log.info("Signup success: email={}", accountReqDto.getEmail());
+            return response;
+        } catch (Exception e) {
+            log.error("Signup failed: email={}, error={}", accountReqDto.getEmail(), e.getMessage(), e);
+            return ResponseDto.fail("SIGNUP_FAILED", "회원가입 실패: " + e.getMessage());
+        }
     }
 
-    //로그인
     @PostMapping("/login")
     public ResponseDto<?> login(@RequestBody @Valid LoginReqDto loginReqDto, HttpServletResponse response) {
         log.info("Login request: email={}, url={}, ip={}", loginReqDto.getEmail(), request.getRequestURL(), request.getRemoteAddr());
         try {
             TokenDto tokenDto = accountService.accountLogin(loginReqDto, response);
-            log.info("Login success: email={}, accessToken={}", loginReqDto.getEmail(), tokenDto.getAccessToken());
-            return ResponseDto.success(tokenDto);
+            log.info("Login success: email={}, accessToken={}, accountId={}", loginReqDto.getEmail(), tokenDto.getAccessToken(), tokenDto.getAccountId());
+            return ResponseDto.success(Map.of(
+                    "accessToken", tokenDto.getAccessToken(),
+                    "refreshToken", tokenDto.getRefreshToken(),
+                    "accountId", tokenDto.getAccountId()
+            ));
         } catch (Exception e) {
             log.error("Login failed: email={}, error={}", loginReqDto.getEmail(), e.getMessage(), e);
             return ResponseDto.fail("LOGIN_FAILED", e.getMessage());
         }
     }
-    //로그아웃
+
     @PostMapping("/logout")
-    public ResponseDto<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails)throws Exception{
-        return ResponseDto.success(accountService.accountLogout(userDetails.getAccount().getEmail()));
+    public ResponseDto<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        try {
+            ResponseDto<?> response = accountService.accountLogout(userDetails.getAccount().getEmail());
+            log.info("Logout success: email={}", userDetails.getAccount().getEmail());
+            return response;
+        } catch (Exception e) {
+            log.error("Logout failed: email={}, error={}", userDetails.getAccount().getEmail(), e.getMessage(), e);
+            return ResponseDto.fail("LOGOUT_FAILED", e.getMessage());
+        }
     }
 
-    // 내 정보 가져오기
     @GetMapping("/me")
     public ResponseDto<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         String email = userDetails.getUsername();
-        return ResponseDto.success(accountService.getUserInfoByEmail(email));
+        try {
+            ResponseDto<?> response = ResponseDto.success(accountService.getUserInfoByEmail(email));
+            log.info("Fetched user info: email={}", email);
+            return response;
+        } catch (Exception e) {
+            log.error("Get user info failed: email={}, error={}", email, e.getMessage(), e);
+            return ResponseDto.fail("USER_NOT_FOUND", e.getMessage());
+        }
     }
 
-    // 내 정보 수정하기
     @PutMapping("/me")
     public ResponseDto<?> updateUserInfo(@RequestHeader("Authorization") String token,
                                          @RequestBody @Valid AccountReqDto accountReqDto) {
         String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
         try {
             accountService.updateUserInfo(email, accountReqDto);
+            log.info("Updated user info: email={}", email);
             return ResponseDto.success("수정 성공 했습니다.");
         } catch (RuntimeException e) {
-            // If a runtime exception occurs (like "This email is already taken")
+            log.error("Update user info failed: email={}, error={}", email, e.getMessage(), e);
             return ResponseDto.fail("EMAIL_ALREADY_TAKEN", e.getMessage());
         }
     }
 
-    @GetMapping("/api/account")
-    public ResponseEntity<?> findAllAccount() {
+    @GetMapping
+    public ResponseEntity<List<AccountDto>> findAllAccount() {
         List<AccountDto> accountDtos = accountService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(accountDtos);
     }
-//id로 검색하기
-    @GetMapping("/api/account/id/{id}")
-    public ResponseEntity<?> findByAccountId(@PathVariable("id") Long id) {
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<AccountDto> findByAccountId(@PathVariable("id") Long id) {
         AccountDto dto = accountService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
