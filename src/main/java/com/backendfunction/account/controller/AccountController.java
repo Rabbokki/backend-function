@@ -1,8 +1,6 @@
 package com.backendfunction.account.controller;
 
-import com.backendfunction.account.dto.AccountDto;
-import com.backendfunction.account.dto.AccountReqDto;
-import com.backendfunction.account.dto.LoginReqDto;
+import com.backendfunction.account.dto.*;
 import com.backendfunction.account.service.AccountService;
 import com.backendfunction.global.dto.ResponseDto;
 import com.backendfunction.global.security.jwt.dto.TokenDto;
@@ -92,15 +90,17 @@ public class AccountController {
     }
 
     @PutMapping("/me")
-    public ResponseDto<?> updateUserInfo(@RequestHeader("Authorization") String token,
-                                         @RequestBody @Valid AccountReqDto accountReqDto) {
+    public ResponseDto<?> updateUserInfo(
+            @RequestHeader("Authorization") String token,
+            @RequestPart("request") @Valid AccountUpdateDto accountUpdateDto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
+    ) {
         String email = jwtUtil.getEmailFromToken(token.replace("Bearer ", ""));
+
         try {
-            accountService.updateUserInfo(email, accountReqDto);
-            log.info("Updated user info: email={}", email);
-            return ResponseDto.success("수정 성공 했습니다.");
+            UserInfoDto updatedUser = accountService.updateUserInfo(email, accountUpdateDto, profileImage);
+            return ResponseDto.success(updatedUser);
         } catch (RuntimeException e) {
-            log.error("Update user info failed: email={}, error={}", email, e.getMessage(), e);
             return ResponseDto.fail("EMAIL_ALREADY_TAKEN", e.getMessage());
         }
     }

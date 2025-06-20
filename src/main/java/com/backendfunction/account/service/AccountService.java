@@ -1,9 +1,6 @@
 package com.backendfunction.account.service;
 
-import com.backendfunction.account.dto.AccountDto;
-import com.backendfunction.account.dto.AccountReqDto;
-import com.backendfunction.account.dto.LoginReqDto;
-import com.backendfunction.account.dto.UserInfoDto;
+import com.backendfunction.account.dto.*;
 import com.backendfunction.account.entity.Account;
 import com.backendfunction.account.entity.RefreshToken;
 import com.backendfunction.account.repository.AccountRepository;
@@ -118,33 +115,53 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateUserInfo(String email, AccountReqDto accountReqDto) {
+    public UserInfoDto updateUserInfo(String email, AccountUpdateDto accountUpdateDto, MultipartFile profileImage) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("Account not found: email={}", email);
                     return new RuntimeException("등록된 이메일이 아닙니다.");
                 });
 
-        if (accountReqDto.getEmail() != null && !accountReqDto.getEmail().equals(account.getEmail())) {
-            Optional<Account> existingAccount = accountRepository.findByEmail(accountReqDto.getEmail());
+        // Email update
+        if (accountUpdateDto.getEmail() != null && !accountUpdateDto.getEmail().equals(account.getEmail())) {
+            Optional<Account> existingAccount = accountRepository.findByEmail(accountUpdateDto.getEmail());
             if (existingAccount.isPresent()) {
-                log.error("Email already taken: {}", accountReqDto.getEmail());
+                log.error("Email already taken: {}", accountUpdateDto.getEmail());
                 throw new RuntimeException("이미 사용 중인 이메일입니다.");
             }
-            account.setEmail(accountReqDto.getEmail());
+            account.setEmail(accountUpdateDto.getEmail());
         }
 
-        if (accountReqDto.getNickname() != null) {
-            account.setNickname(accountReqDto.getNickname());
+        // Nickname update
+        if (accountUpdateDto.getNickname() != null) {
+            account.setNickname(accountUpdateDto.getNickname());
         }
 
-        if (accountReqDto.getPassword() != null) {
-            account.setPassword(passwordEncoder.encode(accountReqDto.getPassword()));
+        // Birthday update
+        if (accountUpdateDto.getBirthday() != null) {
+            account.setBirthday(accountUpdateDto.getBirthday());
         }
 
-        log.info("Updating account: email={}", account.getEmail());
+        // Profile image update (S3)
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                log.info("Uploading new profile image for user: {}", email);
+                String imgUrl = s3Service.uploadFile(profileImage);
+                account.setImgUrl(imgUrl);
+                log.info("Profile image updated: {}", imgUrl);
+            } catch (Exception e) {
+                log.error("S3 upload failed", e);
+                throw new RuntimeException("프로필 이미지 업로드 실패: " + e.getMessage());
+            }
+        } else if (accountUpdateDto.getImgUrl() != null && accountUpdateDto.getImgUrl().isEmpty()) {
+            // User requested to delete their image
+            account.setImgUrl(null);
+            log.info("Profile image removed for user: {}", email);
+        }
+
         accountRepository.save(account);
         log.info("Account updated successfully: email={}", account.getEmail());
+        return UserInfoDto.builder().account(account).build();
     }
 
     public void setHeader(HttpServletResponse response, TokenDto tokenDto) {
