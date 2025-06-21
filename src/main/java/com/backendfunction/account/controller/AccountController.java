@@ -56,7 +56,8 @@ public class AccountController {
             return ResponseDto.success(Map.of(
                     "accessToken", tokenDto.getAccessToken(),
                     "refreshToken", tokenDto.getRefreshToken(),
-                    "accountId", tokenDto.getAccountId()
+                    "accountId", tokenDto.getAccountId(),
+                    "email", loginReqDto.getEmail()
             ));
         } catch (Exception e) {
             log.error("Login failed: email={}, error={}", loginReqDto.getEmail(), e.getMessage(), e);
