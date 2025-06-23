@@ -3,7 +3,9 @@ package com.backendfunction.global.security.user;
 import com.backendfunction.account.entity.Account;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -11,10 +13,12 @@ import java.util.Collections;
 
 @Getter
 @Setter
+@Slf4j
 public class UserDetailsImpl implements UserDetails {
     private Account account;
 
     public UserDetailsImpl(Account account) {
+        log.info("Creating UserDetailsImpl for: {}", account.getEmail());
         this.account = account;
     }
 
@@ -40,9 +44,9 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        // 기본적으로 "ROLE_USER" 권한 부여
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
     }
-
     @Override
     public String getPassword() {
         return account.getPassword();

@@ -84,8 +84,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/payment/**").permitAll()
                         .requestMatchers("/post/**").permitAll()
                         .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/chat").authenticated()
+                        .requestMatchers("/chat/**").authenticated()
                         .requestMatchers("/api/liquor/**").permitAll()
+                        .requestMatchers("/chat/test-auth").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

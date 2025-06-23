@@ -93,11 +93,18 @@ public class ChatRoomService {
     public List<ChatDto.Response> chatConvertToResponseDto(List<ChatMessage> chats) {
         List<ChatDto.Response> responseList = new ArrayList<>();
         for (ChatMessage chat : chats) {
-            ChatDto.Response response = ChatDto.Response.builder().chatMessage(chat).build();
+            // 예시: roomId, roomName, timestamp는 ChatMessage에서 꺼내거나 가공해서 넘겨야 함
+            ChatDto.Response response = ChatDto.Response.fromChatMessage(
+                    chat,
+                    chat.getRoom().getId(),           // ChatMessage에 해당 메서드가 있어야 함
+                    chat.getRoom().getRoomName(),         // 마찬가지로 getter 필요
+                    chat.getCreatedAt().toString()  // 예시로 timestamp 처리
+            );
             responseList.add(response);
         }
         return responseList;
     }
+
 
     private UserResponseDto getUserInfo(ChatRoom room, String account) {
         UserResponseDto userResponseDto = new UserResponseDto();

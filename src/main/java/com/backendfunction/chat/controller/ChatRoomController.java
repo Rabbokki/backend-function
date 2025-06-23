@@ -106,12 +106,13 @@ public class ChatRoomController {
         return ResponseDto.success(paginatedMessages);
     }
 
-    // 테스트 엔드포인트 추가
-    // 또는 Page<ChatRoom>을 응답으로 반환
-    @GetMapping("/test/wnsdyd821/rooms")
-    public ResponseEntity<Page<ChatRoom>> testWnsdydChatRoomsWithResponse() {
-        Page<ChatRoom> rooms = chatRoomService.testChatRoomsForWnsdyd();
-        return ResponseEntity.ok(rooms);
+    @GetMapping("/test-auth")
+    public ResponseDto<?> testAuth(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        log.info("Test auth called, userDetails: {}", userDetails != null ? userDetails.getUsername() : "null");
+        if (userDetails == null || userDetails.getAccount() == null) {
+            return ResponseDto.fail("UNAUTHORIZED", "인증되지 않은 사용자입니다.");
+        }
+        return ResponseDto.success("Authenticated user: " + userDetails.getAccount().getEmail());
     }
 
 }
