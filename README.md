@@ -7,7 +7,7 @@
 
 https://youtu.be/lchUEy-PWBQ
 
-<img src="https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc" width="600"/>
+<img src="https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc" width="400"/>
 
 
 
