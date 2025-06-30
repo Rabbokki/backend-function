@@ -10,7 +10,7 @@ https://youtu.be/lchUEy-PWBQ
 <img src="https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc" width="400"/>
 <img src="https://github.com/user-attachments/assets/b2ddf8a4-153f-4532-ad06-8dd1f1ed4565" width="400"/>
 <img src="https://github.com/user-attachments/assets/896d178f-e884-4511-9019-836d2d7891b2" width="400"/>
-![KakaoTalk_Photo_2025-06-30-18-21-31](https://github.com/user-attachments/assets/a7a1ad0a-6e63-4171-b397-5ffacb892461)
+<img src="https://github.com/user-attachments/assets/a7a1ad0a-6e63-4171-b397-5ffacb892461" width="400"/>
 
 ## ✨ 기술스택
 #### FRONT-END
