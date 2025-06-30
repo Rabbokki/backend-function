@@ -6,12 +6,9 @@
 
 
 https://youtu.be/lchUEy-PWBQ
+![KakaoTalk_Photo_2025-06-30-18-20-54](https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc)
 
-![vllo_gif](https://user-images.githubusercontent.com/113872554/227924125-bd54a734-ec1b-44c0-b646-3c72865845bb.gif)
-![vllo_gif5](https://user-images.githubusercontent.com/113872554/227927894-53cd9465-3007-4adf-a67d-86e285fba0b6.gif)
-![vllo_gif4](https://user-images.githubusercontent.com/113872554/227927886-dec20ec6-1cce-45d4-ba97-284983f74e2b.gif)
-![vllo_gif3](https://user-images.githubusercontent.com/113872554/227927878-86dbab81-8d28-45f4-b70e-507ae86599d4.gif)
-![vllo_gif2](https://user-images.githubusercontent.com/113872554/227927869-465bdf05-3209-49f8-931e-d4a86629af9e.gif)
+
 
 ## ✨ 기술스택
 #### FRONT-END
