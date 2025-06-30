@@ -6,7 +6,8 @@
 
 
 https://youtu.be/lchUEy-PWBQ
-![KakaoTalk_Photo_2025-06-30-18-20-54](https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc)
+<img src="https://github.com/user-attachments/assets/b520fe4e-0960-4870-8756-5215c348aafc" width="600"/>
+
 
 
 
